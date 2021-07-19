@@ -31,6 +31,7 @@ resource "kubectl_manifest" "dynatrace_secret_manifest" {
 resource "kubectl_manifest" "dynatrace_cr_manifest" {
   yaml_body = templatefile("${path.module}/manifests/dynatrace_cr.yaml", {
     dynatrace_api               = var.dynatrace_api
+    cluster_name                = "${var.environment}-cpp"
   })
   depends_on = [
     kubectl_manifest.dynatrace_secret_manifest

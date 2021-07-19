@@ -29,7 +29,7 @@ spec:
   # Optional: Sets Network Zone for OneAgent and ActiveGate pods
   # Make sure networkZones are enabled on your cluster before (see https://www.dynatrace.com/support/help/setup-and-configuration/network-zones/network-zones-basic-info/)
   #
-  # networkZone: name-of-my-network-zone
+  networkZone: ${cluster_name}
 
   # Optional: Defines a custom pull secret in case you use a private registry when pulling images from the dynatrace environment
   #
@@ -90,7 +90,8 @@ spec:
     # Optional: arguments to add to the OneAgent installer.
     # Available options: https://www.dynatrace.com/support/help/shortlink/linux-custom-installation
     # Limitations: https://www.dynatrace.com/support/help/shortlink/oneagent-docker#limitations
-    # args: []
+    args:
+      - --set-host-group=${cluster_name}
 
     # Optional: additional environment variables to add to the OneAgent Pods.
     #
@@ -181,7 +182,7 @@ spec:
 
     # Optional: Set activation group for ActiveGate
     #
-    # group: ""
+    group: ${cluster_name}
 
     # Optional: Add a custom properties file by providing it as a value or reference it from a secret
     # If referenced from a secret, make sure the key is called 'customProperties'
@@ -248,7 +249,7 @@ spec:
 
     # Optional: Set activation group for ActiveGate
     #
-    # group: ""
+    group: ${cluster_name}
 
     # Optional: Add a custom properties file by providing it as a value or reference it from a secret
     # If referenced from a secret, make sure the key is called 'customProperties'
