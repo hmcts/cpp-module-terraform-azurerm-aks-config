@@ -29,3 +29,14 @@ resource "kubectl_manifest" "istio_operator_manifest" {
     kubernetes_namespace.istio_namespace
   ]
 }
+resource "kubectl_manifest" "istio_gateway_manifest" {
+  yaml_body = templatefile("${path.module}/manifests/gateway.yaml", {
+    app           = var.app
+    ingressdomain = var.ingressdomain
+  })
+
+  depends_on = [
+    helm_release.istio_operator_install,
+    kubernetes_namespace.istio_namespace
+  ]
+}
