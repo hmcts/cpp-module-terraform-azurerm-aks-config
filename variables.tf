@@ -28,8 +28,15 @@ variable "dynatrace_paas_token" {
   description = "Dynatrace paas token to configure for Dynakube custom resource "
   type        = string
 }
-
 variable "environment" {
   type        = string
   description = "Environment name"
+}
+variable "app" {
+  type        = string
+  description = "App Name"
+}
+variable "ingressdomain" {
+  type        = string
+  description = "Ingress domain name FQDN"
 }
