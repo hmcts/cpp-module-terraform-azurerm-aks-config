@@ -33,3 +33,48 @@ variable "environment" {
   type        = string
   description = "Environment name"
 }
+
+variable "acr_name" {
+  type        = string
+  description = "ACR name to pull the charts from"
+}
+
+variable "acr_user_name" {
+  type        = string
+  description = "ACR username"
+}
+
+variable "acr_user_password" {
+  type        = string
+  description = "ACR password"
+}
+
+variable "jenkins_rbac_chart_name" {
+  type        = string
+  description = "Name of the chart for jenkins-rbac"
+}
+
+variable "jenkins_rbac_chart_path" {
+  type        = string
+  description = "Path in the ACR for the chart"
+}
+
+variable "jenkins_rbac_chart_version" {
+  type        = string
+  description = "Version of the chart"
+}
+
+variable "aks_cluster_name" {
+  type        = string
+  description = "AKS cluster name"
+}
+
+variable "aks_ca_certificate" {
+  type        = string
+  description = "AKS CA certtificate"
+}
+
+variable "aks_server_endpoint" {
+  type        = string
+  description = "AKS server endpoint"
+}
