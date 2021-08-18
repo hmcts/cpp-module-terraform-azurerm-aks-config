@@ -8,6 +8,19 @@ data "kubectl_file_documents" "dynatrace_manifests" {
   content = file("${path.module}/manifests/dynatrace_operator.yaml")
 }
 
+# added new manifest for operator deployment
+resource "kubectl_manifest" "dynatrace_operator_deployment" {
+    yaml_body        = templatefile("${path.module}/manifests/dynatrace_operator_deploy.yaml", {
+    systempool_taint_key                        = var.systempool_taint_key
+    affinity_exp_key                            = var.node_affinity_exp_key
+    affinity_exp_value                          = var.node_affinity_exp_value
+  })
+
+  depends_on = [
+    kubernetes_namespace.dynatrace_namespace
+  ]
+}
+
 resource "kubectl_manifest" "dynatrace_operator_manifest" {
   count     = length(data.kubectl_file_documents.dynatrace_manifests.documents)
   yaml_body = element(data.kubectl_file_documents.dynatrace_manifests.documents, count.index)

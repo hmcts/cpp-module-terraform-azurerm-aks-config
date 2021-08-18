@@ -13,6 +13,19 @@ spec:
       labels:
         name: istio-operator
     spec:
+      tolerations:
+      - key: {{.Values.systempoolTaintKey}}
+        operator: "Exists"
+        effect: "NoSchedule"
+      affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: {{.Values.affinityKey}}
+                    operator: In
+                    values:
+                    - {{.Values.affinityValue}}
       serviceAccountName: istio-operator{{- if not (eq .Values.revision "") }}-{{ .Values.revision }}{{- end }}
       containers:
         - name: istio-operator

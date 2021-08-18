@@ -9,6 +9,30 @@ variable "istio_node_selector_label" {
   type        = string
 }
 
+variable "systempool_taint_key" {
+  description = "system pool taint key"
+  type        = string
+  default = "CriticalAddonsOnly"
+}
+
+variable "systempool_taint_value" {
+  description = "system pool taint value"
+  type        = bool
+  default = true
+}
+
+variable "node_affinity_exp_key" {
+  description = "node affinity expession key for systempool label"
+  type        = string
+  default = "nodepool"
+}
+
+variable "node_affinity_exp_value" {
+  description = "node affinity expession value for systempool label"
+  type        = string
+  default = "control_plane_node"
+}
+
 variable "istio_ingress_load_balancer_resource_group" {
   description = "Resource group name where the load balancer to be installed"
   type        = string
