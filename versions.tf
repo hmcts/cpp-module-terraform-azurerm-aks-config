@@ -19,6 +19,21 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = ">= 1.11.2"
     }
+  
+    vault = {
+      source  = "hashicorp/vault"
+      version = ">= 2.21.0"
+    }
+
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.1.0"
+    }
+
+    template = {
+      source  = "hashicorp/template"
+      version = ">= 2.2.0"
+    }
   }
 
   required_version = ">= 0.12"
