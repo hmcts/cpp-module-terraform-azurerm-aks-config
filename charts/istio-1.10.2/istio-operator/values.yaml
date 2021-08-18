@@ -27,3 +27,7 @@ operator:
       cpu: 50m
       memory: 128Mi
 
+# Addition of systempool 
+systempoolTaintKey: CriticalAddonsOnly
+affinityKey: nodepool
+affinityValue: control_plane_node
