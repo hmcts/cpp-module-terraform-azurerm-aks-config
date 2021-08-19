@@ -10,10 +10,10 @@ data "kubectl_file_documents" "dynatrace_manifests" {
 
 # added new manifest for operator deployment
 resource "kubectl_manifest" "dynatrace_operator_deployment" {
-    yaml_body        = templatefile("${path.module}/manifests/dynatrace_operator_deploy.yaml", {
-    systempool_taint_key                        = var.systempool_taint_key
-    affinity_exp_key                            = var.node_affinity_exp_key
-    affinity_exp_value                          = var.node_affinity_exp_value
+  yaml_body = templatefile("${path.module}/manifests/dynatrace_operator_deploy.yaml", {
+    systempool_taint_key = var.systempool_taint_key
+    affinity_exp_key     = var.node_affinity_exp_key
+    affinity_exp_value   = var.node_affinity_exp_value
   })
 
   depends_on = [

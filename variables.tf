@@ -12,25 +12,25 @@ variable "istio_node_selector_label" {
 variable "systempool_taint_key" {
   description = "system pool taint key"
   type        = string
-  default = "CriticalAddonsOnly"
+  default     = "CriticalAddonsOnly"
 }
 
 variable "systempool_taint_value" {
   description = "system pool taint value"
   type        = bool
-  default = true
+  default     = true
 }
 
 variable "node_affinity_exp_key" {
   description = "node affinity expession key for systempool label"
   type        = string
-  default = "nodepool"
+  default     = "nodepool"
 }
 
 variable "node_affinity_exp_value" {
   description = "node affinity expession value for systempool label"
   type        = string
-  default = "control_plane_node"
+  default     = "control_plane_node"
 }
 
 variable "istio_ingress_load_balancer_resource_group" {
@@ -105,4 +105,14 @@ variable "aks_ca_certificate" {
 variable "aks_server_endpoint" {
   type        = string
   description = "AKS server endpoint"
+}
+
+variable "istio_gateway_cert_issuer" {
+  type        = string
+  description = "cpp-nonlive"
+}
+
+variable "istio_gateway_cert_secret_name" {
+  type    = string
+  default = "istio-ingressgateway-certs"
 }
