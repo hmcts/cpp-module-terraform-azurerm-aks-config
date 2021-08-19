@@ -19,7 +19,6 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = ">= 1.11.2"
     }
-
     vault = {
       source  = "hashicorp/vault"
       version = ">= 2.21.0"

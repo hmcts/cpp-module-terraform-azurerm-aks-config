@@ -5,11 +5,9 @@ metadata:
   namespace: istio-system
   name: istiocontrolplane
 spec:
+  components:
   profile: default
   values:
-    global:
-      defaultNodeSelector:
-        agentpool: ${istio_node_selector}
     gateways:                                                                                                            
       istio-ingressgateway:                                                                                                                                                                                  
         name: istio-ingressgateway                                                                                       
@@ -23,3 +21,9 @@ spec:
           service.beta.kubernetes.io/azure-load-balancer-resource-group: ${istio_ingress_load_balancer_resource_group}
         service:
           type: LoadBalancer
+    pilot:
+      k8s:
+        tolerations:
+          - key: ${systempool_taint_key}
+            operator: "Exists"
+            effect: "NoSchedule"

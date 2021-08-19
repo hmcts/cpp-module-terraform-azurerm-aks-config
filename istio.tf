@@ -22,6 +22,7 @@ resource "kubectl_manifest" "istio_operator_manifest" {
   yaml_body = templatefile("${path.module}/manifests/istio.yaml", {
     istio_node_selector                        = var.istio_node_selector_label
     istio_ingress_load_balancer_resource_group = var.istio_ingress_load_balancer_resource_group
+    systempool_taint_key                       = var.systempool_taint_key
   })
 
   depends_on = [
