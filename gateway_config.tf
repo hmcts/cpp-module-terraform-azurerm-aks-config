@@ -11,8 +11,8 @@ resource "kubernetes_secret" "istio_gateway_cert_secret" {
   }
 
   data = {
-    "tls.crt" = base64encode(vault_pki_secret_backend_cert.istio_gateway_create_cert.certificate)
-    "tls.key" = base64encode(vault_pki_secret_backend_cert.istio_gateway_create_cert.private_key)
+    "tls.crt" = vault_pki_secret_backend_cert.istio_gateway_create_cert.certificate
+    "tls.key" = vault_pki_secret_backend_cert.istio_gateway_create_cert.private_key
   }
 
   type = "kubernetes.io/tls"
