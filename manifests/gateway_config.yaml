@@ -11,6 +11,14 @@ spec:
   - hosts:
     - ${ingressdomain}
     port:
+      name: http
+      number: 80
+      protocol: HTTP
+    tls:
+      httpsRedirect: true # sends 301 redirect for http requests
+  - hosts:
+    - ${ingressdomain}
+    port:
       name: https
       number: 443
       protocol: HTTPS

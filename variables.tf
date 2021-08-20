@@ -77,21 +77,6 @@ variable "acr_user_password" {
   description = "ACR password"
 }
 
-variable "jenkins_rbac_chart_name" {
-  type        = string
-  description = "Name of the chart for jenkins-rbac"
-}
-
-variable "jenkins_rbac_chart_path" {
-  type        = string
-  description = "Path in the ACR for the chart"
-}
-
-variable "jenkins_rbac_chart_version" {
-  type        = string
-  description = "Version of the chart"
-}
-
 variable "aks_cluster_name" {
   type        = string
   description = "AKS cluster name"
@@ -115,4 +100,26 @@ variable "istio_gateway_cert_issuer" {
 variable "istio_gateway_cert_secret_name" {
   type    = string
   default = "istio-ingressgateway-certs"
+}
+
+variable "charts" {
+  type = object({
+    namespace = map(string)
+    jenkins-rbac = map(string)
+    istio-operator = map(string)
+  })
+  default = {
+    namespace = {
+      path = "charts/namespace"
+      version = "1.1.3"
+    },
+    jenkins-rbac = {
+      path = "charts/jenkins-rbac"
+      version = "1.0.1"
+    },
+    istio-operator = {
+      path = "charts/istio-operator"
+      version = "1.10.2"
+    }    
+  }
 }
