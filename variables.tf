@@ -111,7 +111,7 @@ variable "charts" {
   default = {
     namespace = {
       path = "charts/namespace"
-      version = "1.1.3"
+      version = "0.1.0"
     },
     jenkins-rbac = {
       path = "charts/jenkins-rbac"
