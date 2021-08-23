@@ -9,6 +9,16 @@ resource "helm_release" "istio_operator_install" {
     value = "istio-operator"
   }
 
+  set {
+    name  = "hub"
+    value = "${var.acr_name}.azurecr.io/istio"
+  }
+
+  set {
+    name  = "tag"
+    value = var.charts.istio-operator.version
+  }
+  
   depends_on       = [null_resource.download_charts]
 }
 
@@ -20,10 +30,12 @@ resource "kubernetes_namespace" "istio_namespace" {
 
 # Apply IstioOperator manifest to the operator 
 resource "kubectl_manifest" "istio_operator_manifest" {
-  yaml_body = templatefile("${path.module}/manifests/istio.yaml", {
+  yaml_body = templatefile("${path.module}/manifests/istio_operator.yaml", {
     istio_node_selector                        = var.istio_node_selector_label
     istio_ingress_load_balancer_resource_group = var.istio_ingress_load_balancer_resource_group
     systempool_taint_key                       = var.systempool_taint_key
+    docker_registry                            = "${var.acr_name}.azurecr.io/istio"
+    docker_tag                                 = var.charts.istio-operator.version
   })
 
   depends_on = [

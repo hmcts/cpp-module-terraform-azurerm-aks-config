@@ -7,6 +7,8 @@ metadata:
 spec:
   components:
   profile: default
+  hub: ${docker_registry}
+  tag: ${docker_tag}
   values:
     gateways:                                                                                                            
       istio-ingressgateway:                                                                                                                                                                                  

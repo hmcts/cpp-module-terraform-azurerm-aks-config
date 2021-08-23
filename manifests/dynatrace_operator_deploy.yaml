@@ -69,7 +69,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        image: docker.io/dynatrace/dynatrace-operator:v0.2.1
+        image: ${docker_image_dynatrace_operator}:${docker_tag_dynatrace_operator}
         imagePullPolicy: Always
         livenessProbe:
           httpGet:

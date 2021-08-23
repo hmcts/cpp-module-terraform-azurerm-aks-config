@@ -22,7 +22,7 @@ resource "kubernetes_secret" "istio_gateway_cert_secret" {
 }
 
 resource "kubectl_manifest" "istio_gateway_manifest" {
-  yaml_body = templatefile("${path.module}/manifests/gateway_config.yaml",
+  yaml_body = templatefile("${path.module}/manifests/istio_gateway_config.yaml",
     {
       ingress-gateway-secret = var.istio_gateway_cert_secret_name
       ingressdomain          = var.ingressdomain
