@@ -51,7 +51,7 @@ data "template_file" "jenkins_rbac_admin_rendered_kubeconfig" {
     cluster_name    = var.aks_cluster_name
     server          = var.aks_server_endpoint
     service_account = try(local.chart_values.jenkinsRbac.adminSA.name)
-    namespace       = "jenkins"
+    namespace       = try(local.chart_values.jenkinsRbac.adminSA.namespace)
     token           = data.kubernetes_secret.jenkins_admin_secret.data.token
     ca_data         = var.aks_ca_certificate
   }
