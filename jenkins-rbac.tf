@@ -25,9 +25,6 @@ data "kubernetes_secret" "jenkins_admin_secret" {
     name      = data.kubernetes_service_account.jenkins_admin_sa.default_secret_name
     namespace = try(local.chart_values.jenkinsRbac.adminSA.namespace)
   }
-  binary_data = {
-    "token" = ""
-  }
 }
 
 data "kubernetes_service_account" "jenkins_deploy_sa" {
@@ -45,9 +42,6 @@ data "kubernetes_secret" "jenkins_deploy_secret" {
     name      = each.value.default_secret_name
     namespace = try(each.key)
   }
-  binary_data = {
-    "token" = ""
-  }
   depends_on = [data.kubernetes_service_account.jenkins_deploy_sa]
 }
 
@@ -58,7 +52,7 @@ data "template_file" "jenkins_rbac_admin_rendered_kubeconfig" {
     server          = var.aks_server_endpoint
     service_account = try(local.chart_values.jenkinsRbac.adminSA.name)
     namespace       = "jenkins"
-    token           = base64decode(data.kubernetes_secret.jenkins_admin_secret.binary_data.token)
+    token           = data.kubernetes_secret.jenkins_admin_secret.data.token
     ca_data         = var.aks_ca_certificate
   }
 }
@@ -71,7 +65,7 @@ data "template_file" "jenkins_rbac_deploy_rendered_kubeconfig" {
     server          = var.aks_server_endpoint
     service_account = try(local.chart_values.jenkinsRbac.deploySA.name)
     namespace       = each.value.data.namespace
-    token           = base64decode(each.value.binary_data.token)
+    token           = each.value.data.token
     ca_data         = var.aks_ca_certificate
   }
 }
