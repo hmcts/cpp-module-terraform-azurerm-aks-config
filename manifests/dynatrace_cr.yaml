@@ -158,13 +158,14 @@ spec:
     #
     # Suggested starting point for resources below:
     #
-    # resources:
-    #   requests:
-    #     cpu: 150m
-    #     memory: 250M
-    #   limits:
-    #     cpu: 300m
-    #     memory: 1G
+    # Need to revist depending on utilization 
+    resources:
+      requests:
+        cpu: 150m
+        memory: 500M
+      limits:
+        cpu: 300m
+        memory: 1G
 
     # Optional: labels are customer defined labels for ActiveGate Pods to structure workloads as desired.
     #
@@ -225,13 +226,14 @@ spec:
     #
     # Suggested starting point for resources below:
     #
-    # resources:
-    #   requests:
-    #     cpu: 150m
-    #     memory: 250M
-    #   limits:
-    #     cpu: 300m
-    #     memory: 1G
+    # Need to revist depending on utilization 
+    resources:
+      requests:
+        cpu: 150m
+        memory: 500M
+      limits:
+        cpu: 300m
+        memory: 1G
 
     # Optional: labels are customer defined labels for ActiveGate Pods to structure workloads as desired.
     #

@@ -36,6 +36,8 @@ resource "kubectl_manifest" "istio_operator_manifest" {
     systempool_taint_key                       = var.systempool_taint_key
     docker_registry                            = "${var.acr_name}.azurecr.io/istio"
     docker_tag                                 = var.charts.istio-operator.version
+    hpa_min_replicas                           = var.istio_components_hpa_spec.min_replicas
+    hpa_max_replicas                           = var.istio_components_hpa_spec.max_replicas
   })
 
   depends_on = [

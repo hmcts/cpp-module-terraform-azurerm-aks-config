@@ -102,6 +102,25 @@ variable "istio_gateway_cert_secret_name" {
   default = "istio-ingressgateway-certs"
 }
 
+variable "istio_components_hpa_spec" {
+  type    = map(number)
+  default = {
+    min_replicas = 1
+    max_replicas = 5
+  }
+}
+
+variable "dynatrace_components_hpa_spec" {
+  type = map(number)
+  default = {
+    min_replicas = 1
+    max_replicas = 2
+    avg_cpu_utilization = 80
+    avg_mem_utilization = 80
+  }
+}
+
+
 variable "charts" {
   type = object({
     namespace = map(string)

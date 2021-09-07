@@ -23,9 +23,15 @@ spec:
           service.beta.kubernetes.io/azure-load-balancer-resource-group: ${istio_ingress_load_balancer_resource_group}
         service:
           type: LoadBalancer
+        hpaSpec:
+          minReplicas: ${hpa_min_replicas}
+          maxReplicas: ${hpa_max_replicas}
     pilot:
       k8s:
         tolerations:
           - key: ${systempool_taint_key}
             operator: "Exists"
             effect: "NoSchedule"
+        hpaSpec:
+          minReplicas: ${hpa_min_replicas}
+          maxReplicas: ${hpa_max_replicas}
