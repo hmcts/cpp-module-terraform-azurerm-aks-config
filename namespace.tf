@@ -4,5 +4,8 @@ resource "helm_release" "namespace" {
   version          = lookup(var.charts.namespace, "version", "")
   values           = ["${file("${path.root}/chart-values/${var.environment}.yaml")}"]
   repository       = "./install"
-  depends_on       = [null_resource.download_charts]
+  depends_on       = [
+    null_resource.download_charts,
+    time_sleep.wait_for_istio_crds
+  ]
 }

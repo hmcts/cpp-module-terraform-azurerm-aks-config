@@ -29,8 +29,7 @@ resource "kubectl_manifest" "istio_gateway_manifest" {
   })
 
   depends_on = [
-    helm_release.istio_operator_install,
-    kubernetes_namespace.istio_namespace,
-    kubernetes_secret.istio_gateway_cert_secret
+    kubernetes_secret.istio_gateway_cert_secret,
+    time_sleep.wait_for_istio_crds
   ]
 }

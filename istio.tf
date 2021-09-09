@@ -45,3 +45,9 @@ resource "kubectl_manifest" "istio_operator_manifest" {
     kubernetes_namespace.istio_namespace
   ]
 }
+
+resource "time_sleep" "wait_for_istio_crds" {
+  depends_on = [kubectl_manifest.istio_operator_manifest]
+
+  create_duration = "30s"
+}
