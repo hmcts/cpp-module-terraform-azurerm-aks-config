@@ -5,7 +5,8 @@ metadata:
   namespace: istio-system
   name: istiocontrolplane
 spec:
-  components:
+  meshConfig:
+    accessLogFile: /dev/stdout
   profile: default
   hub: ${docker_registry}
   tag: ${docker_tag}
