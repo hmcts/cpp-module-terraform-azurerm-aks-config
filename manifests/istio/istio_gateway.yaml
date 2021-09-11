@@ -1,0 +1,64 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: istio-ingressgateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - "${ingressdomain}"
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+    tls:
+      httpsRedirect: true # sends 301 redirect for http requests
+  - hosts:
+    - "${ingressdomain}"
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: ${ingress-gateway-secret}
+      mode: SIMPLE
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: loop-control
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: GATEWAY
+      listener:
+       filterChain:
+         filter:
+           name: envoy.filters.network.http_connection_manager
+           subFilter:
+             name: envoy.filters.http.router
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: loop-control
+        typed_config:
+          "@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
+          inlineCode: |
+            function envoy_on_request(request_handle)
+              if request_handle:headers():get("loop-control-${aks_cluster_name}") == "true" then
+                request_handle:logWarn("loop-control-${aks_cluster_name} header present")
+                request_handle:respond({[":status"] = "508"}, "Loop Detected")
+              else 
+                if request_handle:headers():get("loop-control-${aks_cluster_name}") == nil then
+                  request_handle:headers():add("loop-control-${aks_cluster_name}", "true")
+                end       
+              end
+            end

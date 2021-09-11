@@ -30,7 +30,7 @@ resource "kubernetes_namespace" "istio_namespace" {
 
 # Apply IstioOperator manifest to the operator 
 resource "kubectl_manifest" "istio_operator_manifest" {
-  yaml_body = templatefile("${path.module}/manifests/istio_operator.yaml", {
+  yaml_body = templatefile("${path.module}/manifests/istio/istio_operator.yaml", {
     istio_node_selector                        = var.istio_node_selector_label
     istio_ingress_load_balancer_resource_group = var.istio_ingress_load_balancer_resource_group
     systempool_taint_key                       = var.systempool_taint_key
