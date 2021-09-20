@@ -120,12 +120,18 @@ variable "dynatrace_components_hpa_spec" {
   }
 }
 
+variable "filebeat_namespace" {
+  type = string
+  description = "Namespace for filebeat"
+}
 
 variable "charts" {
   type = object({
     namespace = map(string)
     jenkins-rbac = map(string)
     istio-operator = map(string)
+    filebeat-mgm = map(string)
+    filebeat-app = map(string)
   })
   default = {
     namespace = {
@@ -139,6 +145,14 @@ variable "charts" {
     istio-operator = {
       path = "charts/istio-operator"
       version = "1.10.2"
+    },
+    filebeat-mgm = {
+      path = "charts/filebeat"
+      version = "1.0.0"
+    },
+    filebeat-app = {
+        path = "charts/filebeat"
+        version = "1.0.1"
     }    
   }
 }
