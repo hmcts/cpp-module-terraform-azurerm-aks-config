@@ -38,3 +38,5 @@ spec:
         hpaSpec:
           minReplicas: ${hpa_min_replicas}
           maxReplicas: ${hpa_max_replicas}
+        env:
+          PILOT_HTTP10: "1"
