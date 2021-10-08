@@ -1,6 +1,9 @@
 resource "kubernetes_namespace" "filebeat_namespace" {
   metadata {
     name = var.filebeat_namespace
+    labels = {
+      app.kubernetes.io/managed-by = "Terraform"
+    }
   }
 }
 

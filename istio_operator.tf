@@ -25,6 +25,9 @@ resource "helm_release" "istio_operator_install" {
 resource "kubernetes_namespace" "istio_namespace" {
   metadata {
     name = "istio-system"
+    labels = {
+      app.kubernetes.io/managed-by = "Terraform"
+    }
   }
 }
 
