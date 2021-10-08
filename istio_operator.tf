@@ -26,7 +26,7 @@ resource "kubernetes_namespace" "istio_namespace" {
   metadata {
     name = "istio-system"
     labels = {
-      app.kubernetes.io/managed-by = "Terraform"
+      'app.kubernetes.io/managed-by' = "Terraform"
     }
   }
 }
