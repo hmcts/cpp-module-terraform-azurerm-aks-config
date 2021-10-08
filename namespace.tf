@@ -9,3 +9,7 @@ resource "helm_release" "namespace" {
     time_sleep.wait_for_istio_crds
   ]
 }
+
+resource "kubectl_manifest" "delete_adhoc_ns" {
+  yaml_body = file("${path.module}/manifests/common/delete_adhoc_ns.yaml")
+}
