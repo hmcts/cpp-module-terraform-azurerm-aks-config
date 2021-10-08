@@ -2,7 +2,7 @@ resource "kubernetes_namespace" "dynatrace_namespace" {
   metadata {
     name = "dynatrace"
     labels = {
-      'app.kubernetes.io/managed-by' = "Terraform"
+      "app.kubernetes.io/managed-by" = "Terraform"
     }
   }
 }
