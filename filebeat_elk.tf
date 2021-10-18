@@ -36,7 +36,10 @@ resource "helm_release" "filebeat_management" {
   name             = lookup(var.charts.filebeat-mgm, "name", "filebeat-mgm")
   chart            = "filebeat"
   version          = lookup(var.charts.filebeat-mgm, "version", "")
-  values           = ["${file("${path.root}/chart-values/logging/${var.environment}-mgm.yaml")}"]
+  values           = [
+    "${file("${path.root}/chart-values/common/filebeat-mgmt.yaml")}",
+    "${file("${path.root}/chart-values/${var.environment_type}/${var.environment}/filebeat-mgmt.yaml")}"
+  ]
   repository       = "./install"
   namespace        = var.filebeat_namespace
 
@@ -50,7 +53,10 @@ resource "helm_release" "filebeat_application" {
   name             = lookup(var.charts.filebeat-app, "name", "filebeat-app")
   chart            = "filebeat"
   version          = lookup(var.charts.filebeat-app, "version", "")
-  values           = ["${file("${path.root}/chart-values/logging/${var.environment}-app.yaml")}"]
+  values           = [
+    "${file("${path.root}/chart-values/common/filebeat-app.yaml")}",
+    "${file("${path.root}/chart-values/${var.environment_type}/${var.environment}/filebeat-app.yaml")}"
+  ]
   repository       = "./install"
   namespace        = var.filebeat_namespace
 

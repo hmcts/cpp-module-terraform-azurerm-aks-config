@@ -57,6 +57,11 @@ variable "environment" {
   description = "Environment name"
 }
 
+variable "environment_type" {
+  type        = string
+  description = "Environment type - nonlive/live"
+}
+
 variable "ingressdomain" {
   type        = string
   description = "Ingress domain name FQDN"

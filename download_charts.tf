@@ -1,7 +1,3 @@
-locals {
-  chart_values = yamldecode(file("${path.root}/chart-values/${var.environment}.yaml"))
-}
-
 # Need to improve auth to ACR. The helm provider v2 should be able to do it but cannot get it to working. Need to revisit.
 # https://stackoverflow.com/questions/59565463/deploying-helm-charts-via-terraform-helm-provider-and-azure-devops-while-fetchin
 resource "null_resource" "download_charts" {

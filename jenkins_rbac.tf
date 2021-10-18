@@ -1,10 +1,14 @@
+locals {
+  jenkins_rbac_chart_values = yamldecode(file("${path.root}/chart-values/${var.environment_type}/${var.environment}/jenkins-rbac.yaml"))
+}
+
 resource "helm_release" "jenkins_rbac" {
   name             = lookup(var.charts.jenkins-rbac, "name", "jenkins-rbac")
   chart            = lookup(var.charts.jenkins-rbac, "name", "jenkins-rbac")
   version          = lookup(var.charts.jenkins-rbac, "version", "")
-  values           = ["${file("${path.root}/chart-values/${var.environment}.yaml")}"]
+  values           = ["${file("${path.root}/chart-values/${var.environment_type}/${var.environment}/jenkins-rbac.yaml")}"]
   repository       = "./install"
-  namespace        = try(local.chart_values.jenkinsRbac.adminSA.namespace)
+  namespace        = try(local.jenkins_rbac_chart_values.jenkinsRbac.adminSA.namespace)
   create_namespace = true
   depends_on       = [
     null_resource.download_charts,
@@ -14,8 +18,8 @@ resource "helm_release" "jenkins_rbac" {
 
 data "kubernetes_service_account" "jenkins_admin_sa" {
   metadata {
-    name      = try(local.chart_values.jenkinsRbac.adminSA.name)
-    namespace = try(local.chart_values.jenkinsRbac.adminSA.namespace)
+    name      = try(local.jenkins_rbac_chart_values.jenkinsRbac.adminSA.name)
+    namespace = try(local.jenkins_rbac_chart_values.jenkinsRbac.adminSA.namespace)
   }
   depends_on = [helm_release.jenkins_rbac]
 }
@@ -23,14 +27,14 @@ data "kubernetes_service_account" "jenkins_admin_sa" {
 data "kubernetes_secret" "jenkins_admin_secret" {
   metadata {
     name      = data.kubernetes_service_account.jenkins_admin_sa.default_secret_name
-    namespace = try(local.chart_values.jenkinsRbac.adminSA.namespace)
+    namespace = try(local.jenkins_rbac_chart_values.jenkinsRbac.adminSA.namespace)
   }
 }
 
 data "kubernetes_service_account" "jenkins_deploy_sa" {
-  for_each = { for namespace in local.chart_values.jenkinsRbac.deploySA.namespaces : namespace.name => namespace }
+  for_each = { for namespace in local.jenkins_rbac_chart_values.jenkinsRbac.deploySA.namespaces : namespace.name => namespace }
   metadata {
-    name      = try(local.chart_values.jenkinsRbac.deploySA.name)
+    name      = try(local.jenkins_rbac_chart_values.jenkinsRbac.deploySA.name)
     namespace = each.value.name
   }
   depends_on = [helm_release.jenkins_rbac]
@@ -52,8 +56,8 @@ resource "vault_generic_secret" "jenkins_admin_rbac" {
     value = templatefile("${path.module}/kubeconfig.tpl", {
       cluster_name    = var.aks_cluster_name
       server          = var.aks_server_endpoint
-      service_account = try(local.chart_values.jenkinsRbac.adminSA.name)
-      namespace       = try(local.chart_values.jenkinsRbac.adminSA.namespace)
+      service_account = try(local.jenkins_rbac_chart_values.jenkinsRbac.adminSA.name)
+      namespace       = try(local.jenkins_rbac_chart_values.jenkinsRbac.adminSA.namespace)
       token           = data.kubernetes_secret.jenkins_admin_secret.data.token
       ca_data         = var.aks_ca_certificate
     })
@@ -61,14 +65,14 @@ resource "vault_generic_secret" "jenkins_admin_rbac" {
 }
 
 resource "vault_generic_secret" "jenkins_deploy_rbac" {
-  for_each = { for namespace in local.chart_values.jenkinsRbac.deploySA.namespaces : namespace.name => namespace }
+  for_each = { for namespace in local.jenkins_rbac_chart_values.jenkinsRbac.deploySA.namespaces : namespace.name => namespace }
   path     = "secret/terraform/${var.environment}/${var.aks_cluster_name}/jenkins_deploy_kubeconfig_${each.value.name}"
 
   data_json = jsonencode({
     value = templatefile("${path.module}/kubeconfig.tpl", {
       cluster_name    = var.aks_cluster_name
       server          = var.aks_server_endpoint
-      service_account = try(local.chart_values.jenkinsRbac.deploySA.name)
+      service_account = try(local.jenkins_rbac_chart_values.jenkinsRbac.deploySA.name)
       namespace       = each.value.name
       token           = data.kubernetes_secret.jenkins_deploy_secret[each.value.name].data.token
       ca_data         = var.aks_ca_certificate
