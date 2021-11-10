@@ -161,3 +161,14 @@ variable "charts" {
     }    
   }
 }
+
+variable "omsagent" {
+  type = object({
+    log_collection_settings_stdout_enabled = string
+    log_collection_settings_stderr_enabled = string
+  })
+  default = {
+    log_collection_settings_stdout_enabled = "false"
+    log_collection_settings_stderr_enabled = "false"
+  }
+}
