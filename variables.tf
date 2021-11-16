@@ -82,9 +82,20 @@ variable "acr_user_password" {
   description = "ACR password"
 }
 
+variable "aks_resource_group_name" {
+  type        = string
+  description = "AKS cluster resource group name"
+}
+
 variable "aks_cluster_name" {
   type        = string
   description = "AKS cluster name"
+}
+
+variable "aks_cluster_location" {
+  type        = string
+  description = "Geo location where AKS is deployed"
+  default     = "uksouth"
 }
 
 variable "aks_ca_certificate" {
@@ -108,7 +119,7 @@ variable "istio_gateway_cert_secret_name" {
 }
 
 variable "istio_components_hpa_spec" {
-  type    = map(number)
+  type = map(number)
   default = {
     min_replicas = 1
     max_replicas = 5
@@ -118,48 +129,60 @@ variable "istio_components_hpa_spec" {
 variable "dynatrace_components_hpa_spec" {
   type = map(number)
   default = {
-    min_replicas = 1
-    max_replicas = 2
+    min_replicas        = 1
+    max_replicas        = 2
     avg_cpu_utilization = 80
     avg_mem_utilization = 80
   }
 }
 
 variable "filebeat_namespace" {
-  type = string
+  type        = string
   description = "Namespace for filebeat"
 }
 
 variable "charts" {
   type = object({
-    namespace = map(string)
-    jenkins-rbac = map(string)
+    namespace      = map(string)
+    jenkins-rbac   = map(string)
     istio-operator = map(string)
-    filebeat-mgm = map(string)
-    filebeat-app = map(string)
+    filebeat-mgm   = map(string)
+    filebeat-app   = map(string)
   })
   default = {
     namespace = {
-      path = "charts/namespace"
+      path    = "charts/namespace"
       version = "0.1.0"
     },
     jenkins-rbac = {
-      path = "charts/jenkins-rbac"
+      path    = "charts/jenkins-rbac"
       version = "1.0.1"
     },
     istio-operator = {
-      path = "charts/istio-operator"
+      path    = "charts/istio-operator"
       version = "1.10.2"
     },
     filebeat-mgm = {
-      path = "charts/filebeat"
+      path    = "charts/filebeat"
       version = "1.0.0"
     },
     filebeat-app = {
-        path = "charts/filebeat"
-        version = "1.0.1"
-    }    
+      path    = "charts/filebeat"
+      version = "1.0.1"
+    }
   }
+}
+
+variable "workspace_resource_group_name" {
+  type        = string
+  description = "resource grpup where workspace is created"
+  default     = null
+}
+
+variable "action_group_name" {
+  type        = string
+  description = "resource grpup where workspace is created"
+  default     = "platformDevNotify"
 }
 
 variable "omsagent" {
@@ -170,5 +193,75 @@ variable "omsagent" {
   default = {
     log_collection_settings_stdout_enabled = "false"
     log_collection_settings_stderr_enabled = "false"
+  }
+}
+
+variable "alerts" {
+  type = object({
+    enable_alerts = bool
+    infra = object({
+      enabled                  = bool
+      cpu_usage_threshold      = number
+      disk_usage_threshold     = number
+      node_limit_threshold     = number
+      cluster_health_threshold = number
+    })
+    sys_workload = object({
+      enabled    = bool
+      daemonset  = map(number)
+      deployment = map(number)
+    })
+    apps_workload = object({
+      enabled         = bool
+      deployment      = map(number)
+      hpa_min_replica = map(number)
+      hpa_max_replica = map(number)
+    })
+  })
+  default = {
+    enable_alerts = true
+    infra = {
+      enabled                  = true
+      cpu_usage_threshold      = 80
+      disk_usage_threshold     = 80
+      node_limit_threshold     = 0
+      cluster_health_threshold = 1
+    }
+    sys_workload = {
+      enabled = true
+      daemonset = {
+        severity    = 1
+        frequency   = 5
+        time_window = 10
+        threshold   = 0
+      }
+      deployment = {
+        severity    = 1
+        frequency   = 5
+        time_window = 10
+        threshold   = 0
+      }
+    }
+    apps_workload = {
+      enabled = true
+      deployment = {
+        severity    = 1
+        frequency   = 5
+        time_window = 10
+        threshold   = 0
+      }
+      hpa_min_replica = {
+        severity    = 1
+        frequency   = 5
+        time_window = 10
+        threshold   = 0
+      }
+      hpa_max_replica = {
+        severity    = 3
+        frequency   = 5
+        time_window = 10
+        threshold   = 0
+      }
+    }
   }
 }

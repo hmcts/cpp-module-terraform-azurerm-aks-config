@@ -15,9 +15,9 @@ data "vault_generic_secret" "redis_auth" {
 }
 
 resource "kubernetes_secret" "redis_pass" {
-  
+
   metadata {
-    name = "redis-creds"
+    name      = "redis-creds"
     namespace = var.filebeat_namespace
   }
 
@@ -33,34 +33,34 @@ resource "kubernetes_secret" "redis_pass" {
 }
 
 resource "helm_release" "filebeat_management" {
-  name             = lookup(var.charts.filebeat-mgm, "name", "filebeat-mgm")
-  chart            = "filebeat"
-  version          = lookup(var.charts.filebeat-mgm, "version", "")
-  values           = [
+  name    = lookup(var.charts.filebeat-mgm, "name", "filebeat-mgm")
+  chart   = "filebeat"
+  version = lookup(var.charts.filebeat-mgm, "version", "")
+  values = [
     "${file("${path.root}/chart-values/common/filebeat-mgmt.yaml")}",
     "${file("${path.root}/chart-values/${var.environment_type}/${var.environment}/filebeat-mgmt.yaml")}"
   ]
-  repository       = "./install"
-  namespace        = var.filebeat_namespace
+  repository = "./install"
+  namespace  = var.filebeat_namespace
 
-  depends_on       = [
+  depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.filebeat_namespace
   ]
 }
 
 resource "helm_release" "filebeat_application" {
-  name             = lookup(var.charts.filebeat-app, "name", "filebeat-app")
-  chart            = "filebeat"
-  version          = lookup(var.charts.filebeat-app, "version", "")
-  values           = [
+  name    = lookup(var.charts.filebeat-app, "name", "filebeat-app")
+  chart   = "filebeat"
+  version = lookup(var.charts.filebeat-app, "version", "")
+  values = [
     "${file("${path.root}/chart-values/common/filebeat-app.yaml")}",
     "${file("${path.root}/chart-values/${var.environment_type}/${var.environment}/filebeat-app.yaml")}"
   ]
-  repository       = "./install"
-  namespace        = var.filebeat_namespace
+  repository = "./install"
+  namespace  = var.filebeat_namespace
 
-  depends_on       = [
+  depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.filebeat_namespace
   ]

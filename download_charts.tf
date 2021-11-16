@@ -9,11 +9,11 @@ resource "null_resource" "download_charts" {
     command = <<-EOT
       export HELM_EXPERIMENTAL_OCI=1
       helm registry login ${var.acr_name}.azurecr.io --username ${var.acr_user_name} --password ${var.acr_user_password}
-      %{ for chart in var.charts }
+      %{for chart in var.charts}
       helm chart remove ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
       helm chart pull ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
       helm chart export ${var.acr_name}.azurecr.io/${chart.path}:${chart.version} --destination ./install
-      %{ endfor ~}
+      %{endfor~}
     EOT
   }
 }

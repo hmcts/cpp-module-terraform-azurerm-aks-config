@@ -1,8 +1,8 @@
 resource "helm_release" "istio_operator_install" {
-  name             = lookup(var.charts.istio-operator, "name", "istio-operator")
-  chart            = lookup(var.charts.istio-operator, "name", "istio-operator")
-  version          = lookup(var.charts.istio-operator, "version", "")
-  repository       = "./install"
+  name       = lookup(var.charts.istio-operator, "name", "istio-operator")
+  chart      = lookup(var.charts.istio-operator, "name", "istio-operator")
+  version    = lookup(var.charts.istio-operator, "version", "")
+  repository = "./install"
 
   set {
     name  = "operatorNamespace"
@@ -18,8 +18,8 @@ resource "helm_release" "istio_operator_install" {
     name  = "tag"
     value = var.charts.istio-operator.version
   }
-  
-  depends_on       = [null_resource.download_charts]
+
+  depends_on = [null_resource.download_charts]
 }
 
 resource "kubernetes_namespace" "istio_namespace" {

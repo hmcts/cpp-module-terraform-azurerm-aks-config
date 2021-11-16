@@ -10,7 +10,7 @@ resource "helm_release" "jenkins_rbac" {
   repository       = "./install"
   namespace        = try(local.jenkins_rbac_chart_values.jenkinsRbac.adminSA.namespace)
   create_namespace = true
-  depends_on       = [
+  depends_on = [
     null_resource.download_charts,
     helm_release.namespace
   ]
