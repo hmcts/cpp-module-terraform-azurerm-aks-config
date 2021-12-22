@@ -145,6 +145,7 @@ variable "charts" {
   type = object({
     namespace      = map(string)
     jenkins-rbac   = map(string)
+    user-rbac      = map(string)
     istio-operator = map(string)
     filebeat-mgm   = map(string)
     filebeat-app   = map(string)
@@ -158,6 +159,10 @@ variable "charts" {
       path    = "charts/jenkins-rbac"
       version = "1.0.1"
     },
+    user-rbac = {
+      path    = "charts/user-rbac"
+      version = "1.0.0"
+    },
     istio-operator = {
       path    = "charts/istio-operator"
       version = "1.10.2"
@@ -170,6 +175,15 @@ variable "charts" {
       path    = "charts/filebeat"
       version = "1.0.1"
     }
+  }
+}
+
+variable "user_rbac" {
+  type = map(list(string))
+  default = {
+    aks_reader_members_ids = []
+    aks_contributor_members_ids = []
+    aks_cluster_admin_members_ids = []
   }
 }
 
