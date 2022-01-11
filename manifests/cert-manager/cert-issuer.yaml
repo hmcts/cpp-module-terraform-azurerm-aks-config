@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: cert-manager-vault-token
+  namespace: istio-system
+data:
+  token: ${vault_token}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: vault-issuer
+  namespace: istio-system
+spec:
+  vault:
+    path: ${vault_path}
+    server: ${vault_url}
+    caBundle: ${ca_bundle}
+    auth:
+      tokenSecretRef:
+        name: cert-manager-vault-token
+        key: token
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: istio-ingressgateway-cert
+  namespace: istio-system
+spec:
+  commonName: "${ingressdomain}"
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  dnsNames:
+    - "${ingressdomain}"
+  issuerRef:
+    kind: Issuer
+    name: vault-issuer
+  secretName: ${ingress-gateway-secret}

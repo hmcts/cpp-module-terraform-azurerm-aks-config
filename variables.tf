@@ -279,3 +279,23 @@ variable "alerts" {
     }
   }
 }
+
+variable "vault_token" {
+  type        = string
+  description = "AKS server endpoint"
+}
+
+variable "vault_path" {
+  type        = string
+  description = "AKS server endpoint"
+}
+
+variable "vault_url" {
+  type        = string
+  description = "AKS server endpoint"
+}
+
+variable "ca_bundle_path" {
+  type        = string
+  description = "ca bundle path to trust the Vault connection"
+}
