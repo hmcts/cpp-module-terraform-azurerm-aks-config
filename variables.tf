@@ -230,6 +230,7 @@ variable "alerts" {
       deployment      = map(number)
       hpa_min_replica = map(number)
       hpa_max_replica = map(number)
+      cluster_agent_pool = map(number)
     })
   })
   default = {
@@ -276,6 +277,12 @@ variable "alerts" {
         time_window = 10
         threshold   = 0
       }
+      cluster_agent_pool = {
+        severity    = 3
+        frequency   = 5
+        time_window = 10
+        threshold   = 0
+      }
     }
   }
 }
@@ -298,4 +305,10 @@ variable "vault_url" {
 variable "ca_bundle_path" {
   type        = string
   description = "ca bundle path to trust the Vault connection"
+}
+
+variable "worker_agents_pool_name" {
+  description = "The AKS worker agentpool (nodepool) name."
+  type        = string
+  default     = "wrkagentpool"
 }

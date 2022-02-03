@@ -9,6 +9,12 @@ data "azurerm_monitor_action_group" "platformDev" {
   resource_group_name = var.workspace_resource_group_name
 }
 
+data "azurerm_kubernetes_cluster_node_pool" "agentpool" {
+  name                    = var.worker_agents_pool_name
+  kubernetes_cluster_name = var.aks_cluster_name
+  resource_group_name     = var.aks_resource_group_name
+}
+
 resource "azurerm_monitor_metric_alert" "aks_infra_alert_cpu_usage" {
   count               = var.alerts.enable_alerts ? 1 : 0
   name                = "aks_cpu_usage_greater_than_percent"
@@ -239,5 +245,83 @@ QUERY
   trigger {
     operator  = "GreaterThan"
     threshold = var.alerts.apps_workload.hpa_max_replica.threshold
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "aks_worker_agent_pool_count_status" {
+  count               = var.alerts.enable_alerts ? 1 : 0
+  name                = "aks_worker_agent_pool_count_status"
+  location            = var.aks_cluster_location
+  resource_group_name = var.aks_resource_group_name
+
+  action {
+    action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
+  }
+  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
+  description    = "Alert when worker node pool is reached max threshold value"
+  enabled        = var.alerts.apps_workload.enabled
+  query          = <<-QUERY
+  let nodepoolMaxnodeCount = "${data.azurerm_kubernetes_cluster_node_pool.agentpool.max_count}";
+  let _minthreshold = 70;
+  KubeNodeInventory
+    | extend nodepoolType = todynamic(Labels) //Parse the labels to get the list of node pool types
+    | extend nodepoolName = todynamic(nodepoolType[0].agentpool)
+    | where nodepoolName contains "${data.azurerm_kubernetes_cluster_node_pool.agentpool.name}"
+    | extend nodepoolName = tostring(nodepoolName)
+    | summarize nodeCount = count(Computer) by ClusterName, tostring(nodepoolName), TimeGenerated
+    | extend scaledpercent = iff(((nodeCount * 100 / nodepoolMaxnodeCount) >= _minthreshold), "warn", "normal")
+    | where scaledpercent == 'warn'
+    | summarize arg_max(TimeGenerated, *) by nodeCount, ClusterName, tostring(nodepoolName)
+    | project ClusterName,
+        TotalNodeCount= strcat("Total Node Count: ", nodeCount),
+        ScaledOutPercentage = (nodeCount * 100 / nodepoolMaxnodeCount),  
+        TimeGenerated,
+        nodepoolName, scaledpercent
+QUERY
+  severity       = var.alerts.apps_workload.cluster_agent_pool.severity
+  frequency      = var.alerts.apps_workload.cluster_agent_pool.frequency
+  time_window    = var.alerts.apps_workload.cluster_agent_pool.time_window
+  trigger {
+    operator  = "GreaterThan"
+    threshold = var.alerts.apps_workload.cluster_agent_pool.threshold
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "aks_system_agent_pool_count_status" {
+  count               = var.alerts.enable_alerts ? 1 : 0
+  name                = "aks_system_agent_pool_count_status"
+  location            = var.aks_cluster_location
+  resource_group_name = var.aks_resource_group_name
+
+  action {
+    action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
+  }
+  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
+  description    = "Alert when system node pool is reached max threshold value"
+  enabled        = var.alerts.apps_workload.enabled
+  query          = <<-QUERY
+  let nodepoolMaxnodeCount = "${data.azurerm_kubernetes_cluster.cluster.agent_pool_profile.0.max_count}";
+  let _minthreshold = 70;
+  KubeNodeInventory
+    | extend nodepoolType = todynamic(Labels) //Parse the labels to get the list of node pool types
+    | extend nodepoolName = todynamic(nodepoolType[0].agentpool)
+    | where nodepoolName contains "${data.azurerm_kubernetes_cluster.cluster.agent_pool_profile.0.name}"
+    | extend nodepoolName = tostring(nodepoolName)
+    | summarize nodeCount = count(Computer) by ClusterName, tostring(nodepoolName), TimeGenerated
+    | extend scaledpercent = iff(((nodeCount * 100 / nodepoolMaxnodeCount) >= _minthreshold), "warn", "normal")
+    | where scaledpercent == 'warn'
+    | summarize arg_max(TimeGenerated, *) by nodeCount, ClusterName, tostring(nodepoolName)
+    | project ClusterName,
+        TotalNodeCount= strcat("Total Node Count: ", nodeCount),
+        ScaledOutPercentage = (nodeCount * 100 / nodepoolMaxnodeCount),
+        TimeGenerated,
+        nodepoolName, scaledpercent
+QUERY
+  severity       = var.alerts.apps_workload.cluster_agent_pool.severity
+  frequency      = var.alerts.apps_workload.cluster_agent_pool.frequency
+  time_window    = var.alerts.apps_workload.cluster_agent_pool.time_window
+  trigger {
+    operator  = "GreaterThan"
+    threshold = var.alerts.apps_workload.cluster_agent_pool.threshold
   }
 }
