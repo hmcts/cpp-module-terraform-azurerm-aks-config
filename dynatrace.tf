@@ -1,4 +1,5 @@
 resource "kubernetes_namespace" "dynatrace_namespace" {
+  count = var.enable_dynatrace ? 1 : 0
   metadata {
     name = "dynatrace"
     labels = {
@@ -22,6 +23,7 @@ data "kubectl_file_documents" "dynatrace_hpa_manifests" {
 
 # added new manifest for operator deployment
 resource "kubectl_manifest" "dynatrace_operator_deployment" {
+  count = var.enable_dynatrace ? 1 : 0
   yaml_body = templatefile("${path.module}/manifests/dynatrace/dynatrace_operator_deploy.yaml", {
     systempool_taint_key            = var.systempool_taint_key
     affinity_exp_key                = var.node_affinity_exp_key
@@ -36,7 +38,7 @@ resource "kubectl_manifest" "dynatrace_operator_deployment" {
 }
 
 resource "kubectl_manifest" "dynatrace_operator_manifest" {
-  count     = length(data.kubectl_file_documents.dynatrace_manifests.documents)
+  count     = var.enable_dynatrace ? length(data.kubectl_file_documents.dynatrace_manifests.documents) : 0
   yaml_body = element(data.kubectl_file_documents.dynatrace_manifests.documents, count.index)
   depends_on = [
     kubernetes_namespace.dynatrace_namespace,
@@ -45,7 +47,7 @@ resource "kubectl_manifest" "dynatrace_operator_manifest" {
 }
 
 resource "kubectl_manifest" "dynatrace_hpa_manifest" {
-  count     = length(data.kubectl_file_documents.dynatrace_hpa_manifests.documents)
+  count     = var.enable_dynatrace ? length(data.kubectl_file_documents.dynatrace_hpa_manifests.documents) :0
   yaml_body = element(data.kubectl_file_documents.dynatrace_hpa_manifests.documents, count.index)
   depends_on = [
     kubectl_manifest.dynatrace_operator_manifest
@@ -53,6 +55,7 @@ resource "kubectl_manifest" "dynatrace_hpa_manifest" {
 }
 
 resource "kubectl_manifest" "dynatrace_secret_manifest" {
+  count = var.enable_dynatrace ? 1 : 0
   sensitive_fields = ["api_token", "paas_token"]
   yaml_body = templatefile("${path.module}/manifests/dynatrace/dynatrace_secret.yaml", {
     api_token  = var.dynatrace_api_token
@@ -64,6 +67,7 @@ resource "kubectl_manifest" "dynatrace_secret_manifest" {
 }
 
 resource "kubectl_manifest" "dynatrace_cr_manifest" {
+  count = var.enable_dynatrace ? 1 : 0
   yaml_body = templatefile("${path.module}/manifests/dynatrace/dynatrace_cr.yaml", {
     dynatrace_api         = var.dynatrace_api
     cluster_name          = "${var.environment}-cpp"

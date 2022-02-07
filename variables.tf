@@ -312,3 +312,9 @@ variable "worker_agents_pool_name" {
   type        = string
   default     = "wrkagentpool"
 }
+
+variable "enable_dynatrace" {
+  type = bool
+  description = "enable dynatrace monitoring of cluster"
+  default     = true
+}
