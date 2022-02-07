@@ -21,7 +21,7 @@ spec:
                 - -l
                 - app.kubernetes.io/managed-by!=Terraform,app.kubernetes.io/managed-by!=Helm
                 - --field-selector
-                - metadata.name!=default,metadata.name!=kube-public,metadata.name!=kube-node-lease,metadata.name!=kube-system
+                - metadata.name!=default,metadata.name!=kube-public,metadata.name!=kube-node-lease,metadata.name!=kube-system,metadata.name!=cert-manager
               resources:
                 requests:
                   memory: "64Mi"
