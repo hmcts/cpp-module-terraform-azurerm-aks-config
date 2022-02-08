@@ -261,10 +261,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_worker_agent_pool_co
   description    = "Alert when worker node pool is reached max threshold value"
   enabled        = var.alerts.apps_workload.enabled
   query          = <<-QUERY
-  let nodepoolMaxnodeCount = "${data.azurerm_kubernetes_cluster_node_pool.agentpool.max_count}";
+  let nodepoolMaxnodeCount = ${data.azurerm_kubernetes_cluster_node_pool.agentpool.max_count};
   let _minthreshold = 70;
   KubeNodeInventory
-    | extend nodepoolType = todynamic(Labels) //Parse the labels to get the list of node pool types
+    | extend nodepoolType = todynamic(Labels)
     | extend nodepoolName = todynamic(nodepoolType[0].agentpool)
     | where nodepoolName contains "${data.azurerm_kubernetes_cluster_node_pool.agentpool.name}"
     | extend nodepoolName = tostring(nodepoolName)
@@ -274,7 +274,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_worker_agent_pool_co
     | summarize arg_max(TimeGenerated, *) by nodeCount, ClusterName, tostring(nodepoolName)
     | project ClusterName,
         TotalNodeCount= strcat("Total Node Count: ", nodeCount),
-        ScaledOutPercentage = (nodeCount * 100 / nodepoolMaxnodeCount),  
+        ScaledOutPercentage = (nodeCount * 100 / nodepoolMaxnodeCount),
         TimeGenerated,
         nodepoolName, scaledpercent
 QUERY
@@ -300,10 +300,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_system_agent_pool_co
   description    = "Alert when system node pool is reached max threshold value"
   enabled        = var.alerts.apps_workload.enabled
   query          = <<-QUERY
-  let nodepoolMaxnodeCount = "${data.azurerm_kubernetes_cluster.cluster.agent_pool_profile.0.max_count}";
+  let nodepoolMaxnodeCount = ${data.azurerm_kubernetes_cluster.cluster.agent_pool_profile.0.max_count};
   let _minthreshold = 70;
   KubeNodeInventory
-    | extend nodepoolType = todynamic(Labels) //Parse the labels to get the list of node pool types
+    | extend nodepoolType = todynamic(Labels)
     | extend nodepoolName = todynamic(nodepoolType[0].agentpool)
     | where nodepoolName contains "${data.azurerm_kubernetes_cluster.cluster.agent_pool_profile.0.name}"
     | extend nodepoolName = tostring(nodepoolName)
