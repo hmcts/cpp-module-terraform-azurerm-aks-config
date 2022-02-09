@@ -27,6 +27,7 @@ resource "kubernetes_namespace" "istio_namespace" {
     name = "istio-system"
     labels = {
       "app.kubernetes.io/managed-by" = "Terraform"
+      "filebeat_enable" = "enabled"
     }
   }
 }

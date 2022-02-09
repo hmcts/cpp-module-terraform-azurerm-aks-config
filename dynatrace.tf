@@ -4,6 +4,7 @@ resource "kubernetes_namespace" "dynatrace_namespace" {
     name = "dynatrace"
     labels = {
       "app.kubernetes.io/managed-by" = "Terraform"
+      "filebeat_enable" = "enabled"
     }
   }
 }
