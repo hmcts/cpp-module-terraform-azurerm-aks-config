@@ -67,6 +67,14 @@ resource "helm_release" "user_rbac_cluster_admin" {
     name  = "userRbac.clusterAdminGroupID"
     value = azuread_group.aks_admin.object_id
   }
+  set {
+    name  = "userRbac.contributorGroupID"
+    value = azuread_group.aks_contributor.object_id
+  }
+  set {
+    name  = "userRbac.readerGroupID"
+    value = azuread_group.aks_reader.object_id
+  }
 
   depends_on = [
     null_resource.download_charts,
