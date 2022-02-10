@@ -64,15 +64,23 @@ resource "helm_release" "user_rbac_cluster_admin" {
   version          = lookup(var.charts.user-rbac, "version", "")
   repository       = "./install"
   set {
-    name  = "userRbac.clusterAdminGroupID"
+    name  = "userRbac.clusterRole.enable"
+    value = true
+  }
+  set {
+    name  = "userRbac.role.enable"
+    value = false
+  }
+  set {
+    name  = "userRbac.clusterRole.clusterAdminGroupID"
     value = azuread_group.aks_admin.object_id
   }
   set {
-    name  = "userRbac.contributorGroupID"
+    name  = "userRbac.role.contributorGroupID"
     value = azuread_group.aks_contributor.object_id
   }
   set {
-    name  = "userRbac.readerGroupID"
+    name  = "userRbac.role.readerGroupID"
     value = azuread_group.aks_reader.object_id
   }
 
@@ -90,11 +98,19 @@ resource "helm_release" "user_rbac_namespace" {
   repository       = "./install"
   namespace        = each.value.name
   set {
-    name  = "userRbac.contributorGroupID"
+    name  = "userRbac.clusterRole.enable"
+    value = false
+  }
+  set {
+    name  = "userRbac.role.enable"
+    value = true
+  }
+  set {
+    name  = "userRbac.role.contributorGroupID"
     value = azuread_group.aks_contributor.object_id
   }
   set {
-    name  = "userRbac.readerGroupID"
+    name  = "userRbac.role.readerGroupID"
     value = azuread_group.aks_reader.object_id
   }
 
