@@ -325,3 +325,29 @@ QUERY
     threshold = var.alerts.apps_workload.cluster_agent_pool.threshold
   }
 }
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "aks_all_pod_status" {
+  count               = var.alerts.enable_alerts ? 1 : 0
+  name                = "aks_all_pod_status"
+  location            = var.aks_cluster_location
+  resource_group_name = var.aks_resource_group_name
+
+  action {
+    action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
+  }
+  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
+  description    = "Alert when any namespace pod is unhealthy"
+  enabled        = var.alerts.apps_workload.enabled
+  query          = <<-QUERY
+  KubeEvents
+    | where Reason contains "Unhealthy"
+    | distinct tostring(Namespace), tostring(ClusterName), tostring(Name)
+QUERY
+  severity       = var.alerts.apps_workload.cluster_agent_pool.severity
+  frequency      = var.alerts.apps_workload.cluster_agent_pool.frequency
+  time_window    = var.alerts.apps_workload.cluster_agent_pool.time_window
+  trigger {
+    operator  = "GreaterThan"
+    threshold = var.alerts.apps_workload.cluster_agent_pool.threshold
+  }
+}
