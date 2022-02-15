@@ -318,3 +318,8 @@ variable "enable_dynatrace" {
   description = "enable dynatrace monitoring of cluster"
   default     = true
 }
+
+variable "dynatrace_networkzone" {
+  description = "Dynatrace api endpoint to configure for Dynakube custom resource "
+  type        = string
+}

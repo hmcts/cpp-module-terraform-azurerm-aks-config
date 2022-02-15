@@ -71,7 +71,7 @@ resource "kubectl_manifest" "dynatrace_cr_manifest" {
   count = var.enable_dynatrace ? 1 : 0
   yaml_body = templatefile("${path.module}/manifests/dynatrace/dynatrace_cr.yaml", {
     dynatrace_api         = var.dynatrace_api
-    cluster_name          = "${var.environment}-cpp"
+    network_zone          = "${var.dynatrace_networkzone}"
     docker_image_oneagent = "${var.acr_name}.azurecr.io/dynatrace/oneagent"
   })
   depends_on = [

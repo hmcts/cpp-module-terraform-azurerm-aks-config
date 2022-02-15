@@ -29,7 +29,7 @@ spec:
   # Optional: Sets Network Zone for OneAgent and ActiveGate pods
   # Make sure networkZones are enabled on your cluster before (see https://www.dynatrace.com/support/help/setup-and-configuration/network-zones/network-zones-basic-info/)
   #
-  networkZone: ${cluster_name}
+  networkZone: ${network_zone}
 
   # Optional: Defines a custom pull secret in case you use a private registry when pulling images from the dynatrace environment
   #
@@ -73,7 +73,7 @@ spec:
     # See more here: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
     tolerations:
       - effect: NoSchedule
-        key: node-role.kubernetes.io/master
+        key: CriticalAddonsOnly
         operator: Exists
 
     # Optional: resource settings for OneAgent container. Consumption of the OneAgent heavily depends
@@ -91,7 +91,7 @@ spec:
     # Available options: https://www.dynatrace.com/support/help/shortlink/linux-custom-installation
     # Limitations: https://www.dynatrace.com/support/help/shortlink/oneagent-docker#limitations
     args:
-      - --set-host-group=${cluster_name}
+      - --set-host-group=${network_zone}
 
     # Optional: additional environment variables to add to the OneAgent Pods.
     #
@@ -130,7 +130,7 @@ spec:
   # of OneAgent traffic
   routing:
     # Enable Kubernetes routing functionality
-    enabled: true
+    enabled: false
 
     # Amount of replicas of activegate routing pods
     #
@@ -183,7 +183,7 @@ spec:
 
     # Optional: Set activation group for ActiveGate
     #
-    group: ${cluster_name}
+    group: ${network_zone}
 
     # Optional: Add a custom properties file by providing it as a value or reference it from a secret
     # If referenced from a secret, make sure the key is called 'customProperties'
@@ -198,7 +198,7 @@ spec:
   # of Kubernetes environments
   kubernetesMonitoring:
     # Enable Kubernetes monitoring functionality
-    enabled: true
+    enabled: false
 
     # Amount of replicas of activegate pods
     #
@@ -251,7 +251,7 @@ spec:
 
     # Optional: Set activation group for ActiveGate
     #
-    group: ${cluster_name}
+    group: ${network_zone}
 
     # Optional: Add a custom properties file by providing it as a value or reference it from a secret
     # If referenced from a secret, make sure the key is called 'customProperties'
