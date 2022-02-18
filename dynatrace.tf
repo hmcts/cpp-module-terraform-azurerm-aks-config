@@ -29,7 +29,7 @@ resource "kubectl_manifest" "dynatrace_operator_deployment" {
     systempool_taint_key            = var.systempool_taint_key
     affinity_exp_key                = var.node_affinity_exp_key
     affinity_exp_value              = var.node_affinity_exp_value
-    docker_image_dynatrace_operator = "${var.acr_name}.azurecr.io/dynatrace/dynatrace-operator"
+    docker_image_dynatrace_operator = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/dynatrace-operator"
     docker_tag_dynatrace_operator   = "v0.2.1"
   })
 
@@ -72,7 +72,8 @@ resource "kubectl_manifest" "dynatrace_cr_manifest" {
   yaml_body = templatefile("${path.module}/manifests/dynatrace/dynatrace_cr.yaml", {
     dynatrace_api         = var.dynatrace_api
     network_zone          = "${var.dynatrace_networkzone}"
-    docker_image_oneagent = "${var.acr_name}.azurecr.io/dynatrace/oneagent"
+    cluster_name          = "${var.environment}-cpp"
+    docker_image_oneagent = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/oneagent"
   })
   depends_on = [
     kubectl_manifest.dynatrace_secret_manifest

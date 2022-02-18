@@ -11,7 +11,7 @@ resource "helm_release" "istio_operator_install" {
 
   set {
     name  = "hub"
-    value = "${var.acr_name}.azurecr.io/istio"
+    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/istio"
   }
 
   set {
@@ -38,7 +38,7 @@ resource "kubectl_manifest" "istio_operator_manifest" {
     istio_node_selector                        = var.istio_node_selector_label
     istio_ingress_load_balancer_resource_group = var.istio_ingress_load_balancer_resource_group
     systempool_taint_key                       = var.systempool_taint_key
-    docker_registry                            = "${var.acr_name}.azurecr.io/istio"
+    docker_registry                            = "${var.acr_name}.azurecr.io/registry.hub.docker.com/istio"
     docker_tag                                 = var.charts.istio-operator.version
     hpa_min_replicas                           = var.istio_components_hpa_spec.min_replicas
     hpa_max_replicas                           = var.istio_components_hpa_spec.max_replicas
