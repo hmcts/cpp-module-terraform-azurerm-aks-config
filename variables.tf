@@ -149,6 +149,7 @@ variable "charts" {
     istio-operator = map(string)
     filebeat-mgm   = map(string)
     filebeat-app   = map(string)
+    kiali-operator = map(string)
   })
   default = {
     namespace = {
@@ -174,6 +175,10 @@ variable "charts" {
     filebeat-app = {
       path    = "charts/filebeat"
       version = "1.0.1"
+    }
+    kiali-operator = {
+      path    = "charts/kiali-operator"
+      version = "0.1.0"
     }
   }
 }
@@ -322,4 +327,8 @@ variable "enable_dynatrace" {
 variable "dynatrace_networkzone" {
   description = "Dynatrace api endpoint to configure for Dynakube custom resource "
   type        = string
+}
+
+variable "monitor_config" {
+  type = map(string)
 }
