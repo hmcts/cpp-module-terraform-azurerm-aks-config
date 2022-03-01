@@ -9,7 +9,7 @@ resource "kubernetes_namespace" "kiali_namespace" {
 }
 
 data "vault_generic_secret" "kiali_auth" {
-  path = "secret/mgmt/k8s_monitor_password"
+  path = "secret/mgmt/spn_k8s_monitor"
 }
 
 resource "kubernetes_secret" "kiali_pass" {
@@ -20,7 +20,7 @@ resource "kubernetes_secret" "kiali_pass" {
   }
 
   data = {
-    oidc-secret = data.vault_generic_secret.kiali_auth.data["value"]
+    oidc-secret = data.vault_generic_secret.kiali_auth.data["client_secret"]
   }
 
   type = "Opaque"

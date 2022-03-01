@@ -9,7 +9,7 @@ resource "kubernetes_namespace" "prometheus_namespace" {
 }
 
 data "vault_generic_secret" "grafana_spn_creds" {
-  path = "secret/mgmt/spn_k8s_grafana"
+  path = "secret/mgmt/spn_k8s_monitor"
 }
 
 resource "helm_release" "prometheus" {
