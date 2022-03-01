@@ -150,6 +150,7 @@ variable "charts" {
     filebeat-mgm   = map(string)
     filebeat-app   = map(string)
     kiali-operator = map(string)
+    prometheus     = map(string)
   })
   default = {
     namespace = {
@@ -175,11 +176,15 @@ variable "charts" {
     filebeat-app = {
       path    = "charts/filebeat"
       version = "1.0.1"
-    }
+    },
     kiali-operator = {
       path    = "charts/kiali-operator"
       version = "0.1.0"
-    }
+    },
+    prometheus = {
+      path    = "charts/kube-prometheus-stack"
+      version = "32.3.0"
+    },
   }
 }
 
@@ -331,4 +336,33 @@ variable "dynatrace_networkzone" {
 
 variable "monitor_config" {
   type = map(string)
+}
+
+variable "prometheus" {
+  type = object({
+    grafana_image_tag = string
+    grafana_k8s_sidecar_image_tag  = string
+    kube_state_metrics_image_tag = string
+    node_exporter_image_tag = string
+    prometheus_operator_image_tag = string
+    prometheus_config_reloader_image_tag = string
+    kube_webhook_certgen_image_tag = string
+    prometheus_image_tag = string
+    prometheus_retention = string
+    prometheus_storage_class_name = string
+    prometheus_storage_size = string
+  })
+  default = {
+    grafana_image_tag = "8.3.5"
+    grafana_k8s_sidecar_image_tag  = "1.15.1"
+    kube_state_metrics_image_tag = "v2.3.0"
+    node_exporter_image_tag = "v1.3.1"
+    prometheus_operator_image_tag = "v0.54.0"
+    prometheus_config_reloader_image_tag = "v0.54.0"
+    kube_webhook_certgen_image_tag = "v1.0"
+    prometheus_image_tag = "v2.33.1"
+    prometheus_retention = "15d"
+    prometheus_storage_class_name = "managed-premium"
+    prometheus_storage_size = "100Gi"
+  }
 }

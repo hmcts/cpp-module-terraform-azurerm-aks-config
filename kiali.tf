@@ -3,6 +3,7 @@ resource "kubernetes_namespace" "kiali_namespace" {
     name = "kiali-operator"
     labels = {
       "app.kubernetes.io/managed-by" = "Terraform"
+      "filebeat_enable"              = "enabled"
     }
   }
 }
@@ -60,6 +61,9 @@ resource "helm_release" "kiali_operator_install" {
     name  = "cr.spec.auth.openid.additional_request_params.resource"
     value = lookup(var.monitor_config, "shared_resource_id")
   }
+
+  wait              = true
+  timeout           = 300
 
   depends_on = [null_resource.download_charts,kubernetes_secret.kiali_pass]
 }
