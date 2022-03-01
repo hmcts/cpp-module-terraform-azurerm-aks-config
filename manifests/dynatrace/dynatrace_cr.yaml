@@ -92,6 +92,7 @@ spec:
     # Limitations: https://www.dynatrace.com/support/help/shortlink/oneagent-docker#limitations
     args:
       - --set-host-group=${network_zone}
+      - --set-host-id-source=ip-addresses
 
     # Optional: additional environment variables to add to the OneAgent Pods.
     #
