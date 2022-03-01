@@ -38,7 +38,7 @@ resource "helm_release" "kiali_operator_install" {
 
   set {
     name  = "cr.namespace"
-    value = "istio-operator"
+    value = "istio-system"
   }
   set {
     name  = "image.repo"
