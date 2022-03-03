@@ -190,3 +190,6 @@ prometheus:
       - source_labels: [__meta_kubernetes_pod_container_port_name]
         action: keep
         regex: '.*-envoy-prom'
+      - source_labels: [ http_conn_manager_prefix ]
+        regex: '(0\.0\.0\.0_).*'
+        action: drop
