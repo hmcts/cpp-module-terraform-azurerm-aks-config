@@ -151,6 +151,7 @@ variable "charts" {
     filebeat-app   = map(string)
     kiali-operator = map(string)
     prometheus     = map(string)
+    prometheus-adapter = map(string)
   })
   default = {
     namespace = {
@@ -184,6 +185,10 @@ variable "charts" {
     prometheus = {
       path    = "charts/kube-prometheus-stack"
       version = "32.3.0"
+    },
+    prometheus-adapter = {
+      path    = "charts/prometheus-adapter"
+      version = "3.0.2"
     },
   }
 }

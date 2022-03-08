@@ -50,3 +50,21 @@ resource "helm_release" "prometheus" {
     kubernetes_namespace.prometheus_namespace
   ]
 }
+
+resource "helm_release" "prometheus_adapter_install" {
+  name       = lookup(var.charts.prometheus-adapter, "name", "prometheus-adapter")
+  chart      = lookup(var.charts.prometheus-adapter, "name", "prometheus-adapter")
+  version    = lookup(var.charts.prometheus-adapter, "version", "")
+  repository = "./install"
+  namespace  = "prometheus"
+
+  set {
+    name  = "image.repository"
+    value = "${var.acr_name}.azurecr.io/k8s.gcr.io/prometheus-adapter/prometheus-adapter"
+  }
+
+  wait              = true
+  timeout           = 300
+
+  depends_on = [null_resource.download_charts,helm_release.prometheus]
+}
