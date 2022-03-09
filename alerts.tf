@@ -120,7 +120,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_alert_daemonset"
   query          = <<-QUERY
   KubePodInventory 
     | where ControllerKind has "daemonset"
-    | where Namespace has "kube-system" or Namespace has "filebeat-system" or Namespace has "dynatrace"
+    | where Namespace has "kube-system" or Namespace has "filebeat-system" or Namespace has "dynatrace" or Namespace has "prometheus"
     | where PodStatus has "Failed" or PodStatus has "Unknown"
 QUERY
   severity       = var.alerts.sys_workload.daemonset.severity
@@ -148,7 +148,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_alert_actual_vs_
   InsightsMetrics
     | where Name has "kube_deployment_status_replicas_ready"
     | extend tags=parse_json(Tags)
-    | where tags.k8sNamespace has "kube-system" or tags.k8sNamespace has "istio-system" or tags.k8sNamespace has "istio-operator" or tags.k8sNamespace has "dynatrace"
+    | where tags.k8sNamespace has "kube-system" or tags.k8sNamespace has "istio-system" or tags.k8sNamespace has "istio-ingress" or tags.k8sNamespace has "dynatrace" or tags.k8sNamespace has "prometheus"
     | where toint(tags.status_replicas_available) < toint(tags.spec_replicas)
     | distinct tostring(tags.deployment),tostring(tags.k8sNamespace)
 QUERY

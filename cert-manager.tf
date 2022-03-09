@@ -21,5 +21,6 @@ data "kubectl_file_documents" "cert_issuer_manifests" {
 resource "kubectl_manifest" "cert_issuer_install" {
   count     = length(data.kubectl_file_documents.cert_issuer_manifests.documents)
   yaml_body = element(data.kubectl_file_documents.cert_issuer_manifests.documents, count.index)
+  override_namespace = "istio-ingress"
   depends_on = [kubectl_manifest.cert-manager-install]
 }

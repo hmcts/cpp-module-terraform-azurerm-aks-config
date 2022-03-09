@@ -4,7 +4,7 @@ kind: Secret
 type: Opaque
 metadata:
   name: cert-manager-vault-token
-  namespace: istio-system
+  namespace: "istio-ingress"
 data:
   token: ${vault_token}
 ---
@@ -12,7 +12,7 @@ apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: vault-issuer
-  namespace: istio-system
+  namespace: "istio-ingress"
 spec:
   vault:
     path: ${vault_path}
@@ -27,7 +27,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: istio-ingressgateway-cert
-  namespace: istio-system
+  namespace: "istio-ingress"
 spec:
   commonName: "${ingressdomain}"
   duration: 2160h # 90d

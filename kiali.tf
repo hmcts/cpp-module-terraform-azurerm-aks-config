@@ -26,7 +26,8 @@ resource "kubernetes_secret" "kiali_pass" {
   type = "Opaque"
 
   depends_on = [
-    kubernetes_namespace.kiali_namespace
+    kubernetes_namespace.kiali_namespace,
+    kubernetes_namespace.istio_system_namespace
   ]
 }
 
@@ -65,5 +66,8 @@ resource "helm_release" "kiali_operator_install" {
   wait              = true
   timeout           = 300
 
-  depends_on = [null_resource.download_charts,kubernetes_secret.kiali_pass]
+  depends_on = [
+    null_resource.download_charts,
+    kubernetes_secret.kiali_pass
+  ]
 }

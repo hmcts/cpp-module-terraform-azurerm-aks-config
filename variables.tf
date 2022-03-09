@@ -1,24 +1,16 @@
-variable "istio_version" {
-  default     = "1.10.2"
-  description = "The version of Istio to be installed"
-  type        = string
-}
-
-variable "istio_node_selector_label" {
-  description = "Node selector label to install istio on selected nodes"
-  type        = string
+variable "istiod_node_selector" {
+  description = "Node selector key and value to install istiod"
+  type        = map(string)
+  default = {
+    key   = "agentpool"
+    value = "sysagentpool"
+  }
 }
 
 variable "systempool_taint_key" {
   description = "system pool taint key"
   type        = string
   default     = "CriticalAddonsOnly"
-}
-
-variable "systempool_taint_value" {
-  description = "system pool taint value"
-  type        = bool
-  default     = true
 }
 
 variable "node_affinity_exp_key" {
@@ -143,20 +135,22 @@ variable "filebeat_namespace" {
 
 variable "charts" {
   type = object({
-    namespace      = map(string)
-    jenkins-rbac   = map(string)
-    user-rbac      = map(string)
-    istio-operator = map(string)
-    filebeat-mgm   = map(string)
-    filebeat-app   = map(string)
-    kiali-operator = map(string)
-    prometheus     = map(string)
+    namespace          = map(string)
+    jenkins-rbac       = map(string)
+    user-rbac          = map(string)
+    istio-base         = map(string)
+    istiod             = map(string)
+    istio-ingress      = map(string)
+    filebeat-mgm       = map(string)
+    filebeat-app       = map(string)
+    kiali-operator     = map(string)
+    prometheus         = map(string)
     prometheus-adapter = map(string)
   })
   default = {
     namespace = {
       path    = "charts/namespace"
-      version = "0.1.0"
+      version = "0.3.1"
     },
     jenkins-rbac = {
       path    = "charts/jenkins-rbac"
@@ -166,9 +160,17 @@ variable "charts" {
       path    = "charts/user-rbac"
       version = "1.0.0"
     },
-    istio-operator = {
-      path    = "charts/istio-operator"
-      version = "1.10.2"
+    istio-base = {
+      path    = "charts/istio-base"
+      version = "1.13.2"
+    },
+    istiod = {
+      path    = "charts/istiod"
+      version = "1.13.2"
+    },
+    istio-ingress = {
+      path    = "charts/istio-ingress"
+      version = "1.13.2"
     },
     filebeat-mgm = {
       path    = "charts/filebeat"
@@ -196,8 +198,8 @@ variable "charts" {
 variable "user_rbac" {
   type = map(list(string))
   default = {
-    aks_reader_members_ids = []
-    aks_contributor_members_ids = []
+    aks_reader_members_ids        = []
+    aks_contributor_members_ids   = []
     aks_cluster_admin_members_ids = []
   }
 }
@@ -241,10 +243,10 @@ variable "alerts" {
       deployment = map(number)
     })
     apps_workload = object({
-      enabled         = bool
-      deployment      = map(number)
-      hpa_min_replica = map(number)
-      hpa_max_replica = map(number)
+      enabled            = bool
+      deployment         = map(number)
+      hpa_min_replica    = map(number)
+      hpa_max_replica    = map(number)
       cluster_agent_pool = map(number)
     })
   })
@@ -329,7 +331,7 @@ variable "worker_agents_pool_name" {
 }
 
 variable "enable_dynatrace" {
-  type = bool
+  type        = bool
   description = "enable dynatrace monitoring of cluster"
   default     = true
 }
@@ -345,29 +347,29 @@ variable "monitor_config" {
 
 variable "prometheus" {
   type = object({
-    grafana_image_tag = string
-    grafana_k8s_sidecar_image_tag  = string
-    kube_state_metrics_image_tag = string
-    node_exporter_image_tag = string
-    prometheus_operator_image_tag = string
+    grafana_image_tag                    = string
+    grafana_k8s_sidecar_image_tag        = string
+    kube_state_metrics_image_tag         = string
+    node_exporter_image_tag              = string
+    prometheus_operator_image_tag        = string
     prometheus_config_reloader_image_tag = string
-    kube_webhook_certgen_image_tag = string
-    prometheus_image_tag = string
-    prometheus_retention = string
-    prometheus_storage_class_name = string
-    prometheus_storage_size = string
+    kube_webhook_certgen_image_tag       = string
+    prometheus_image_tag                 = string
+    prometheus_retention                 = string
+    prometheus_storage_class_name        = string
+    prometheus_storage_size              = string
   })
   default = {
-    grafana_image_tag = "8.3.5"
-    grafana_k8s_sidecar_image_tag  = "1.15.1"
-    kube_state_metrics_image_tag = "v2.3.0"
-    node_exporter_image_tag = "v1.3.1"
-    prometheus_operator_image_tag = "v0.54.0"
+    grafana_image_tag                    = "8.3.5"
+    grafana_k8s_sidecar_image_tag        = "1.15.1"
+    kube_state_metrics_image_tag         = "v2.3.0"
+    node_exporter_image_tag              = "v1.3.1"
+    prometheus_operator_image_tag        = "v0.54.0"
     prometheus_config_reloader_image_tag = "v0.54.0"
-    kube_webhook_certgen_image_tag = "v1.0"
-    prometheus_image_tag = "v2.33.1"
-    prometheus_retention = "15d"
-    prometheus_storage_class_name = "managed-premium"
-    prometheus_storage_size = "100Gi"
+    kube_webhook_certgen_image_tag       = "v1.0"
+    prometheus_image_tag                 = "v2.33.1"
+    prometheus_retention                 = "15d"
+    prometheus_storage_class_name        = "managed-premium"
+    prometheus_storage_size              = "100Gi"
   }
 }
