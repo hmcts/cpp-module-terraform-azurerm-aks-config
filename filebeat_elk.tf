@@ -40,6 +40,16 @@ resource "helm_release" "filebeat_management" {
     "${file("${path.root}/chart-values/common/filebeat-mgmt.yaml")}",
     "${file("${path.root}/chart-values/${var.environment_type}/${var.environment}/filebeat-mgmt.yaml")}"
   ]
+  set {
+    name  = "image"
+    value = "${var.acr_name}.azurecr.io/beats/filebeat"
+  }
+
+  set {
+    name  = "imageTag"
+    value = "8.0.0-SNAPSHOT"
+  }
+
   repository = "./install"
   namespace  = var.filebeat_namespace
 
@@ -57,6 +67,16 @@ resource "helm_release" "filebeat_application" {
     "${file("${path.root}/chart-values/common/filebeat-app.yaml")}",
     "${file("${path.root}/chart-values/${var.environment_type}/${var.environment}/filebeat-app.yaml")}"
   ]
+  set {
+    name  = "image"
+    value = "${var.acr_name}.azurecr.io/beats/filebeat"
+  }
+
+  set {
+    name  = "imageTag"
+    value = "8.0.0-SNAPSHOT"
+  }
+  
   repository = "./install"
   namespace  = var.filebeat_namespace
 

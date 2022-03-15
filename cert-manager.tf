@@ -1,5 +1,10 @@
 data "kubectl_file_documents" "cert_manager_manifests" {
-  content = templatefile("${path.module}/manifests/cert-manager/cert-manager.yaml", {})
+  content = templatefile("${path.module}/manifests/cert-manager/cert-manager.yaml", {
+    docker_image_certmanager_cainjector = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-cainjector"
+    docker_image_certmanager_controller = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-controller"
+    docker_image_certmanager_webhook    = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-webhook"
+    docker_tag_certmanager              = "v1.6.1"
+  })
 }
 
 resource "kubectl_manifest" "cert-manager-install" {
