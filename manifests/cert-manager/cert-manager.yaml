@@ -17095,6 +17095,12 @@ spec:
                   fieldPath: metadata.namespace
           resources:
             {}
+      tolerations:
+        - key: "CriticalAddonsOnly"
+          operator: "Exists"
+          effect: "NoSchedule"
+      nodeSelector:
+        agentpool: sysagentpool
 ---
 # Source: cert-manager/templates/deployment.yaml
 apiVersion: apps/v1
@@ -17149,6 +17155,12 @@ spec:
                   fieldPath: metadata.namespace
           resources:
             {}
+      tolerations:
+        - key: "CriticalAddonsOnly"
+          operator: "Exists"
+          effect: "NoSchedule"
+      nodeSelector:
+        agentpool: sysagentpool
 ---
 # Source: cert-manager/templates/webhook-deployment.yaml
 apiVersion: apps/v1
@@ -17222,6 +17234,12 @@ spec:
                   fieldPath: metadata.namespace
           resources:
             {}
+      tolerations:
+        - key: "CriticalAddonsOnly"
+          operator: "Exists"
+          effect: "NoSchedule"
+      nodeSelector:
+        agentpool: sysagentpool
 ---
 # Source: cert-manager/templates/webhook-mutating-webhook.yaml
 apiVersion: admissionregistration.k8s.io/v1
