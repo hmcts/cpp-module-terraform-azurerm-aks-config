@@ -26,15 +26,31 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: istio-ingressgateway-cert
+  name: istio-ingressgateway-mgmt-cert
   namespace: "istio-ingress"
 spec:
-  commonName: "${ingressdomain}"
+  commonName: "${istio_ingress_mgmt_domain}"
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   dnsNames:
-    - "${ingressdomain}"
+    - "${istio_ingress_mgmt_domain}"
   issuerRef:
     kind: Issuer
     name: vault-issuer
-  secretName: ${ingress-gateway-secret}
+  secretName: ${istio_gateway_mgmt_cert_secret_name}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: istio-ingressgateway-apps-cert
+  namespace: "istio-ingress"
+spec:
+  commonName: "${istio_ingress_apps_domain}"
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  dnsNames:
+    - "${istio_ingress_apps_domain}"
+  issuerRef:
+    kind: Issuer
+    name: vault-issuer
+  secretName: ${istio_gateway_apps_cert_secret_name}

@@ -63,11 +63,25 @@ resource "helm_release" "kiali_operator_install" {
     value = lookup(var.monitor_config, "shared_resource_id")
   }
 
-  wait              = true
-  timeout           = 300
+  wait    = true
+  timeout = 300
 
   depends_on = [
     null_resource.download_charts,
     kubernetes_secret.kiali_pass
+  ]
+}
+
+resource "kubectl_manifest" "install_kiali_virtualservice_manifests" {
+  yaml_body          = templatefile("${path.module}/manifests/kiali/virtualservice.yaml", {
+    namespace         = "istio-system"
+    gateway           = "istio-ingress/istio-ingressgateway-mgmt"
+    kiali_hostname    = "${var.kiali_hostname_prefix}${split("*", var.istio_ingress_mgmt_domain)[1]}"
+    kiali_destination = "kiali"
+  })
+  override_namespace = "istio-system"
+  depends_on = [
+    helm_release.kiali_operator_install,
+    kubectl_manifest.install_istio_ingress_gateway_manifests
   ]
 }

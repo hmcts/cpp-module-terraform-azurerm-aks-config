@@ -2,14 +2,14 @@
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-  name: istio-ingressgateway
+  name: istio-ingressgateway-mgmt
   namespace: istio-ingress
 spec:
   selector:
-    istio: ingressgateway
+    istio: ingressgateway-mgmt
   servers:
   - hosts:
-    - "${ingressdomain}"
+    - "${istio_ingress_mgmt_domain}"
     port:
       name: http
       number: 80
@@ -17,13 +17,42 @@ spec:
     tls:
       httpsRedirect: true # sends 301 redirect for http requests
   - hosts:
-    - "${ingressdomain}"
+    - "${istio_ingress_mgmt_domain}"
     port:
       name: https
       number: 443
       protocol: HTTPS
     tls:
-      credentialName: ${ingress-gateway-secret}
+      credentialName: ${istio_gateway_mgmt_cert_secret_name}
+      mode: SIMPLE
+      privateKey: sds
+      serverCertificate: sds
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: istio-ingressgateway-apps
+  namespace: istio-ingress
+spec:
+  selector:
+    istio: ingressgateway-apps
+  servers:
+  - hosts:
+    - "${istio_ingress_apps_domain}"
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+    tls:
+      httpsRedirect: true # sends 301 redirect for http requests
+  - hosts:
+    - "${istio_ingress_apps_domain}"
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: ${istio_gateway_apps_cert_secret_name}
       mode: SIMPLE
       privateKey: sds
       serverCertificate: sds
@@ -37,7 +66,7 @@ metadata:
 spec:
   workloadSelector:
     labels:
-      istio: ingressgateway
+      istio: ingressgateway-apps
   configPatches:
   - applyTo: HTTP_FILTER
     match:

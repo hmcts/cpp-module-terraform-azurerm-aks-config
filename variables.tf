@@ -7,6 +7,15 @@ variable "istiod_node_selector" {
   }
 }
 
+variable "istio_ingress_mgmt_node_selector" {
+  description = "Node selector key and value to install istiod"
+  type        = map(string)
+  default = {
+    key   = "agentpool"
+    value = "sysagentpool"
+  }
+}
+
 variable "systempool_taint_key" {
   description = "system pool taint key"
   type        = string
@@ -54,9 +63,32 @@ variable "environment_type" {
   description = "Environment type - nonlive/live"
 }
 
-variable "ingressdomain" {
+variable "istio_ingress_apps_domain" {
   type        = string
-  description = "Ingress domain name FQDN"
+  description = "Ingress domain name FQDN for apps"
+}
+
+variable "istio_ingress_mgmt_domain" {
+  type        = string
+  description = "Ingress domain name FQDN for mgmt"
+}
+
+variable "kiali_hostname_prefix" {
+  type        = string
+  description = "Hostname prefix to access kiali"
+  default = "kiali"
+}
+
+variable "prometheus_hostname_prefix" {
+  type        = string
+  description = "Hostname prefix to access kiali"
+  default = "prometheus"
+}
+
+variable "grafana_hostname_prefix" {
+  type        = string
+  description = "Hostname prefix to access kiali"
+  default = "grafana"
 }
 
 variable "acr_name" {
@@ -105,16 +137,25 @@ variable "istio_gateway_cert_issuer" {
   description = "cpp-nonlive"
 }
 
-variable "istio_gateway_cert_secret_name" {
+variable "istio_gateway_mgmt_cert_secret_name" {
   type    = string
-  default = "istio-ingressgateway-certs"
+  default = "istio-ingressgateway-mgmt-cert"
+}
+
+variable "istio_gateway_apps_cert_secret_name" {
+  type    = string
+  default = "istio-ingressgateway-apps-cert"
 }
 
 variable "istio_components_hpa_spec" {
   type = map(number)
   default = {
-    min_replicas = 1
-    max_replicas = 5
+    istiod_min_replicas = 1
+    istiod_max_replicas = 5
+    istio_ingress_mgmt_min_replicas = 1
+    istio_ingress_mgmt_max_replicas = 5
+    istio_ingress_apps_min_replicas = 1
+    istio_ingress_apps_max_replicas = 5
   }
 }
 

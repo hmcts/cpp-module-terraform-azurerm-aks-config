@@ -1,0 +1,23 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  labels:
+    app: kiali
+  name: kiali
+  namespace: ${namespace}
+spec:
+  gateways:
+  - ${gateway}
+  hosts:
+  - ${kiali_hostname}
+  http:
+  - headers:
+      request:
+        set:
+          X-Forwarded-Port: "443"
+    route:
+    - destination:
+        host: ${kiali_destination}
+        port:
+          number: 20001

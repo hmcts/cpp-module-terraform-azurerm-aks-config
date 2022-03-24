@@ -40,6 +40,8 @@ grafana:
       token_url: https://login.microsoftonline.com/${grafana_auth_azuread_tenant_id}/oauth2/v2.0/token
       allowed_domains:
       allowed_groups:
+    server:
+      root_url: ${grafana_url}
 
   affinity:
     nodeAffinity:

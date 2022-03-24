@@ -14,18 +14,20 @@ resource "kubectl_manifest" "cert-manager-install" {
 
 data "kubectl_file_documents" "cert_issuer_manifests" {
   content = templatefile("${path.module}/manifests/cert-manager/cert-issuer.yaml", {
-    vault_token  = base64encode(var.vault_token)
-    vault_path   = var.vault_path
-    vault_url    = var.vault_url
-    ca_bundle    = filebase64(var.ca_bundle_path)
-    ingress-gateway-secret = var.istio_gateway_cert_secret_name
-    ingressdomain          = var.ingressdomain
+    vault_token                         = base64encode(var.vault_token)
+    vault_path                          = var.vault_path
+    vault_url                           = var.vault_url
+    ca_bundle                           = filebase64(var.ca_bundle_path)
+    istio_gateway_mgmt_cert_secret_name = var.istio_gateway_mgmt_cert_secret_name
+    istio_gateway_apps_cert_secret_name = var.istio_gateway_apps_cert_secret_name
+    istio_ingress_apps_domain           = var.istio_ingress_apps_domain
+    istio_ingress_mgmt_domain           = var.istio_ingress_mgmt_domain
   })
 }
 
 resource "kubectl_manifest" "cert_issuer_install" {
-  count     = length(data.kubectl_file_documents.cert_issuer_manifests.documents)
-  yaml_body = element(data.kubectl_file_documents.cert_issuer_manifests.documents, count.index)
+  count              = length(data.kubectl_file_documents.cert_issuer_manifests.documents)
+  yaml_body          = element(data.kubectl_file_documents.cert_issuer_manifests.documents, count.index)
   override_namespace = "istio-ingress"
-  depends_on = [kubectl_manifest.cert-manager-install]
+  depends_on         = [kubectl_manifest.cert-manager-install]
 }

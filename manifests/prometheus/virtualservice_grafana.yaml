@@ -1,0 +1,20 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  labels:
+    app: grafana
+  name: grafana
+  namespace: ${namespace}
+spec:
+  gateways:
+  - ${gateway}
+  hosts:
+  - ${grafana_hostname}
+  http:
+  - name: grafana
+    route:
+    - destination:
+        host: ${grafana_destination}
+        port:
+          number: 80
