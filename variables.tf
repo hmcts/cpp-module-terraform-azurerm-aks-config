@@ -53,6 +53,7 @@ variable "dynatrace_paas_token" {
   description = "Dynatrace paas token to configure for Dynakube custom resource "
   type        = string
 }
+
 variable "environment" {
   type        = string
   description = "Environment name"
