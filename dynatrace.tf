@@ -4,78 +4,137 @@ resource "kubernetes_namespace" "dynatrace_namespace" {
     name = "dynatrace"
     labels = {
       "app.kubernetes.io/managed-by" = "Terraform"
-      "filebeat_enable" = "enabled"
+      "filebeat_enable"              = "enabled"
     }
   }
 }
 
-data "kubectl_file_documents" "dynatrace_manifests" {
-  content = file("${path.module}/manifests/dynatrace/dynatrace_operator.yaml")
+resource "kubectl_manifest" "dynatrace_operator_crd_install" {
+  count     = var.enable_dynatrace ? 1 : 0
+  yaml_body = file("${path.module}/manifests/dynatrace/dynatrace.com_dynakubes.yaml")
 }
 
-data "kubectl_file_documents" "dynatrace_hpa_manifests" {
-  content = templatefile("${path.module}/manifests/dynatrace/dynatrace_hpa.yaml", {
-    hpa_min_replicas        = var.dynatrace_components_hpa_spec.min_replicas
-    hpa_max_replicas        = var.dynatrace_components_hpa_spec.max_replicas
-    hpa_avg_cpu_utilization = var.dynatrace_components_hpa_spec.avg_cpu_utilization
-    hpa_avg_mem_utilization = var.dynatrace_components_hpa_spec.avg_mem_utilization
-  })
-}
+resource "helm_release" "dynatrace_operator" {
+  count      = var.enable_dynatrace ? 1 : 0
+  name       = lookup(var.charts.dynatrace-operator, "name", "dynatrace-operator")
+  chart      = lookup(var.charts.dynatrace-operator, "name", "dynatrace-operator")
+  version    = lookup(var.charts.dynatrace-operator, "version", "")
+  repository = "./install"
+  namespace  = "dynatrace"
 
-# added new manifest for operator deployment
-resource "kubectl_manifest" "dynatrace_operator_deployment" {
-  count = var.enable_dynatrace ? 1 : 0
-  yaml_body = templatefile("${path.module}/manifests/dynatrace/dynatrace_operator_deploy.yaml", {
-    systempool_taint_key            = var.systempool_taint_key
-    affinity_exp_key                = var.node_affinity_exp_key
-    affinity_exp_value              = var.node_affinity_exp_value
-    docker_image_dynatrace_operator = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/dynatrace-operator"
-    docker_tag_dynatrace_operator   = "v0.2.1"
-  })
+  set {
+    name  = "operator.tolerations[0].key"
+    value = var.systempool_taint_key
+  }
+
+  set {
+    name  = "operator.tolerations[0].operator"
+    value = "Exists"
+  }
+
+  set {
+    name  = "operator.tolerations[0].effect"
+    value = "NoSchedule"
+  }
+
+  set {
+    name  = "operator.nodeSelector.${var.dynatrace_operator_node_selector.key}"
+    value = var.dynatrace_operator_node_selector.value
+  }
+
+  set {
+    name  = "operator.image"
+    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/dynatrace-operator:v0.5.1"
+  }
+
+  set {
+    name  = "apiUrl"
+    value = var.dynatrace_api
+  }
+
+  set {
+    name  = "apiToken"
+    value = var.dynatrace_api_token
+  }
+
+  set {
+    name  = "paasToken"
+    value = var.dynatrace_paas_token
+  }
+
+  set {
+    name  = "dataIngestToken"
+    value = ""
+  }
+
+  set {
+    name  = "networkZone"
+    value = var.dynatrace_networkzone
+  }
+
+  set {
+    name  = "classicFullStack.enabled"
+    value = true
+  }
+
+  set {
+    name  = "classicFullStack.tolerations[0].key"
+    value = var.systempool_taint_key
+  }
+
+  set {
+    name  = "classicFullStack.tolerations[0].operator"
+    value = "Exists"
+  }
+
+  set {
+    name  = "classicFullStack.tolerations[0].effect"
+    value = "NoSchedule"
+  }
+
+  set {
+    name  = "classicFullStack.image"
+    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/oneagent"
+  }
+
+  set {
+    name  = "classicFullStack.version"
+    value = "latest"
+  }
+
+  set {
+    name  = "classicFullStack.env[0].name"
+    value = "ONEAGENT_INSTALLER_DOWNLOAD_TOKEN"
+  }
+
+  set {
+    name  = "classicFullStack.env[0].valueFrom.secretKeyRef.name"
+    value = "dynakube"
+  }
+
+  set {
+    name  = "classicFullStack.env[0].valueFrom.secretKeyRef.key"
+    value = "paasToken"
+  }
+
+  set {
+    name  = "classicFullStack.env[0].valueFrom.secretKeyRef.key"
+    value = "paasToken"
+  }
+
+  set {
+    name  = "classicFullStack.env[1].name"
+    value = "ONEAGENT_INSTALLER_SCRIPT_URL"
+  }
+
+  set {
+    name  = "classicFullStack.env[1].value"
+    value = "${var.dynatrace_api}/v1/deployment/installer/agent/unix/default/latest?arch=x86"
+  }
 
   depends_on = [
-    kubernetes_namespace.dynatrace_namespace
-  ]
-}
-
-resource "kubectl_manifest" "dynatrace_operator_manifest" {
-  count     = var.enable_dynatrace ? length(data.kubectl_file_documents.dynatrace_manifests.documents) : 0
-  yaml_body = element(data.kubectl_file_documents.dynatrace_manifests.documents, count.index)
-  depends_on = [
+    null_resource.download_charts,
     kubernetes_namespace.dynatrace_namespace,
-    data.kubectl_file_documents.dynatrace_manifests
-  ]
-}
-
-resource "kubectl_manifest" "dynatrace_hpa_manifest" {
-  count     = var.enable_dynatrace ? length(data.kubectl_file_documents.dynatrace_hpa_manifests.documents) :0
-  yaml_body = element(data.kubectl_file_documents.dynatrace_hpa_manifests.documents, count.index)
-  depends_on = [
-    kubectl_manifest.dynatrace_operator_manifest
-  ]
-}
-
-resource "kubectl_manifest" "dynatrace_secret_manifest" {
-  count = var.enable_dynatrace ? 1 : 0
-  sensitive_fields = ["api_token", "paas_token"]
-  yaml_body = templatefile("${path.module}/manifests/dynatrace/dynatrace_secret.yaml", {
-    api_token  = var.dynatrace_api_token
-    paas_token = var.dynatrace_paas_token
-  })
-  depends_on = [
-    kubectl_manifest.dynatrace_operator_manifest
-  ]
-}
-
-resource "kubectl_manifest" "dynatrace_cr_manifest" {
-  count = var.enable_dynatrace ? 1 : 0
-  yaml_body = templatefile("${path.module}/manifests/dynatrace/dynatrace_cr.yaml", {
-    dynatrace_api         = var.dynatrace_api
-    network_zone          = "${var.dynatrace_networkzone}"
-    cluster_name          = "${var.environment}-cpp"
-    docker_image_oneagent = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/oneagent"
-  })
-  depends_on = [
-    kubectl_manifest.dynatrace_secret_manifest
+    kubectl_manifest.dynatrace_operator_crd_install
   ]
 }

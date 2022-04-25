@@ -7,6 +7,15 @@ variable "istiod_node_selector" {
   }
 }
 
+variable "dynatrace_operator_node_selector" {
+  description = "Node selector key and value to install dynatrace operator"
+  type        = map(string)
+  default = {
+    key   = "agentpool"
+    value = "sysagentpool"
+  }
+}
+
 variable "istio_ingress_mgmt_node_selector" {
   description = "Node selector key and value to install istiod"
   type        = map(string)
@@ -188,6 +197,7 @@ variable "charts" {
     kiali-operator     = map(string)
     prometheus         = map(string)
     prometheus-adapter = map(string)
+    dynatrace-operator = map(string)
   })
   default = {
     namespace = {
@@ -233,6 +243,10 @@ variable "charts" {
     prometheus-adapter = {
       path    = "charts/prometheus-adapter"
       version = "3.0.2"
+    },
+    dynatrace-operator = {
+      path    = "charts/dynatrace-operator"
+      version = "0.5.1"
     },
   }
 }

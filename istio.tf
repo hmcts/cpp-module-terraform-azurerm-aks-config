@@ -162,22 +162,22 @@ resource "helm_release" "istio_ingress_mgmt_install" {
   }
 
   set {
-    name  = "tolerations[0].key"
+    name  = "global.defaultTolerations[0].key"
     value = var.systempool_taint_key
   }
 
   set {
-    name  = "tolerations[0].operator"
+    name  = "global.defaultTolerations[0].operator"
     value = "Exists"
   }
 
   set {
-    name  = "tolerations[0].effect"
+    name  = "global.defaultTolerations[0].effect"
     value = "NoSchedule"
   }
 
   set {
-    name  = "nodeSelector.${var.istio_ingress_mgmt_node_selector.key}"
+    name  = "global.defaultNodeSelector.${var.istio_ingress_mgmt_node_selector.key}"
     value = var.istio_ingress_mgmt_node_selector.value
   }
 
@@ -312,9 +312,19 @@ resource "kubectl_manifest" "install_istio_ingress_gateway_manifests" {
 # PeerAuthentication menifest - Enable mtls 
 resource "kubectl_manifest" "enable_mtls" {
   yaml_body = file("${path.module}/manifests/istio/istio_peerauthentication.yaml")
+  depends_on = [
+    kubernetes_namespace.istio_system_namespace,
+    time_sleep.wait_for_istio_crds,
+    helm_release.istio_base_install
+  ]
 }
 
 # Enable envoy access logs
 resource "kubectl_manifest" "istio_telemetry" {
   yaml_body = file("${path.module}/manifests/istio/telemetry.yaml")
+  depends_on = [
+    kubernetes_namespace.istio_system_namespace,
+    time_sleep.wait_for_istio_crds,
+    helm_release.istio_base_install
+  ]
 }

@@ -1,3 +1,13 @@
+resource "kubernetes_namespace" "cert_manager_namespace" {
+  metadata {
+    name = "cert-manager"
+    labels = {
+      "app.kubernetes.io/managed-by" = "Terraform"
+      "filebeat_enable"              = "enabled"
+    }
+  }
+}
+
 data "kubectl_file_documents" "cert_manager_manifests" {
   content = templatefile("${path.module}/manifests/cert-manager/cert-manager.yaml", {
     docker_image_certmanager_cainjector = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-cainjector"
@@ -8,8 +18,9 @@ data "kubectl_file_documents" "cert_manager_manifests" {
 }
 
 resource "kubectl_manifest" "cert-manager-install" {
-  count     = length(data.kubectl_file_documents.cert_manager_manifests.documents)
-  yaml_body = element(data.kubectl_file_documents.cert_manager_manifests.documents, count.index)
+  count      = length(data.kubectl_file_documents.cert_manager_manifests.documents)
+  yaml_body  = element(data.kubectl_file_documents.cert_manager_manifests.documents, count.index)
+  depends_on = [kubernetes_namespace.cert_manager_namespace]
 }
 
 data "kubectl_file_documents" "cert_issuer_manifests" {
