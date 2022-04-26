@@ -23,6 +23,13 @@ resource "kubectl_manifest" "cert-manager-install" {
   depends_on = [kubernetes_namespace.cert_manager_namespace]
 }
 
+resource "time_sleep" "wait_for_certmanager_install" {
+  depends_on = [
+    kubectl_manifest.cert-manager-install
+  ]
+  create_duration = "20s"
+}
+
 data "kubectl_file_documents" "cert_issuer_manifests" {
   content = templatefile("${path.module}/manifests/cert-manager/cert-issuer.yaml", {
     vault_token                         = base64encode(var.vault_token)
@@ -34,11 +41,12 @@ data "kubectl_file_documents" "cert_issuer_manifests" {
     istio_ingress_apps_domain           = var.istio_ingress_apps_domain
     istio_ingress_mgmt_domain           = var.istio_ingress_mgmt_domain
   })
+  depends_on = [time_sleep.wait_for_certmanager_install]
 }
 
 resource "kubectl_manifest" "cert_issuer_install" {
   count              = length(data.kubectl_file_documents.cert_issuer_manifests.documents)
   yaml_body          = element(data.kubectl_file_documents.cert_issuer_manifests.documents, count.index)
   override_namespace = "istio-ingress"
-  depends_on         = [kubectl_manifest.cert-manager-install]
+  depends_on         = [kubectl_manifest.cert-manager-install,time_sleep.wait_for_certmanager_install]
 }
