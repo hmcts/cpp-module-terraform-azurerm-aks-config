@@ -41,7 +41,6 @@ data "kubectl_file_documents" "cert_issuer_manifests" {
     istio_ingress_apps_domain           = var.istio_ingress_apps_domain
     istio_ingress_mgmt_domain           = var.istio_ingress_mgmt_domain
   })
-  depends_on = [time_sleep.wait_for_certmanager_install]
 }
 
 resource "kubectl_manifest" "cert_issuer_install" {
