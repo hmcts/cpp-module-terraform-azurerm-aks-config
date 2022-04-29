@@ -1,11 +1,9 @@
 output "jenkins_rbac_deploy" {
-  value = [
-    for k, v in vault_generic_secret.jenkins_deploy_rbac : tomap({"namespace" = k, "vault_path" = v.path})
-  ]
+  value = vault_generic_secret.jenkins_deploy_clusterrole_rbac.path
 }
 
 output "jenkins_rbac_admin" {
-  value = vault_generic_secret.jenkins_admin_rbac.path
+  value = vault_generic_secret.jenkins_admin_clusterrole_rbac.path
 }
 
 output "ingress_apps_domain_name" {

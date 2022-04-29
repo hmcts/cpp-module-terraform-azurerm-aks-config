@@ -186,9 +186,7 @@ variable "filebeat_namespace" {
 
 variable "charts" {
   type = object({
-    namespace          = map(string)
-    jenkins-rbac       = map(string)
-    user-rbac          = map(string)
+    aks-rbac          = map(string)
     istio-base         = map(string)
     istiod             = map(string)
     istio-ingress      = map(string)
@@ -200,17 +198,9 @@ variable "charts" {
     dynatrace-operator = map(string)
   })
   default = {
-    namespace = {
-      path    = "charts/namespace"
-      version = "0.3.1"
-    },
-    jenkins-rbac = {
-      path    = "charts/jenkins-rbac"
+    aks-rbac = {
+      path    = "charts/aks-rbac"
       version = "1.0.1"
-    },
-    user-rbac = {
-      path    = "charts/user-rbac"
-      version = "1.0.0"
     },
     istio-base = {
       path    = "charts/istio-base"
@@ -258,6 +248,30 @@ variable "user_rbac" {
     aks_contributor_members_ids   = []
     aks_cluster_admin_members_ids = []
   }
+}
+
+variable "aks_rbac_namespace" {
+  type        = string
+  description = "namespace where to store configmap with AKS Groupids"
+  default     = "kube-system"
+}
+
+variable "aks_rbac_configmap" {
+  type        = string
+  description = "configmap where to store AKS Groupids"
+  default     = "aks-rbac"
+}
+
+variable "jenkins_admin_sa" {
+  type        = string
+  description = "service account for Jenkins Admin"
+  default     = "jenkins-admin"
+}
+
+variable "jenkins_deploy_sa" {
+  type        = string
+  description = "service account for Jenkins deployments"
+  default     = "jenkins-deploy"
 }
 
 variable "workspace_resource_group_name" {
