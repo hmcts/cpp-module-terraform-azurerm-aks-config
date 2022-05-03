@@ -400,7 +400,7 @@ variable "worker_agents_pool_name" {
   default     = "wrkagentpool"
 }
 
-variable "enable_dynatrace" {
+variable "enable_moniotring" {
   type        = bool
   description = "enable dynatrace monitoring of cluster"
   default     = true

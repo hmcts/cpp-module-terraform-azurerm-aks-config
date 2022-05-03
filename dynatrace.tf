@@ -1,5 +1,5 @@
 resource "kubernetes_namespace" "dynatrace_namespace" {
-  count = var.enable_dynatrace ? 1 : 0
+  count = var.enable_moniotring ? 1 : 0
   metadata {
     name = "dynatrace"
     labels = {
@@ -10,12 +10,12 @@ resource "kubernetes_namespace" "dynatrace_namespace" {
 }
 
 resource "kubectl_manifest" "dynatrace_operator_crd_install" {
-  count     = var.enable_dynatrace ? 1 : 0
+  count     = var.enable_moniotring ? 1 : 0
   yaml_body = file("${path.module}/manifests/dynatrace/dynatrace.com_dynakubes.yaml")
 }
 
 resource "helm_release" "dynatrace_operator" {
-  count      = var.enable_dynatrace ? 1 : 0
+  count      = var.enable_moniotring ? 1 : 0
   name       = lookup(var.charts.dynatrace-operator, "name", "dynatrace-operator")
   chart      = lookup(var.charts.dynatrace-operator, "name", "dynatrace-operator")
   version    = lookup(var.charts.dynatrace-operator, "version", "")

@@ -1,4 +1,5 @@
 resource "kubernetes_namespace" "kiali_namespace" {
+  count = var.enable_moniotring ? 1 : 0
   metadata {
     name = "kiali-operator"
     labels = {
@@ -13,7 +14,7 @@ data "vault_generic_secret" "kiali_auth" {
 }
 
 resource "kubernetes_secret" "kiali_pass" {
-
+  count = var.enable_moniotring ? 1 : 0
   metadata {
     name      = "kiali"
     namespace = "istio-system"
@@ -32,6 +33,7 @@ resource "kubernetes_secret" "kiali_pass" {
 }
 
 resource "helm_release" "kiali_operator_install" {
+  count = var.enable_moniotring ? 1 : 0
   name       = lookup(var.charts.kiali-operator, "name", "kiali-operator")
   chart      = lookup(var.charts.kiali-operator, "name", "kiali-operator")
   version    = lookup(var.charts.kiali-operator, "version", "")
@@ -73,6 +75,7 @@ resource "helm_release" "kiali_operator_install" {
 }
 
 resource "kubectl_manifest" "install_kiali_virtualservice_manifests" {
+  count = var.enable_moniotring ? 1 : 0
   yaml_body          = templatefile("${path.module}/manifests/kiali/virtualservice.yaml", {
     namespace         = "istio-system"
     gateway           = "istio-ingress/istio-ingressgateway-mgmt"

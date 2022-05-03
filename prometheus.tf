@@ -1,4 +1,5 @@
 resource "kubernetes_namespace" "prometheus_namespace" {
+  count = var.enable_moniotring ? 1 : 0
   metadata {
     name = "prometheus"
     labels = {
@@ -13,6 +14,7 @@ data "vault_generic_secret" "grafana_spn_creds" {
 }
 
 resource "helm_release" "prometheus" {
+  count = var.enable_moniotring ? 1 : 0
   name    = lookup(var.charts.prometheus, "name", "kube-prometheus-stack")
   chart   = lookup(var.charts.prometheus, "name", "kube-prometheus-stack")
   version = lookup(var.charts.prometheus, "version", "")
@@ -53,6 +55,7 @@ resource "helm_release" "prometheus" {
 }
 
 resource "helm_release" "prometheus_adapter_install" {
+  count = var.enable_moniotring ? 1 : 0
   name       = lookup(var.charts.prometheus-adapter, "name", "prometheus-adapter")
   chart      = lookup(var.charts.prometheus-adapter, "name", "prometheus-adapter")
   version    = lookup(var.charts.prometheus-adapter, "version", "")
@@ -71,6 +74,7 @@ resource "helm_release" "prometheus_adapter_install" {
 }
 
 resource "kubectl_manifest" "install_grafana_virtualservice_manifests" {
+  count = var.enable_moniotring ? 1 : 0
   yaml_body          = templatefile("${path.module}/manifests/prometheus/virtualservice_grafana.yaml", {
     namespace              = "prometheus"
     gateway                = "istio-ingress/istio-ingressgateway-mgmt"
