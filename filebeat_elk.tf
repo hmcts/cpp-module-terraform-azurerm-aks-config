@@ -42,7 +42,7 @@ resource "helm_release" "filebeat_management" {
   ]
   set {
     name  = "image"
-    value = "${var.acr_name}.azurecr.io/beats/filebeat"
+    value = "${var.acr_name}.azurecr.io/docker.elastic.co/beats/filebeat"
   }
 
   set {
@@ -69,7 +69,7 @@ resource "helm_release" "filebeat_application" {
   ]
   set {
     name  = "image"
-    value = "${var.acr_name}.azurecr.io/beats/filebeat"
+    value = "${var.acr_name}.azurecr.io/docker.elastic.co/beats/filebeat"
   }
 
   set {
