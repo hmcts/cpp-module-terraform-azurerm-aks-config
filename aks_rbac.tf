@@ -86,6 +86,16 @@ resource "helm_release" "aks_rbac" {
     value = azuread_group.aks_admin.object_id
   }
 
+  set {
+    name  = "clusterRoles.namespace-readonly-role.bindingSubjects.readerGroupID.name"
+    value = azuread_group.aks_reader.object_id
+  }
+
+  set {
+    name  = "clusterRoles.namespace-readonly-role.bindingSubjects.contributorGroupID.name"
+    value = azuread_group.aks_contributor.object_id
+  }
+
   depends_on = [
     null_resource.download_charts,
     kubectl_manifest.store_aks_rbac_groupids
