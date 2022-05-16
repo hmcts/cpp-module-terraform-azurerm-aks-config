@@ -4,15 +4,14 @@ kind: Secret
 type: Opaque
 metadata:
   name: cert-manager-vault-token
-  namespace: "istio-ingress"
+  namespace: "cert-manager"
 data:
   token: ${vault_token}
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: vault-issuer
-  namespace: "istio-ingress"
 spec:
   vault:
     path: ${vault_path}
@@ -35,7 +34,7 @@ spec:
   dnsNames:
     - "${istio_ingress_mgmt_domain}"
   issuerRef:
-    kind: Issuer
+    kind: ClusterIssuer
     name: vault-issuer
   secretName: ${istio_gateway_mgmt_cert_secret_name}
 ---
@@ -51,6 +50,6 @@ spec:
   dnsNames:
     - "${istio_ingress_apps_domain}"
   issuerRef:
-    kind: Issuer
+    kind: ClusterIssuer
     name: vault-issuer
   secretName: ${istio_gateway_apps_cert_secret_name}
