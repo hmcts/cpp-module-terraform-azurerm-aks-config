@@ -148,6 +148,7 @@ prometheus:
       tag: ${prometheus_image_tag}
       sha: ""
     retention: ${prometheus_retention}
+    replicas: ${prometheus_replica}
     storageSpec:
       volumeClaimTemplate:
         spec:

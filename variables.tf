@@ -424,6 +424,7 @@ variable "prometheus" {
     prometheus_operator_image_tag        = string
     prometheus_config_reloader_image_tag = string
     kube_webhook_certgen_image_tag       = string
+    prometheus_replica                   = number
     prometheus_image_tag                 = string
     prometheus_retention                 = string
     prometheus_storage_class_name        = string
@@ -437,6 +438,7 @@ variable "prometheus" {
     prometheus_operator_image_tag        = "v0.54.0"
     prometheus_config_reloader_image_tag = "v0.54.0"
     kube_webhook_certgen_image_tag       = "v1.0"
+    prometheus_replica                   = 1
     prometheus_image_tag                 = "v2.33.1"
     prometheus_retention                 = "15d"
     prometheus_storage_class_name        = "managed-premium"

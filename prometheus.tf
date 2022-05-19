@@ -36,6 +36,7 @@ resource "helm_release" "prometheus" {
     kube_webhook_certgen_image           = "${var.acr_name}.azurecr.io/k8s.gcr.io/ingress-nginx/kube-webhook-certgen"
     kube_webhook_certgen_image_tag       = var.prometheus.kube_webhook_certgen_image_tag
     prometheus_image                     = "${var.acr_name}.azurecr.io/quay.io/prometheus/prometheus"
+    prometheus_replica                   = var.prometheus.prometheus_replica
     prometheus_image_tag                 = var.prometheus.prometheus_image_tag
     prometheus_retention                 = var.prometheus.prometheus_retention
     prometheus_storage_class_name        = var.prometheus.prometheus_storage_class_name
