@@ -196,6 +196,7 @@ variable "charts" {
     prometheus         = map(string)
     prometheus-adapter = map(string)
     dynatrace-operator = map(string)
+    overprovisioning   = map(string)
   })
   default = {
     aks-rbac = {
@@ -238,6 +239,35 @@ variable "charts" {
       path    = "charts/dynatrace-operator"
       version = "0.5.1"
     },
+    overprovisioning = {
+      path    = "charts/overprovisioning"
+      version = "0.1.0"
+    },
+  }
+}
+
+variable "overprovisioning" {
+  type = object({
+    enable        = bool
+    replica_count = number
+    resources     = object({
+      requests = map(string)
+      limits   = map(string)
+    })
+  })
+  default = {
+    enable = false
+    replica_count = 1
+    resources = {
+      requests = {
+        cpu = "6"
+        memory = "16Gi"
+      }
+      limits = {
+        cpu = "6"
+        memory = "16Gi"
+      }
+    }
   }
 }
 
