@@ -475,3 +475,9 @@ variable "prometheus" {
     prometheus_storage_size              = "100Gi"
   }
 }
+
+variable "create_jenkins_namespace" {
+  type        = bool
+  description = "Create Jenkins Namespace for agents. Only needed on DEV cluster"
+  default     = false
+}
