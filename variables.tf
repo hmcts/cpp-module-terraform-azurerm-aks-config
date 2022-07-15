@@ -481,3 +481,9 @@ variable "create_jenkins_namespace" {
   description = "Create Jenkins Namespace for agents. Only needed on DEV cluster"
   default     = false
 }
+
+variable "enable_elk" {
+  type        = bool
+  description = "enable whether to log to elasticsearch or not "
+  default     = true
+}

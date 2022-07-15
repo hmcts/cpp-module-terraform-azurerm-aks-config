@@ -1,4 +1,5 @@
 resource "kubernetes_namespace" "filebeat_namespace" {
+  count      = var.enable_elk ? 1 : 0
   metadata {
     name = var.filebeat_namespace
     labels = {
@@ -15,7 +16,7 @@ data "vault_generic_secret" "redis_auth" {
 }
 
 resource "kubernetes_secret" "redis_pass" {
-
+  count      = var.enable_elk ? 1 : 0
   metadata {
     name      = "redis-creds"
     namespace = var.filebeat_namespace
@@ -33,6 +34,7 @@ resource "kubernetes_secret" "redis_pass" {
 }
 
 resource "helm_release" "filebeat_management" {
+  count      = var.enable_elk ? 1 : 0
   name    = lookup(var.charts.filebeat-mgm, "name", "filebeat-mgm")
   chart   = "filebeat"
   version = lookup(var.charts.filebeat-mgm, "version", "")
@@ -60,6 +62,7 @@ resource "helm_release" "filebeat_management" {
 }
 
 resource "helm_release" "filebeat_application" {
+  count      = var.enable_elk ? 1 : 0
   name    = lookup(var.charts.filebeat-app, "name", "filebeat-app")
   chart   = "filebeat"
   version = lookup(var.charts.filebeat-app, "version", "")
