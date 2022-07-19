@@ -173,6 +173,11 @@ prometheus:
               values:
               - "sysagentpool"
 
+    resources:
+      requests:
+        memory: "12Gi"
+        cpu: 1000m
+
     additionalScrapeConfigs: 
     - job_name: 'istiod'
       kubernetes_sd_configs:
