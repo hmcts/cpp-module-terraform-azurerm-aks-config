@@ -89,6 +89,10 @@ prometheus-node-exporter:
     - key: "CriticalAddonsOnly"
       operator: "Exists"
       effect: "NoSchedule"
+    - key: "PrometheusOnly"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
 
 prometheusOperator:
   image:
@@ -158,11 +162,6 @@ prometheus:
             requests:
               storage: ${prometheus_storage_size}
 
-    tolerations: 
-      - key: "CriticalAddonsOnly"
-        operator: "Exists"
-        effect: "NoSchedule"
-
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -171,7 +170,13 @@ prometheus:
             - key: "agentpool"
               operator: In
               values:
-              - "sysagentpool"
+              - "prometheus"
+
+    tolerations:
+      - key: "PrometheusOnly"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
 
     resources:
       requests:

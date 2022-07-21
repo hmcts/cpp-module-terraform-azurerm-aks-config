@@ -15,6 +15,12 @@ data "azurerm_kubernetes_cluster_node_pool" "agentpool" {
   resource_group_name     = var.aks_resource_group_name
 }
 
+data "azurerm_kubernetes_cluster_node_pool" "sysagentpool" {
+  name                    = var.system_worker_agents_pool_name
+  kubernetes_cluster_name = var.aks_cluster_name
+  resource_group_name     = var.aks_resource_group_name
+}
+
 resource "azurerm_monitor_metric_alert" "aks_infra_alert_cpu_usage" {
   count               = var.alerts.enable_alerts ? 1 : 0
   name                = "aks_cpu_usage_greater_than_percent"
@@ -306,12 +312,12 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_system_agent_pool_co
   description    = "Alert when system node pool is reached max threshold value"
   enabled        = var.alerts.apps_workload.enabled
   query          = <<-QUERY
-  let nodepoolMaxnodeCount = ${data.azurerm_kubernetes_cluster.cluster.agent_pool_profile.0.max_count};
+  let nodepoolMaxnodeCount = ${data.azurerm_kubernetes_cluster_node_pool.sysagentpool.max_count};
   let _minthreshold = 70;
   KubeNodeInventory
     | extend nodepoolType = todynamic(Labels)
     | extend nodepoolName = todynamic(nodepoolType[0].agentpool)
-    | where nodepoolName contains "${data.azurerm_kubernetes_cluster.cluster.agent_pool_profile.0.name}"
+    | where nodepoolName contains "${data.azurerm_kubernetes_cluster_node_pool.sysagentpool.name}"
     | extend nodepoolName = tostring(nodepoolName)
     | summarize nodeCount = count(Computer) by ClusterName, tostring(nodepoolName), TimeGenerated
     | extend scaledpercent = iff(((nodeCount * 100 / nodepoolMaxnodeCount) >= _minthreshold), "warn", "normal")

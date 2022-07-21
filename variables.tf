@@ -430,6 +430,12 @@ variable "worker_agents_pool_name" {
   default     = "wrkagentpool"
 }
 
+variable "system_worker_agents_pool_name" {
+  description = "The AKS worker agentpool (nodepool) name."
+  type        = string
+  default     = "sysagentpool"
+}
+
 variable "enable_dynatrace" {
   type        = bool
   description = "enable dynatrace monitoring of cluster"
