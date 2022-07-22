@@ -105,9 +105,9 @@ resource "azurerm_monitor_metric_alert" "aks_infra_alert_cluster_health" {
   }
 }
 
-resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_alert_daemonset" {
+resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_alert_daemonset_statefulset" {
   count               = var.alerts.enable_alerts ? 1 : 0
-  name                = "aks_sys_alert_daemonset"
+  name                = "aks_sys_alert_daemonset_statefulset"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
 
@@ -115,17 +115,18 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_alert_daemonset"
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
   data_source_id = data.azurerm_kubernetes_cluster.cluster.id
-  description    = "Alert when sys daemonsets are not healthy"
+  description    = "Alert when sys daemonsets or statefulsets are not healthy"
   enabled        = var.alerts.sys_workload.enabled
   query          = <<-QUERY
   KubePodInventory 
-    | where ControllerKind has "daemonset"
-    | where Namespace has "kube-system" or Namespace has "filebeat-system" or Namespace has "dynatrace" or Namespace has "prometheus"
+    | where ControllerKind has "daemonset" or  ControllerKind has "statefulset"
+    | where Namespace !contains "ccm"
     | where PodStatus has "Failed" or PodStatus has "Unknown"
 QUERY
   severity       = var.alerts.sys_workload.daemonset.severity
   frequency      = var.alerts.sys_workload.daemonset.frequency
   time_window    = var.alerts.sys_workload.daemonset.time_window
+  auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
     threshold = var.alerts.sys_workload.daemonset.threshold
@@ -148,13 +149,14 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_alert_actual_vs_
   InsightsMetrics
     | where Name has "kube_deployment_status_replicas_ready"
     | extend tags=parse_json(Tags)
-    | where tags.k8sNamespace has "kube-system" or tags.k8sNamespace has "istio-system" or tags.k8sNamespace has "istio-ingress" or tags.k8sNamespace has "dynatrace" or tags.k8sNamespace has "prometheus"
+    | where tags.k8sNamespace !contains "ccm"
     | where toint(tags.status_replicas_available) < toint(tags.spec_replicas)
     | distinct tostring(tags.deployment),tostring(tags.k8sNamespace)
 QUERY
   severity       = var.alerts.sys_workload.deployment.severity
   frequency      = var.alerts.sys_workload.deployment.frequency
   time_window    = var.alerts.sys_workload.deployment.time_window
+  auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
     threshold = var.alerts.sys_workload.deployment.threshold
@@ -184,6 +186,7 @@ QUERY
   severity       = var.alerts.apps_workload.deployment.severity
   frequency      = var.alerts.apps_workload.deployment.frequency
   time_window    = var.alerts.apps_workload.deployment.time_window
+  auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
     threshold = var.alerts.apps_workload.deployment.threshold
@@ -213,6 +216,7 @@ QUERY
   severity       = var.alerts.apps_workload.hpa_min_replica.severity
   frequency      = var.alerts.apps_workload.hpa_min_replica.frequency
   time_window    = var.alerts.apps_workload.hpa_min_replica.time_window
+  auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
     threshold = var.alerts.apps_workload.hpa_min_replica.threshold
@@ -242,6 +246,7 @@ QUERY
   severity       = var.alerts.apps_workload.hpa_max_replica.severity
   frequency      = var.alerts.apps_workload.hpa_max_replica.frequency
   time_window    = var.alerts.apps_workload.hpa_max_replica.time_window
+  auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
     threshold = var.alerts.apps_workload.hpa_max_replica.threshold
@@ -281,6 +286,7 @@ QUERY
   severity       = var.alerts.apps_workload.cluster_agent_pool.severity
   frequency      = var.alerts.apps_workload.cluster_agent_pool.frequency
   time_window    = var.alerts.apps_workload.cluster_agent_pool.time_window
+  auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
     threshold = var.alerts.apps_workload.cluster_agent_pool.threshold
@@ -320,6 +326,7 @@ QUERY
   severity       = var.alerts.apps_workload.cluster_agent_pool.severity
   frequency      = var.alerts.apps_workload.cluster_agent_pool.frequency
   time_window    = var.alerts.apps_workload.cluster_agent_pool.time_window
+  auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
     threshold = var.alerts.apps_workload.cluster_agent_pool.threshold
@@ -346,6 +353,7 @@ QUERY
   severity       = var.alerts.apps_workload.cluster_agent_pool.severity
   frequency      = var.alerts.apps_workload.cluster_agent_pool.frequency
   time_window    = var.alerts.apps_workload.cluster_agent_pool.time_window
+  auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
     threshold = var.alerts.apps_workload.cluster_agent_pool.threshold
