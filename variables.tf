@@ -493,3 +493,9 @@ variable "enable_elk" {
   description = "enable whether to log to elasticsearch or not "
   default     = true
 }
+
+variable "delete_validation_ns" {
+  type        = bool
+  description = "enable cronjob to delete validation ns"
+  default     = false
+}
