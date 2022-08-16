@@ -1,0 +1,27 @@
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: delete-validation-ns
+  namespace: kube-system
+spec:
+  schedule: "0 7 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          containers:
+            - name: cleanup
+              image: crmdvrepo01.azurecr.io/hmcts/jenkins-agent-java11:v1.0.4-jdk11
+              imagePullPolicy: IfNotPresent
+              command: ["/bin/bash", "-c", "helm delete $(kubectl get ns -l is_validation==true  --output=custom-columns='NAME:.metadata.name' --no-headers=true) -n kube-system || true"]
+              resources:
+                requests:
+                  memory: "64Mi"
+                limits:
+                  memory: "128Mi"
+          restartPolicy: Never
+          serviceAccountName: jenkins-admin
