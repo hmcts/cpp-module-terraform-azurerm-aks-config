@@ -17056,7 +17056,7 @@ metadata:
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.6.1"
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: cainjector
@@ -17108,7 +17108,7 @@ metadata:
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.6.1"
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: cert-manager
@@ -17168,7 +17168,7 @@ metadata:
     app.kubernetes.io/component: "webhook"
     app.kubernetes.io/version: "v1.6.1"
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: webhook
