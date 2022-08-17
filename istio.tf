@@ -125,6 +125,7 @@ resource "helm_release" "istiod_install" {
   set {
     name  = "global.proxy.lifecycle.postStart.exec.command"
     value = ["pilot-agent", "wait", "--timeoutSeconds", "120"]
+    type  = "auto"
   }
 
   wait    = true
