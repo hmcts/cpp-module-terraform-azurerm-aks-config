@@ -122,18 +122,25 @@ resource "helm_release" "istiod_install" {
     value = var.istio_components_hpa_spec.istiod_min_replicas
   }
 
-  values = [yamlencode({
-    global:
-      proxy:  
-        lifecycle:
-          postStart:
-            exec:
-              command:
-              - pilot-agent
-              - wait
-              - --timeoutSeconds
-              - "120"
-  })]
+  set {
+    name  = "global.proxy.lifecycle.postStart.exec.command[0]"
+    value = "pilot-agent"
+  }
+
+  set {
+    name  = "global.proxy.lifecycle.postStart.exec.command[1]"
+    value = "wait"
+  }
+
+  set {
+    name  = "global.proxy.lifecycle.postStart.exec.command[2]"
+    value = "--timeoutSeconds"
+  }
+  
+  set {
+    name  = "global.proxy.lifecycle.postStart.exec.command[3]"
+    value = "120"
+  }
 
   wait    = true
   timeout = 300
