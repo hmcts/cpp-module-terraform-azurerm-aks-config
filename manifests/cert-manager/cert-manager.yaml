@@ -17226,7 +17226,8 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
           resources:
-            {}
+            requests:
+              cpu: 1000m
       tolerations:
         - key: "CriticalAddonsOnly"
           operator: "Exists"
