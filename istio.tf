@@ -122,6 +122,11 @@ resource "helm_release" "istiod_install" {
     value = var.istio_components_hpa_spec.istiod_min_replicas
   }
 
+  set {
+    name  = "global.proxy.lifecycle.postStart.exec.command"
+    value = ["pilot-agent", "wait", "--timeoutSeconds", "120"]
+  }
+
   wait    = true
   timeout = 300
 
