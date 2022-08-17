@@ -501,9 +501,3 @@ variable "delete_validation_ns" {
   description = "enable cronjob to delete validation ns"
   default     = false
 }
-
-variable "istio_proxy_lifecycle_timeout" {
-  type        = string
-  description = "istio-proxy container PostStart lifecycle hook timeout"
-  default     = "120"
-}
