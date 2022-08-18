@@ -5,7 +5,7 @@ metadata:
   name: delete-validation-ns
   namespace: kube-system
 spec:
-  schedule: "0 7 * * *"
+  schedule: "0 19 * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:
