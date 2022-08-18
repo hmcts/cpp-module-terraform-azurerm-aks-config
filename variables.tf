@@ -86,19 +86,19 @@ variable "istio_ingress_mgmt_domain" {
 variable "kiali_hostname_prefix" {
   type        = string
   description = "Hostname prefix to access kiali"
-  default = "kiali"
+  default     = "kiali"
 }
 
 variable "prometheus_hostname_prefix" {
   type        = string
   description = "Hostname prefix to access kiali"
-  default = "prometheus"
+  default     = "prometheus"
 }
 
 variable "grafana_hostname_prefix" {
   type        = string
   description = "Hostname prefix to access kiali"
-  default = "grafana"
+  default     = "grafana"
 }
 
 variable "acr_name" {
@@ -160,8 +160,8 @@ variable "istio_gateway_apps_cert_secret_name" {
 variable "istio_components_hpa_spec" {
   type = map(number)
   default = {
-    istiod_min_replicas = 1
-    istiod_max_replicas = 5
+    istiod_min_replicas             = 1
+    istiod_max_replicas             = 5
     istio_ingress_mgmt_min_replicas = 1
     istio_ingress_mgmt_max_replicas = 5
     istio_ingress_apps_min_replicas = 1
@@ -186,7 +186,7 @@ variable "filebeat_namespace" {
 
 variable "charts" {
   type = object({
-    aks-rbac          = map(string)
+    aks-rbac           = map(string)
     istio-base         = map(string)
     istiod             = map(string)
     istio-ingress      = map(string)
@@ -250,21 +250,21 @@ variable "overprovisioning" {
   type = object({
     enable        = bool
     replica_count = number
-    resources     = object({
+    resources = object({
       requests = map(string)
       limits   = map(string)
     })
   })
   default = {
-    enable = false
+    enable        = false
     replica_count = 1
     resources = {
       requests = {
-        cpu = "6"
+        cpu    = "6"
         memory = "16Gi"
       }
       limits = {
-        cpu = "6"
+        cpu    = "6"
         memory = "16Gi"
       }
     }
@@ -453,32 +453,34 @@ variable "monitor_config" {
 
 variable "prometheus" {
   type = object({
-    grafana_image_tag                    = string
-    grafana_k8s_sidecar_image_tag        = string
-    kube_state_metrics_image_tag         = string
-    node_exporter_image_tag              = string
-    prometheus_operator_image_tag        = string
-    prometheus_config_reloader_image_tag = string
-    kube_webhook_certgen_image_tag       = string
-    prometheus_replica                   = number
-    prometheus_image_tag                 = string
-    prometheus_retention                 = string
-    prometheus_storage_class_name        = string
-    prometheus_storage_size              = string
+    grafana_image_tag                            = string
+    grafana_k8s_sidecar_image_tag                = string
+    kube_state_metrics_image_tag                 = string
+    node_exporter_image_tag                      = string
+    prometheus_operator_image_tag                = string
+    prometheus_config_reloader_image_tag         = string
+    kube_webhook_certgen_image_tag               = string
+    prometheus_replica                           = number
+    prometheus_image_tag                         = string
+    prometheus_retention                         = string
+    prometheus_storage_class_name                = string
+    prometheus_storage_size                      = string
+    prometheus_drop_envoy_stats_for_context_pods = bool
   })
   default = {
-    grafana_image_tag                    = "8.3.5"
-    grafana_k8s_sidecar_image_tag        = "1.15.1"
-    kube_state_metrics_image_tag         = "v2.3.0"
-    node_exporter_image_tag              = "v1.3.1"
-    prometheus_operator_image_tag        = "v0.54.0"
-    prometheus_config_reloader_image_tag = "v0.54.0"
-    kube_webhook_certgen_image_tag       = "v1.0"
-    prometheus_replica                   = 1
-    prometheus_image_tag                 = "v2.33.1"
-    prometheus_retention                 = "15d"
-    prometheus_storage_class_name        = "managed-premium"
-    prometheus_storage_size              = "100Gi"
+    grafana_image_tag                            = "8.3.5"
+    grafana_k8s_sidecar_image_tag                = "1.15.1"
+    kube_state_metrics_image_tag                 = "v2.3.0"
+    node_exporter_image_tag                      = "v1.3.1"
+    prometheus_operator_image_tag                = "v0.54.0"
+    prometheus_config_reloader_image_tag         = "v0.54.0"
+    kube_webhook_certgen_image_tag               = "v1.0"
+    prometheus_replica                           = 1
+    prometheus_image_tag                         = "v2.33.1"
+    prometheus_retention                         = "15d"
+    prometheus_storage_class_name                = "managed-premium"
+    prometheus_storage_size                      = "100Gi"
+    prometheus_drop_envoy_stats_for_context_pods = false
   }
 }
 

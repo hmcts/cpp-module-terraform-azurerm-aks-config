@@ -122,6 +122,8 @@ resource "helm_release" "istiod_install" {
     value = var.istio_components_hpa_spec.istiod_min_replicas
   }
 
+  values = ["${file("${path.module}/manifests/istio/istiod_overrides.yaml")}"]
+
   wait    = true
   timeout = 300
 

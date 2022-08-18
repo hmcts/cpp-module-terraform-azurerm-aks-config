@@ -41,6 +41,7 @@ resource "helm_release" "prometheus" {
     prometheus_retention                 = var.prometheus.prometheus_retention
     prometheus_storage_class_name        = var.prometheus.prometheus_storage_class_name
     prometheus_storage_size              = var.prometheus.prometheus_storage_size
+    drop_envoy_stats_for_context_pods    = var.prometheus.prometheus_drop_envoy_stats_for_context_pods
   })]
   repository        = "./install"
   namespace         = "prometheus"

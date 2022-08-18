@@ -200,6 +200,11 @@ prometheus:
       kubernetes_sd_configs:
       - role: pod
       relabel_configs:
+      %{ if drop_envoy_stats_for_context_pods }
+      - source_labels: [ __meta_kubernetes_pod_label_app_kubernetes_io_name ]
+        regex: 'wildfly-app'
+        action: drop
+      %{ endif }
       - source_labels: [__meta_kubernetes_pod_container_port_name]
         action: keep
         regex: '.*-envoy-prom'
