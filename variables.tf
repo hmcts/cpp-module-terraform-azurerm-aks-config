@@ -501,3 +501,9 @@ variable "delete_validation_ns" {
   description = "enable cronjob to delete validation ns"
   default     = false
 }
+
+variable "create_management_namespace" {
+  type        = bool
+  description = "Create Management Namespace for managing helm chart deployment on cluster"
+  default     = true
+}
