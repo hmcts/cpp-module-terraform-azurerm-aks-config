@@ -8,3 +8,25 @@ resource "kubernetes_namespace" "jenkins_namespace" {
     }
   }
 }
+
+resource "kubectl_manifest" "jenkins_deploy_rolebinding" {
+  yaml_body          = <<YAML
+kind: RoleBinding
+metadata:
+  name: jenkins-deploy
+  namespace: jenkins
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: jenkins-deploy
+subjects:
+- kind: ServiceAccount
+  name: jenkins-deploy
+  namespace: kube-system
+YAML
+
+  depends_on = [
+    kubernetes_namespace.jenkins_namespace,
+    helm_release.aks_rbac
+  ]
+}
