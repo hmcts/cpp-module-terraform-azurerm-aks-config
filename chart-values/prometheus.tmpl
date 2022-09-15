@@ -212,3 +212,17 @@ prometheus:
       - source_labels: [ http_conn_manager_prefix ]
         regex: '(0\.0\.0\.0_).*'
         action: drop
+      - source_labels: [__name__]
+        regex: 'envoy_cluster.*'
+        action: drop
+
+kubelet:
+  serviceMonitor:
+    cAdvisorMetricRelabelings:
+      - action: drop
+        regex: container_blkio_device_usage_total
+        sourceLabels: [__name__]
+    metricRelabelings:
+      - action: drop
+        regex: (rest_client_request_duration_seconds_bucket|storage_operation_duration_seconds_bucket|rest_client_rate_limiter_duration_seconds_bucket)
+        sourceLabels: [__name__]

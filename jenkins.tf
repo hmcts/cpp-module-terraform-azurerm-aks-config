@@ -10,6 +10,7 @@ resource "kubernetes_namespace" "jenkins_namespace" {
 }
 
 resource "kubectl_manifest" "jenkins_deploy_rolebinding" {
+  count = var.create_jenkins_namespace ? 1 : 0
   yaml_body          = <<YAML
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -27,7 +28,7 @@ subjects:
 YAML
 
   depends_on = [
-    kubernetes_namespace.jenkins_namespace,
+    kubernetes_namespace.jenkins_namespace[0],
     helm_release.aks_rbac
   ]
 }
