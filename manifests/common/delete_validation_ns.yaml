@@ -3,7 +3,7 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: delete-validation-ns
-  namespace: namespace-management
+  namespace: kube-system
 spec:
   schedule: "0 19 * * *"
   successfulJobsHistoryLimit: 1
