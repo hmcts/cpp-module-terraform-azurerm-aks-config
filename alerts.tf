@@ -365,3 +365,98 @@ QUERY
     threshold = var.alerts.apps_workload.cluster_agent_pool.threshold
   }
 }
+
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_pod_memory_usage" {
+  count               = var.alerts.enable_alerts ? 1 : 0
+  name                = "prometheus_pod_memory_usage_status"
+  location            = var.aks_cluster_location
+  resource_group_name = var.aks_resource_group_name
+
+  action {
+    action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
+  }
+  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
+  description    = "Alert when Prometheus pod memory usage is above 75% usage memory"
+  enabled        = var.alerts.apps_workload.enabled
+  query          = <<-QUERY
+  let endDateTime = now();
+  let startDateTime = ago(1h);
+  let trendBinSize = 1m;
+  let capacityCounterName = 'memoryLimitBytes';
+  let usageCounterName = 'memoryRssBytes';
+  let clusterName = '${data.azurerm_kubernetes_cluster.cluster.name}';
+  let controllerName = 'prometheus-kube-prometheus-stack-prometheus';
+  KubePodInventory
+    | where TimeGenerated < endDateTime
+    | where TimeGenerated >= startDateTime
+    | where ClusterName == clusterName
+    | where ControllerName == controllerName
+    | extend InstanceName = strcat(ClusterId, '/', ContainerName),
+             ContainerName = strcat(controllerName, '/', tostring(split(ContainerName, '/')[1]))
+    | distinct Computer, InstanceName, ContainerName
+    | join hint.strategy=shuffle (
+        Perf
+        | where TimeGenerated < endDateTime
+        | where TimeGenerated >= startDateTime
+        | where ObjectName == 'K8SContainer'
+        | where CounterName == capacityCounterName
+        | summarize LimitValue = max(CounterValue) by Computer, InstanceName, bin(TimeGenerated, trendBinSize)
+        | project Computer, InstanceName, LimitStartTime = TimeGenerated, LimitEndTime = TimeGenerated + trendBinSize, LimitValue
+    ) on Computer, InstanceName
+    | join kind=inner hint.strategy=shuffle (
+        Perf
+        | where TimeGenerated < endDateTime + trendBinSize
+        | where TimeGenerated >= startDateTime - trendBinSize
+        | where ObjectName == 'K8SContainer'
+        | where CounterName == usageCounterName
+        | project Computer, InstanceName, UsageValue = CounterValue, TimeGenerated
+    ) on Computer, InstanceName
+    | where TimeGenerated >= LimitStartTime and TimeGenerated < LimitEndTime
+    | project Computer, ContainerName, TimeGenerated, UsagePercent = UsageValue * 100.0 / LimitValue
+    | summarize AggregatedValue = avg(UsagePercent) by bin(TimeGenerated, trendBinSize) , ContainerName
+QUERY
+  severity       = var.alerts.apps_workload.prometheus_pod_memory.severity
+  frequency      = var.alerts.apps_workload.prometheus_pod_memory.frequency
+  time_window    = var.alerts.apps_workload.prometheus_pod_memory.time_window
+  auto_mitigation_enabled = true
+  trigger {
+    operator  = "GreaterThan"
+    threshold = var.alerts.apps_workload.prometheus_pod_memory.threshold
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_node_disk_usage_status" {
+  count               = var.alerts.enable_alerts ? 1 : 0
+  name                = "prometheus_node_disk_usage_status"
+  location            = var.aks_cluster_location
+  resource_group_name = var.aks_resource_group_name
+
+  action {
+    action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
+  }
+  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
+  description    = "Alert when Prometheus node disk usage is reached to 75% usage disk"
+  enabled        = var.alerts.apps_workload.enabled
+  query          = <<-QUERY
+  let setGBValue = 120;
+  InsightsMetrics
+    | where TimeGenerated > ago(1h)
+    | where Name contains "pvUsedBytes"
+    | extend tags=parse_json(Tags)
+    | where tags.pvcNamespace contains "prometheus"
+    | project Val, tags.pvCapacityBytes, _SubscriptionId, _ResourceId
+    | extend UsedDiskGB = Val/1000000000
+    | extend TotalDiskSpaceGB = tags_pvCapacityBytes/1000000000
+    | summarize FreespaceGB = min(UsedDiskGB) by _ResourceId,  _SubscriptionId
+    | where FreespaceGB >= setGBValue
+QUERY
+  severity       = var.alerts.apps_workload.prometheus_disk_usage.severity
+  frequency      = var.alerts.apps_workload.prometheus_disk_usage.frequency
+  time_window    = var.alerts.apps_workload.prometheus_disk_usage.time_window
+  auto_mitigation_enabled = true
+  trigger {
+    operator  = "GreaterThan"
+    threshold = var.alerts.apps_workload.prometheus_disk_usage.threshold
+  }
+}

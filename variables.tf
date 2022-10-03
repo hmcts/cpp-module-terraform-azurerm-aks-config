@@ -348,6 +348,8 @@ variable "alerts" {
       hpa_min_replica    = map(number)
       hpa_max_replica    = map(number)
       cluster_agent_pool = map(number)
+      prometheus_disk_usage = map(number)
+      prometheus_pod_memory = map(number)
     })
   })
   default = {
@@ -399,6 +401,18 @@ variable "alerts" {
         frequency   = 5
         time_window = 10
         threshold   = 0
+      }
+      prometheus_disk_usage = {
+        severity    = 3
+        frequency   = 5
+        time_window = 10
+        threshold   = 0
+      }
+      prometheus_pod_memory = {
+        severity    = 3
+        frequency   = 5
+        time_window = 10
+        threshold   = 75
       }
     }
   }
