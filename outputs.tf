@@ -7,5 +7,5 @@ output "jenkins_rbac_admin" {
 }
 
 output "ingress_apps_domain_name" {
-  value = "${split("*", var.istio_ingress_apps_domain)[1]}"
+  value = split("*", var.istio_ingress_apps_domain)[1]
 }

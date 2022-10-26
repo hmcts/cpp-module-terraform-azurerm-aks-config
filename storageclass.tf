@@ -1,5 +1,5 @@
 resource "kubectl_manifest" "custom_storageclass_file_alfresco" {
-  yaml_body          = <<YAML
+  yaml_body = <<YAML
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
@@ -21,7 +21,7 @@ YAML
 }
 
 resource "kubectl_manifest" "custom_storageclass_disk_alfresco" {
-  yaml_body          = <<YAML
+  yaml_body = <<YAML
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:

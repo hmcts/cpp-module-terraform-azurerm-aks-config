@@ -10,7 +10,7 @@ alertmanager:
               operator: In
               values:
               - "sysagentpool"
-    tolerations: 
+    tolerations:
       - key: "CriticalAddonsOnly"
         operator: "Exists"
         effect: "NoSchedule"
@@ -53,7 +53,7 @@ grafana:
             values:
             - "sysagentpool"
 
-  tolerations: 
+  tolerations:
     - key: "CriticalAddonsOnly"
       operator: "Exists"
       effect: "NoSchedule"
@@ -74,7 +74,7 @@ kube-state-metrics:
             values:
             - "sysagentpool"
 
-  tolerations: 
+  tolerations:
     - key: "CriticalAddonsOnly"
       operator: "Exists"
       effect: "NoSchedule"
@@ -85,7 +85,7 @@ prometheus-node-exporter:
     tag: ${node_exporter_image_tag}
     pullPolicy: IfNotPresent
 
-  tolerations: 
+  tolerations:
     - key: "CriticalAddonsOnly"
       operator: "Exists"
       effect: "NoSchedule"
@@ -106,8 +106,8 @@ prometheusOperator:
       repository: ${prometheus_config_reloader_image}
       tag: ${prometheus_config_reloader_image_tag}
       sha: ""
-  
-  tolerations: 
+
+  tolerations:
     - key: "CriticalAddonsOnly"
       operator: "Exists"
       effect: "NoSchedule"
@@ -140,7 +140,7 @@ prometheusOperator:
                 operator: In
                 values:
                 - "sysagentpool"
-      tolerations: 
+      tolerations:
         - key: "CriticalAddonsOnly"
           operator: "Exists"
           effect: "NoSchedule"
@@ -183,7 +183,7 @@ prometheus:
         memory: "10Gi"
         cpu: 1000m
 
-    additionalScrapeConfigs: 
+    additionalScrapeConfigs:
     - job_name: 'istiod'
       kubernetes_sd_configs:
       - role: endpoints

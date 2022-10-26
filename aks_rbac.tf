@@ -12,27 +12,27 @@ data "azurerm_kubernetes_cluster" "aks_cluster" {
 
 # Devops group is already admins on the cluster, This group is created if we have to additional admins.
 resource "azuread_group" "aks_admin" {
-  display_name = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Admin"
+  display_name     = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Admin"
   mail_enabled     = false
   security_enabled = true
-  owners = [data.azuread_client_config.current.object_id]
-  members = var.user_rbac.aks_cluster_admin_members_ids
+  owners           = [data.azuread_client_config.current.object_id]
+  members          = var.user_rbac.aks_cluster_admin_members_ids
 }
 
 resource "azuread_group" "aks_reader" {
-  display_name = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Reader"
+  display_name     = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Reader"
   mail_enabled     = false
   security_enabled = true
-  owners = [data.azuread_client_config.current.object_id]
-  members = var.user_rbac.aks_reader_members_ids
+  owners           = [data.azuread_client_config.current.object_id]
+  members          = var.user_rbac.aks_reader_members_ids
 }
 
 resource "azuread_group" "aks_contributor" {
-  display_name = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Contributor"
+  display_name     = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Contributor"
   mail_enabled     = false
   security_enabled = true
-  owners = [data.azuread_client_config.current.object_id]
-  members = var.user_rbac.aks_contributor_members_ids
+  owners           = [data.azuread_client_config.current.object_id]
+  members          = var.user_rbac.aks_contributor_members_ids
 }
 
 # Role assignments
@@ -74,10 +74,10 @@ YAML
 # Install User RBAC helm chart
 
 resource "helm_release" "aks_rbac" {
-  name    = lookup(var.charts.aks-rbac, "name", "aks-rbac")
-  chart   = lookup(var.charts.aks-rbac, "name", "aks-rbac")
-  version = lookup(var.charts.aks-rbac, "version", "")
-  values = ["${file("${path.root}/chart-values/common/aks-rbac.yaml")}"]
+  name       = lookup(var.charts.aks-rbac, "name", "aks-rbac")
+  chart      = lookup(var.charts.aks-rbac, "name", "aks-rbac")
+  version    = lookup(var.charts.aks-rbac, "version", "")
+  values     = ["${file("${path.module}/chart-values/aks-rbac.yaml")}"]
   repository = "./install"
   namespace  = var.aks_rbac_namespace
 
@@ -134,7 +134,7 @@ data "kubernetes_secret" "jenkins_deploy_clusterrole_secret" {
 }
 
 resource "vault_generic_secret" "jenkins_admin_clusterrole_rbac" {
-  path     = "secret/terraform/${var.environment}/${var.aks_cluster_name}/jenkins_admin_clusterrole_kubeconfig"
+  path = "secret/terraform/${var.environment}/${var.aks_cluster_name}/jenkins_admin_clusterrole_kubeconfig"
 
   data_json = jsonencode({
     value = templatefile("${path.module}/kubeconfig.tpl", {
@@ -150,7 +150,7 @@ resource "vault_generic_secret" "jenkins_admin_clusterrole_rbac" {
 
 
 resource "vault_generic_secret" "jenkins_deploy_clusterrole_rbac" {
-  path     = "secret/terraform/${var.environment}/${var.aks_cluster_name}/jenkins_deploy_clusterrole_kubeconfig"
+  path = "secret/terraform/${var.environment}/${var.aks_cluster_name}/jenkins_deploy_clusterrole_kubeconfig"
 
   data_json = jsonencode({
     value = templatefile("${path.module}/kubeconfig.tpl", {
@@ -163,4 +163,3 @@ resource "vault_generic_secret" "jenkins_deploy_clusterrole_rbac" {
     })
   })
 }
-

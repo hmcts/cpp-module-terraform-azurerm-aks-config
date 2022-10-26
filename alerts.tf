@@ -120,18 +120,18 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_alert_daemonset_
   action {
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
-  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
-  description    = "Alert when sys daemonsets or statefulsets are not healthy"
-  enabled        = var.alerts.sys_workload.enabled
-  query          = <<-QUERY
-  KubePodInventory 
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when sys daemonsets or statefulsets are not healthy"
+  enabled                 = var.alerts.sys_workload.enabled
+  query                   = <<-QUERY
+  KubePodInventory
     | where ControllerKind has "daemonset" or  ControllerKind has "statefulset"
     | where Namespace !contains "ccm"
     | where PodStatus has "Failed" or PodStatus has "Unknown"
 QUERY
-  severity       = var.alerts.sys_workload.daemonset.severity
-  frequency      = var.alerts.sys_workload.daemonset.frequency
-  time_window    = var.alerts.sys_workload.daemonset.time_window
+  severity                = var.alerts.sys_workload.daemonset.severity
+  frequency               = var.alerts.sys_workload.daemonset.frequency
+  time_window             = var.alerts.sys_workload.daemonset.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
@@ -148,10 +148,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_alert_actual_vs_
   action {
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
-  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
-  description    = "Alert when actual replica of pods is less than desired replcia"
-  enabled        = var.alerts.sys_workload.enabled
-  query          = <<-QUERY
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when actual replica of pods is less than desired replcia"
+  enabled                 = var.alerts.sys_workload.enabled
+  query                   = <<-QUERY
   InsightsMetrics
     | where Name has "kube_deployment_status_replicas_ready"
     | extend tags=parse_json(Tags)
@@ -159,9 +159,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_alert_actual_vs_
     | where toint(tags.status_replicas_available) < toint(tags.spec_replicas)
     | distinct tostring(tags.deployment),tostring(tags.k8sNamespace)
 QUERY
-  severity       = var.alerts.sys_workload.deployment.severity
-  frequency      = var.alerts.sys_workload.deployment.frequency
-  time_window    = var.alerts.sys_workload.deployment.time_window
+  severity                = var.alerts.sys_workload.deployment.severity
+  frequency               = var.alerts.sys_workload.deployment.frequency
+  time_window             = var.alerts.sys_workload.deployment.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
@@ -178,10 +178,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_apps_alert_actual_vs
   action {
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
-  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
-  description    = "Alert when actual replica of pods is less than desired replcia"
-  enabled        = var.alerts.apps_workload.enabled
-  query          = <<-QUERY
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when actual replica of pods is less than desired replcia"
+  enabled                 = var.alerts.apps_workload.enabled
+  query                   = <<-QUERY
   InsightsMetrics
     | where Name has "kube_deployment_status_replicas_ready"
     | extend tags=parse_json(Tags)
@@ -189,9 +189,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_apps_alert_actual_vs
     | where toint(tags.status_replicas_available) < toint(tags.spec_replicas)
     | distinct tostring(tags.deployment),tostring(tags.k8sNamespace)
 QUERY
-  severity       = var.alerts.apps_workload.deployment.severity
-  frequency      = var.alerts.apps_workload.deployment.frequency
-  time_window    = var.alerts.apps_workload.deployment.time_window
+  severity                = var.alerts.apps_workload.deployment.severity
+  frequency               = var.alerts.apps_workload.deployment.frequency
+  time_window             = var.alerts.apps_workload.deployment.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
@@ -208,10 +208,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_apps_hpa_desired_rep
   action {
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
-  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
-  description    = "Alert when actual replica of pods is less than minimum replcia of hpa"
-  enabled        = var.alerts.apps_workload.enabled
-  query          = <<-QUERY
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when actual replica of pods is less than minimum replcia of hpa"
+  enabled                 = var.alerts.apps_workload.enabled
+  query                   = <<-QUERY
   InsightsMetrics
     | where Name has "kube_hpa_status_current_replicas"
     | extend tags=parse_json(Tags)
@@ -219,9 +219,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_apps_hpa_desired_rep
     | where toint(tags.status_desired_replicas) < toint(tags.spec_min_replicas)
     | distinct tostring(tags.hpa),tostring(tags.k8sNamespace)
 QUERY
-  severity       = var.alerts.apps_workload.hpa_min_replica.severity
-  frequency      = var.alerts.apps_workload.hpa_min_replica.frequency
-  time_window    = var.alerts.apps_workload.hpa_min_replica.time_window
+  severity                = var.alerts.apps_workload.hpa_min_replica.severity
+  frequency               = var.alerts.apps_workload.hpa_min_replica.frequency
+  time_window             = var.alerts.apps_workload.hpa_min_replica.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
@@ -238,10 +238,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_apps_hpa_desired_rep
   action {
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
-  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
-  description    = "Alert when actual replica of pods is equal to minimum replica of hpa"
-  enabled        = var.alerts.apps_workload.enabled
-  query          = <<-QUERY
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when actual replica of pods is equal to minimum replica of hpa"
+  enabled                 = var.alerts.apps_workload.enabled
+  query                   = <<-QUERY
   InsightsMetrics
     | where Name has "kube_hpa_status_current_replicas"
     | extend tags=parse_json(Tags)
@@ -249,9 +249,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_apps_hpa_desired_rep
     | where toint(tags.status_desired_replicas) == toint(tags.spec_max_replicas)
     | distinct tostring(tags.hpa),tostring(tags.k8sNamespace)
 QUERY
-  severity       = var.alerts.apps_workload.hpa_max_replica.severity
-  frequency      = var.alerts.apps_workload.hpa_max_replica.frequency
-  time_window    = var.alerts.apps_workload.hpa_max_replica.time_window
+  severity                = var.alerts.apps_workload.hpa_max_replica.severity
+  frequency               = var.alerts.apps_workload.hpa_max_replica.frequency
+  time_window             = var.alerts.apps_workload.hpa_max_replica.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
@@ -268,10 +268,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_worker_agent_pool_co
   action {
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
-  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
-  description    = "Alert when worker node pool is reached max threshold value"
-  enabled        = var.alerts.apps_workload.enabled
-  query          = <<-QUERY
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when worker node pool is reached max threshold value"
+  enabled                 = var.alerts.apps_workload.enabled
+  query                   = <<-QUERY
   let nodepoolMaxnodeCount = ${data.azurerm_kubernetes_cluster_node_pool.agentpool.max_count};
   let _minthreshold = 70;
   KubeNodeInventory
@@ -289,9 +289,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_worker_agent_pool_co
         TimeGenerated,
         nodepoolName, scaledpercent
 QUERY
-  severity       = var.alerts.apps_workload.cluster_agent_pool.severity
-  frequency      = var.alerts.apps_workload.cluster_agent_pool.frequency
-  time_window    = var.alerts.apps_workload.cluster_agent_pool.time_window
+  severity                = var.alerts.apps_workload.cluster_agent_pool.severity
+  frequency               = var.alerts.apps_workload.cluster_agent_pool.frequency
+  time_window             = var.alerts.apps_workload.cluster_agent_pool.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
@@ -308,10 +308,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_system_agent_pool_co
   action {
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
-  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
-  description    = "Alert when system node pool is reached max threshold value"
-  enabled        = var.alerts.apps_workload.enabled
-  query          = <<-QUERY
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when system node pool is reached max threshold value"
+  enabled                 = var.alerts.apps_workload.enabled
+  query                   = <<-QUERY
   let nodepoolMaxnodeCount = ${data.azurerm_kubernetes_cluster_node_pool.sysagentpool.max_count};
   let _minthreshold = 70;
   KubeNodeInventory
@@ -329,9 +329,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_system_agent_pool_co
         TimeGenerated,
         nodepoolName, scaledpercent
 QUERY
-  severity       = var.alerts.apps_workload.cluster_agent_pool.severity
-  frequency      = var.alerts.apps_workload.cluster_agent_pool.frequency
-  time_window    = var.alerts.apps_workload.cluster_agent_pool.time_window
+  severity                = var.alerts.apps_workload.cluster_agent_pool.severity
+  frequency               = var.alerts.apps_workload.cluster_agent_pool.frequency
+  time_window             = var.alerts.apps_workload.cluster_agent_pool.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
@@ -348,17 +348,17 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_all_pod_status" {
   action {
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
-  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
-  description    = "Alert when any namespace pod is unhealthy"
-  enabled        = var.alerts.apps_workload.enabled
-  query          = <<-QUERY
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when any namespace pod is unhealthy"
+  enabled                 = var.alerts.apps_workload.enabled
+  query                   = <<-QUERY
   KubeEvents
     | where Reason contains "Unhealthy"
     | distinct tostring(Namespace), tostring(ClusterName), tostring(Name)
 QUERY
-  severity       = var.alerts.apps_workload.cluster_agent_pool.severity
-  frequency      = var.alerts.apps_workload.cluster_agent_pool.frequency
-  time_window    = var.alerts.apps_workload.cluster_agent_pool.time_window
+  severity                = var.alerts.apps_workload.cluster_agent_pool.severity
+  frequency               = var.alerts.apps_workload.cluster_agent_pool.frequency
+  time_window             = var.alerts.apps_workload.cluster_agent_pool.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
@@ -376,10 +376,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_pod_memory_us
   action {
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
-  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
-  description    = "Alert when Prometheus pod memory usage is above 75% usage memory"
-  enabled        = var.alerts.apps_workload.enabled
-  query          = <<-QUERY
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when Prometheus pod memory usage is above 75% usage memory"
+  enabled                 = var.alerts.apps_workload.enabled
+  query                   = <<-QUERY
   let endDateTime = now();
   let startDateTime = ago(1h);
   let trendBinSize = 1m;
@@ -416,9 +416,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_pod_memory_us
     | project Computer, ContainerName, TimeGenerated, UsagePercent = UsageValue * 100.0 / LimitValue
     | summarize AggregatedValue = avg(UsagePercent) by bin(TimeGenerated, trendBinSize) , ContainerName
 QUERY
-  severity       = var.alerts.apps_workload.prometheus_pod_memory.severity
-  frequency      = var.alerts.apps_workload.prometheus_pod_memory.frequency
-  time_window    = var.alerts.apps_workload.prometheus_pod_memory.time_window
+  severity                = var.alerts.apps_workload.prometheus_pod_memory.severity
+  frequency               = var.alerts.apps_workload.prometheus_pod_memory.frequency
+  time_window             = var.alerts.apps_workload.prometheus_pod_memory.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
@@ -435,10 +435,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_node_disk_usa
   action {
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
-  data_source_id = data.azurerm_kubernetes_cluster.cluster.id
-  description    = "Alert when Prometheus node disk usage is reached to 75% usage disk"
-  enabled        = var.alerts.apps_workload.enabled
-  query          = <<-QUERY
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when Prometheus node disk usage is reached to 75% usage disk"
+  enabled                 = var.alerts.apps_workload.enabled
+  query                   = <<-QUERY
   let setGBValue = 120;
   InsightsMetrics
     | where TimeGenerated > ago(1h)
@@ -451,9 +451,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_node_disk_usa
     | summarize FreespaceGB = min(UsedDiskGB) by _ResourceId,  _SubscriptionId
     | where FreespaceGB >= setGBValue
 QUERY
-  severity       = var.alerts.apps_workload.prometheus_disk_usage.severity
-  frequency      = var.alerts.apps_workload.prometheus_disk_usage.frequency
-  time_window    = var.alerts.apps_workload.prometheus_disk_usage.time_window
+  severity                = var.alerts.apps_workload.prometheus_disk_usage.severity
+  frequency               = var.alerts.apps_workload.prometheus_disk_usage.frequency
+  time_window             = var.alerts.apps_workload.prometheus_disk_usage.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"

@@ -73,11 +73,11 @@ resource "helm_release" "prometheus_adapter_install" {
 }
 
 resource "kubectl_manifest" "install_grafana_virtualservice_manifests" {
-  yaml_body          = templatefile("${path.module}/manifests/prometheus/virtualservice_grafana.yaml", {
-    namespace              = "prometheus"
-    gateway                = "istio-ingress/istio-ingressgateway-mgmt"
-    grafana_hostname       = "${var.grafana_hostname_prefix}${split("*", var.istio_ingress_mgmt_domain)[1]}"
-    grafana_destination    = "${helm_release.prometheus.name}-grafana"
+  yaml_body = templatefile("${path.module}/manifests/prometheus/virtualservice_grafana.yaml", {
+    namespace           = "prometheus"
+    gateway             = "istio-ingress/istio-ingressgateway-mgmt"
+    grafana_hostname    = "${var.grafana_hostname_prefix}${split("*", var.istio_ingress_mgmt_domain)[1]}"
+    grafana_destination = "${helm_release.prometheus.name}-grafana"
   })
   override_namespace = "prometheus"
   depends_on = [

@@ -44,7 +44,7 @@ data "kubectl_file_documents" "cert_issuer_manifests" {
 }
 
 resource "kubectl_manifest" "cert_issuer_install" {
-  count              = length(data.kubectl_file_documents.cert_issuer_manifests.documents)
-  yaml_body          = element(data.kubectl_file_documents.cert_issuer_manifests.documents, count.index)
-  depends_on         = [kubectl_manifest.cert-manager-install,time_sleep.wait_for_certmanager_install]
+  count      = length(data.kubectl_file_documents.cert_issuer_manifests.documents)
+  yaml_body  = element(data.kubectl_file_documents.cert_issuer_manifests.documents, count.index)
+  depends_on = [kubectl_manifest.cert-manager-install, time_sleep.wait_for_certmanager_install]
 }

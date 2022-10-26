@@ -1,0 +1,57 @@
+clusterRoles:
+  cluster-admin:
+    create: false
+    createClusterRoleBinding: true
+    clusterRoleBindingName: hmcts-cluster-admins
+    bindingSubjects:
+      clusterAdminGroup:
+        apiGroup: rbac.authorization.k8s.io
+        kind: Group
+      jenkinsAdmin:
+        kind: ServiceAccount
+        name: jenkins-admin
+        namespace: kube-system
+  contributor-role:
+    create: true
+    createBinding: false
+    rules:
+    - apiGroups: ["", "apps", "batch", "networking.k8s.io"]
+      resources: ["*"]
+      verbs: ["*"]
+  namespace-readonly-role:
+    create: true
+    createBinding: false
+    createClusterRoleBinding: true
+    clusterRoleBindingName: hmcts-cluster-namespace-readonly
+    bindingSubjects:
+      readerGroupID:
+        apiGroup: rbac.authorization.k8s.io
+        kind: Group
+      contributorGroupID:
+        apiGroup: rbac.authorization.k8s.io
+        kind: Group
+    rules:
+    - apiGroups: [""]
+      resources: ["namespaces"]
+      verbs: ["get", "list"]
+  reader-role:
+    create: true
+    createBinding: false
+    rules:
+    - apiGroups: ["", "apps", "batch"]
+      resources: ["*"]
+      verbs: ["get","list","watch"]
+    - apiGroups: [""]
+      resources: ["pods/portforward"]
+      verbs: ["*"]
+  jenkins-deploy:
+    create: true
+    rules:
+    - apiGroups: ["", "policy", "batch", "extensions", "apps", "networking.istio.io", "networking.k8s.io", "security.istio.io", "rbac.authorization.k8s.io", "autoscaling", "cert-manager.io"]
+      resources: ["*"]
+      verbs: ["*"]
+clusterServiceAccounts:
+  jenkins-admin:
+    namespace: kube-system
+  jenkins-deploy:
+    namespace: kube-system
