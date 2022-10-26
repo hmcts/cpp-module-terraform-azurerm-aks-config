@@ -1,4 +1,4 @@
-# Install configmap with omsagent configuration 
+# Install configmap with omsagent configuration
 resource "kubectl_manifest" "omsagent_configmap_manifest" {
   yaml_body = templatefile("${path.module}/manifests/omsagent/container-azm-ms-agentconfig.yaml", {
     log_collection_settings_stdout_enabled = var.omsagent.log_collection_settings_stdout_enabled

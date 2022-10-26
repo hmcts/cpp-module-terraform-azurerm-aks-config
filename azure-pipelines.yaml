@@ -1,0 +1,29 @@
+name: CPP AKS Module
+trigger: none
+pr:
+  - main
+
+parameters:
+  - name: tfversion
+    default: 1.0.1
+  - name: pythonVersion
+    default: 3.8.14
+
+resources:
+  repositories:
+    - repository: cppAzureDevOpsTemplates
+      type: github
+      name: hmcts/cpp-azure-devops-templates
+      endpoint: 'cpp-apps'
+
+stages:
+  - stage: precommit
+    pool:
+      name: "MDV-ADO-AGENTS-01"
+    jobs:
+    - job: precommit
+      steps:
+      - template: steps/terraform/terraform-precommit.yaml@cppAzureDevOpsTemplates
+        parameters:
+          tfversion: ${{ parameters.tfversion }}
+          pythonVersion: ${{ parameters.pythonVersion }}

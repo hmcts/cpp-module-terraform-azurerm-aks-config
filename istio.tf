@@ -311,7 +311,7 @@ resource "kubectl_manifest" "install_istio_ingress_gateway_manifests" {
   ]
 }
 
-# PeerAuthentication menifest - Enable mtls 
+# PeerAuthentication menifest - Enable mtls
 resource "kubectl_manifest" "enable_mtls" {
   yaml_body = file("${path.module}/manifests/istio/istio_peerauthentication.yaml")
   depends_on = [
