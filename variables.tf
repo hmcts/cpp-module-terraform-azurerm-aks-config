@@ -197,6 +197,7 @@ variable "charts" {
     prometheus-adapter = map(string)
     dynatrace-operator = map(string)
     overprovisioning   = map(string)
+    gatekeeper         = map(string)
   })
   default = {
     aks-rbac = {
@@ -242,6 +243,10 @@ variable "charts" {
     overprovisioning = {
       path    = "charts/overprovisioning"
       version = "0.1.0"
+    },
+    gatekeeper = {
+      path    = "charts/gatekeeper"
+      version = "3.10.0"
     },
   }
 }
@@ -520,4 +525,15 @@ variable "create_management_namespace" {
   type        = bool
   description = "Create Management Namespace for managing helm chart deployment on cluster"
   default     = true
+}
+
+variable "gatekeeper_config" {
+  type = object({
+    enable   = bool
+    replicas = number
+  })
+  default = {
+    enable   = false
+    replicas = 3
+  }
 }
