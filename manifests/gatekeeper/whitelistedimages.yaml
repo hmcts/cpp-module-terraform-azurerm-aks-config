@@ -12,3 +12,4 @@ spec:
     images:
       - crmdvrepo01.azurecr.io/
       - mcr.microsoft.com/
+      - crmpdrepo01.azurecr.io/
