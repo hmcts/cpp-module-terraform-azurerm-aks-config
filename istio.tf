@@ -204,6 +204,16 @@ resource "helm_release" "istio_ingress_mgmt_install" {
   }
 
   set {
+    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-create"
+    value = "true"
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-name"
+    value = "PLS-${var.aks_cluster_name}-INGRESS-MGMT"
+  }
+
+  set {
     name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-resource-group"
     value = var.istio_ingress_load_balancer_resource_group
   }
@@ -266,6 +276,16 @@ resource "helm_release" "istio_ingress_apps_install" {
   set {
     name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-internal"
     value = "true"
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-create"
+    value = "true"
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-name"
+    value = "PLS-${var.aks_cluster_name}-INGRESS-APPS"
   }
 
   set {
