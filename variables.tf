@@ -537,3 +537,9 @@ variable "gatekeeper_config" {
     replicas = 3
   }
 }
+
+variable "istio_ingress_load_balancer_name" {
+  type        = string
+  default     = "kubernetes-internal"
+  description = "Istio gateway LB name"
+}

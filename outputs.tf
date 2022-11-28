@@ -9,3 +9,11 @@ output "jenkins_rbac_admin" {
 output "ingress_apps_domain_name" {
   value = split("*", var.istio_ingress_apps_domain)[1]
 }
+
+output "ingress_lb_private_ip_address" {
+  value = data.azurerm_lb.ingress_lb.private_ip_address
+}
+
+output "ingress_lb_private_ip_addresses" {
+  value = data.azurerm_lb.ingress_lb.private_ip_addresses
+}
