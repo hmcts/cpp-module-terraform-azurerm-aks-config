@@ -543,3 +543,18 @@ variable "istio_ingress_load_balancer_name" {
   default     = "kubernetes-internal"
   description = "Istio gateway LB name"
 }
+
+variable "addns" {
+  type        = map(map(string))
+  description = "ADDNS details"
+  default = {
+    nonlive = {
+      domain    = "cpp.nonlive"
+      resolvers = "192.168.200.4 192.168.200.5"
+    }
+    live = {
+      domain    = "cp.cjs.hmcts.net"
+      resolvers = "192.168.88.4 192.168.88.5"
+    }
+  }
+}
