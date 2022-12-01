@@ -73,20 +73,19 @@ variable "environment_type" {
   description = "Environment type - nonlive/live"
 }
 
-variable "istio_ingress_apps_domain" {
-  type        = string
+variable "istio_ingress_apps_domains" {
+  type        = list(string)
   description = "Ingress domain name FQDN for apps"
 }
 
-variable "istio_ingress_mgmt_domain" {
-  type        = string
+variable "istio_ingress_mgmt_domains" {
+  type        = list(string)
   description = "Ingress domain name FQDN for mgmt"
 }
 
-variable "kiali_hostname_prefix" {
-  type        = string
-  description = "Hostname prefix to access kiali"
-  default     = "kiali"
+variable "kiali_hostnames" {
+  type        = list(string)
+  description = "Hostnames used for kiali"
 }
 
 variable "prometheus_hostname_prefix" {
@@ -95,10 +94,9 @@ variable "prometheus_hostname_prefix" {
   default     = "prometheus"
 }
 
-variable "grafana_hostname_prefix" {
-  type        = string
-  description = "Hostname prefix to access kiali"
-  default     = "grafana"
+variable "grafana_hostnames" {
+  type        = list(string)
+  description = "Hostnames for access to Grafana"
 }
 
 variable "acr_name" {

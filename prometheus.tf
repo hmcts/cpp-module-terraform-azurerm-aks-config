@@ -21,7 +21,7 @@ resource "helm_release" "prometheus" {
     grafana_image_tag                    = var.prometheus.grafana_image_tag
     grafana_k8s_sidecar_image            = "${var.acr_name}.azurecr.io/quay.io/kiwigrid/k8s-sidecar"
     grafana_k8s_sidecar_image_tag        = var.prometheus.grafana_k8s_sidecar_image_tag
-    grafana_url                          = "https://${var.grafana_hostname_prefix}${split("*", var.istio_ingress_mgmt_domain)[1]}"
+    grafana_url                          = "https://${var.istio_ingress_mgmt_domains[0]}"
     grafana_auth_azuread_client_id       = data.vault_generic_secret.grafana_spn_creds.data["client_id"]
     grafana_auth_azuread_client_secret   = data.vault_generic_secret.grafana_spn_creds.data["client_secret"]
     grafana_auth_azuread_tenant_id       = data.azurerm_client_config.current.tenant_id
@@ -76,7 +76,7 @@ resource "kubectl_manifest" "install_grafana_virtualservice_manifests" {
   yaml_body = templatefile("${path.module}/manifests/prometheus/virtualservice_grafana.yaml", {
     namespace           = "prometheus"
     gateway             = "istio-ingress/istio-ingressgateway-mgmt"
-    grafana_hostname    = "${var.grafana_hostname_prefix}${split("*", var.istio_ingress_mgmt_domain)[1]}"
+    grafana_hostnames   = var.grafana_hostnames
     grafana_destination = "${helm_release.prometheus.name}-grafana"
   })
   override_namespace = "prometheus"
