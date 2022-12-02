@@ -19,13 +19,14 @@ resource "kubernetes_namespace" "istio_ingress_namespace" {
   }
 }
 
-data "kubectl_file_documents" "istio_crd_manifests" {
-  content = templatefile("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml", {})
+data "kubectl_path_documents" "istio_crd_manifests" {
+  pattern = "${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml"
 }
 
+# https://github.com/gavinbunney/terraform-provider-kubectl/issues/61
 resource "kubectl_manifest" "istio_crd_install" {
-  count     = length(data.kubectl_file_documents.istio_crd_manifests.documents)
-  yaml_body = element(data.kubectl_file_documents.istio_crd_manifests.documents, count.index)
+  count     = length(split("\n---\n", file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml")))
+  yaml_body = element(data.kubectl_path_documents.istio_crd_manifests.documents, count.index)
 }
 
 resource "kubectl_manifest" "istio_operator_crd_install" {
@@ -320,7 +321,7 @@ data "kubectl_file_documents" "istio_ingress_gateway_manifests" {
 }
 
 resource "kubectl_manifest" "install_istio_ingress_gateway_manifests" {
-  count              = length(data.kubectl_file_documents.istio_ingress_gateway_manifests.documents)
+  count              = length(split("\n---\n", file("${path.module}/manifests/istio/istio_ingress_gateway.yaml")))
   yaml_body          = element(data.kubectl_file_documents.istio_ingress_gateway_manifests.documents, count.index)
   override_namespace = "istio-ingress"
   depends_on = [

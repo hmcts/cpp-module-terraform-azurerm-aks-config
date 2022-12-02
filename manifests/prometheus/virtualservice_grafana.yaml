@@ -10,9 +10,9 @@ spec:
   gateways:
   - ${gateway}
   hosts:
-  %{ for host in grafana_hostnames ~}
+  %{~ for host in grafana_hostnames ~}
   - "${host}"
-  %{ endfor ~}
+  %{~ endfor ~}
   http:
   - name: grafana
     route:

@@ -8,18 +8,20 @@ resource "kubernetes_namespace" "cert_manager_namespace" {
   }
 }
 
-data "kubectl_file_documents" "cert_manager_manifests" {
-  content = templatefile("${path.module}/manifests/cert-manager/cert-manager.yaml", {
+data "kubectl_path_documents" "cert_manager_manifests" {
+  pattern = "${path.module}/manifests/cert-manager/cert-manager.yaml"
+  vars = {
     docker_image_certmanager_cainjector = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-cainjector"
     docker_image_certmanager_controller = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-controller"
     docker_image_certmanager_webhook    = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-webhook"
     docker_tag_certmanager              = "v1.6.1"
-  })
+  }
 }
 
+# https://github.com/gavinbunney/terraform-provider-kubectl/issues/61
 resource "kubectl_manifest" "cert-manager-install" {
-  count      = length(data.kubectl_file_documents.cert_manager_manifests.documents)
-  yaml_body  = element(data.kubectl_file_documents.cert_manager_manifests.documents, count.index)
+  count      = length(split("\n---\n", file("${path.module}/manifests/cert-manager/cert-manager.yaml")))
+  yaml_body  = element(data.kubectl_path_documents.cert_manager_manifests.documents, count.index)
   depends_on = [kubernetes_namespace.cert_manager_namespace]
 }
 
@@ -44,7 +46,7 @@ data "kubectl_file_documents" "cert_issuer_manifests" {
 }
 
 resource "kubectl_manifest" "cert_issuer_install" {
-  count      = length(data.kubectl_file_documents.cert_issuer_manifests.documents)
+  count      = length(split("\n---\n", file("${path.module}/manifests/cert-manager/cert-issuer.yaml")))
   yaml_body  = element(data.kubectl_file_documents.cert_issuer_manifests.documents, count.index)
   depends_on = [kubectl_manifest.cert-manager-install, time_sleep.wait_for_certmanager_install]
 }

@@ -13,7 +13,7 @@ data:
   ${var.environment_type}.server: |
     ${local.addns.domain}:53 {
       errors
-      cache 1
+      cache 30
       forward . ${local.addns.resolvers}
     }
 YAML

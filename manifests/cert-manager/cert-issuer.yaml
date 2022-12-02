@@ -31,9 +31,9 @@ spec:
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   dnsNames:
-    %{ for dnsname in istio_ingress_mgmt_domains ~}
+    %{~ for dnsname in istio_ingress_mgmt_domains ~}
     - "${dnsname}"
-    %{ endfor ~}
+    %{~ endfor ~}
   issuerRef:
     kind: ClusterIssuer
     name: vault-issuer
@@ -48,9 +48,9 @@ spec:
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   dnsNames:
-    %{ for dnsname in istio_ingress_apps_domains ~}
+    %{~ for dnsname in istio_ingress_apps_domains ~}
     - "${dnsname}"
-    %{ endfor ~}
+    %{~ endfor ~}
   issuerRef:
     kind: ClusterIssuer
     name: vault-issuer

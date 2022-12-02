@@ -548,11 +548,11 @@ variable "addns" {
   default = {
     nonlive = {
       domain    = "cpp.nonlive"
-      resolvers = "192.168.200.4 192.168.200.5"
+      resolvers = "192.168.88.4 192.168.88.5"
     }
     live = {
       domain    = "cp.cjs.hmcts.net"
-      resolvers = "192.168.88.4 192.168.88.5"
+      resolvers = "192.168.200.4 192.168.200.5"
     }
   }
 }
