@@ -19,12 +19,12 @@ resource "helm_release" "pgadmin" {
 
   set {
     name  = "pgadmindefaults.admin_user"
-    value =  var.pgadmin_admin_user
+    value = var.pgadmin_admin_user
   }
 
   set {
     name  = "pgadmindefaults.admin_password"
-    value =  var.pgadmin_admin_password
+    value = var.pgadmin_admin_password
   }
 
   depends_on = [
