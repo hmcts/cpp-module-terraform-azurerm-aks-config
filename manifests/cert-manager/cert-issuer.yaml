@@ -28,6 +28,7 @@ metadata:
   name: istio-ingressgateway-mgmt-cert
   namespace: "istio-ingress"
 spec:
+  commonName: "${element(istio_ingress_mgmt_domains, 0)}"
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   dnsNames:
@@ -45,6 +46,7 @@ metadata:
   name: istio-ingressgateway-apps-cert
   namespace: "istio-ingress"
 spec:
+  commonName: "${element(istio_ingress_apps_domains, 0)}"
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   dnsNames:
