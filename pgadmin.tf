@@ -18,6 +18,16 @@ resource "helm_release" "pgadmin" {
   namespace  = "pgadmin"
 
   set {
+    name  = "image.repository"
+    value = "${var.acr_name}.azurecr.io/charts/pgadmin"
+  }
+
+  set {
+    name  = "image.tag"
+    value = "0.1.0"
+  }
+
+  set {
     name  = "pgadmindefaults.admin_user"
     value = var.pgadmin_admin_user
   }
