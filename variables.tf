@@ -560,4 +560,3 @@ variable "pgadmin_admin_password" {
   description = "enable pgadmin interface within cluster"
   default     = "abc123"
 }
-
