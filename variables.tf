@@ -140,11 +140,6 @@ variable "aks_server_endpoint" {
   description = "AKS server endpoint"
 }
 
-variable "istio_gateway_cert_issuer" {
-  type        = string
-  description = "cpp-nonlive"
-}
-
 variable "istio_gateway_mgmt_cert_secret_name" {
   type    = string
   default = "istio-ingressgateway-mgmt-cert"
