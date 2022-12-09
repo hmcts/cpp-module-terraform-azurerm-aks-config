@@ -21,7 +21,7 @@ resource "helm_release" "prometheus" {
     grafana_image_tag                    = var.prometheus.grafana_image_tag
     grafana_k8s_sidecar_image            = "${var.acr_name}.azurecr.io/quay.io/kiwigrid/k8s-sidecar"
     grafana_k8s_sidecar_image_tag        = var.prometheus.grafana_k8s_sidecar_image_tag
-    grafana_url                          = "https://${var.istio_ingress_mgmt_domains[0]}"
+    grafana_url                          = "https://${var.grafana_hostnames[0]}"
     grafana_auth_azuread_client_id       = data.vault_generic_secret.grafana_spn_creds.data["client_id"]
     grafana_auth_azuread_client_secret   = data.vault_generic_secret.grafana_spn_creds.data["client_secret"]
     grafana_auth_azuread_tenant_id       = data.azurerm_client_config.current.tenant_id
