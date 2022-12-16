@@ -61,5 +61,8 @@ resource "helm_release" "overprovisioning_install" {
   wait    = true
   timeout = 500
 
-  depends_on = [kubernetes_namespace.overprovisioning_namespace]
+  depends_on = [
+    kubernetes_namespace.overprovisioning_namespace,
+    null_resource.download_charts
+  ]
 }
