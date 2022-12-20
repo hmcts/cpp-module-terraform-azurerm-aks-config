@@ -10,7 +10,9 @@ spec:
   gateways:
   - ${gateway}
   hosts:
-  - ${kiali_hostname}
+  %{~ for host in kiali_hostnames ~}
+  - "${host}"
+  %{~ endfor ~}
   http:
   - headers:
       request:

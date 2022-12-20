@@ -73,20 +73,19 @@ variable "environment_type" {
   description = "Environment type - nonlive/live"
 }
 
-variable "istio_ingress_apps_domain" {
-  type        = string
+variable "istio_ingress_apps_domains" {
+  type        = list(string)
   description = "Ingress domain name FQDN for apps"
 }
 
-variable "istio_ingress_mgmt_domain" {
-  type        = string
+variable "istio_ingress_mgmt_domains" {
+  type        = list(string)
   description = "Ingress domain name FQDN for mgmt"
 }
 
-variable "kiali_hostname_prefix" {
-  type        = string
-  description = "Hostname prefix to access kiali"
-  default     = "kiali"
+variable "kiali_hostnames" {
+  type        = list(string)
+  description = "Hostnames used for kiali"
 }
 
 variable "prometheus_hostname_prefix" {
@@ -95,10 +94,9 @@ variable "prometheus_hostname_prefix" {
   default     = "prometheus"
 }
 
-variable "grafana_hostname_prefix" {
-  type        = string
-  description = "Hostname prefix to access kiali"
-  default     = "grafana"
+variable "grafana_hostnames" {
+  type        = list(string)
+  description = "Hostnames for access to Grafana"
 }
 
 variable "acr_name" {
@@ -140,11 +138,6 @@ variable "aks_ca_certificate" {
 variable "aks_server_endpoint" {
   type        = string
   description = "AKS server endpoint"
-}
-
-variable "istio_gateway_cert_issuer" {
-  type        = string
-  description = "cpp-nonlive"
 }
 
 variable "istio_gateway_mgmt_cert_secret_name" {
@@ -535,5 +528,26 @@ variable "gatekeeper_config" {
   default = {
     enable   = false
     replicas = 3
+  }
+}
+
+variable "istio_ingress_load_balancer_name" {
+  type        = string
+  default     = "kubernetes-internal"
+  description = "Istio gateway LB name"
+}
+
+variable "addns" {
+  type        = map(map(string))
+  description = "ADDNS details"
+  default = {
+    nonlive = {
+      domain    = "cpp.nonlive"
+      resolvers = "192.168.88.4 192.168.88.5"
+    }
+    live = {
+      domain    = "cp.cjs.hmcts.net"
+      resolvers = "192.168.200.4 192.168.200.5"
+    }
   }
 }

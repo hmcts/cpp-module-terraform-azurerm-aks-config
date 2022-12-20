@@ -76,7 +76,7 @@ resource "kubectl_manifest" "install_kiali_virtualservice_manifests" {
   yaml_body = templatefile("${path.module}/manifests/kiali/virtualservice.yaml", {
     namespace         = "istio-system"
     gateway           = "istio-ingress/istio-ingressgateway-mgmt"
-    kiali_hostname    = "${var.kiali_hostname_prefix}${split("*", var.istio_ingress_mgmt_domain)[1]}"
+    kiali_hostnames   = var.kiali_hostnames
     kiali_destination = "kiali"
   })
   override_namespace = "istio-system"
