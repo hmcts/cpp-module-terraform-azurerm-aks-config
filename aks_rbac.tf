@@ -57,7 +57,7 @@ resource "azurerm_role_assignment" "aks_contributor" {
 
 # store Groupids in the configmap
 resource "kubectl_manifest" "store_aks_rbac_groupids" {
-  yaml_body = <<YAML
+  yaml_body  = <<YAML
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -68,7 +68,7 @@ data:
   readerGroupID: ${azuread_group.aks_reader.object_id}
   contributorGroupID: ${azuread_group.aks_contributor.object_id}
 YAML
-
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 # Install User RBAC helm chart
@@ -97,6 +97,7 @@ resource "helm_release" "aks_rbac" {
   }
 
   depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
     null_resource.download_charts,
     kubectl_manifest.store_aks_rbac_groupids
   ]

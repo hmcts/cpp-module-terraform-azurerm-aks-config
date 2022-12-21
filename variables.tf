@@ -551,3 +551,13 @@ variable "addns" {
     }
   }
 }
+
+variable "wait_for_k8s_api_to_be_available" {
+  type        = map(any)
+  description = "Used to wait k8s executions until the private endpoint and DNS is available"
+}
+
+variable "wait_for_acr_pe_to_be_available" {
+  type        = string
+  description = "Used to wait ACR PE to be available"
+}
