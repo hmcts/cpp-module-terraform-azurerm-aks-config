@@ -6,6 +6,7 @@ resource "kubernetes_namespace" "istio_system_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 resource "kubernetes_namespace" "istio_ingress_namespace" {
@@ -17,6 +18,7 @@ resource "kubernetes_namespace" "istio_ingress_namespace" {
       "istio-injection"              = "enabled"
     }
   }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 data "kubectl_path_documents" "istio_crd_manifests" {
@@ -25,12 +27,14 @@ data "kubectl_path_documents" "istio_crd_manifests" {
 
 # https://github.com/gavinbunney/terraform-provider-kubectl/issues/61
 resource "kubectl_manifest" "istio_crd_install" {
-  count     = length(split("\n---\n", file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml")))
-  yaml_body = element(data.kubectl_path_documents.istio_crd_manifests.documents, count.index)
+  count      = length(split("\n---\n", file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml")))
+  yaml_body  = element(data.kubectl_path_documents.istio_crd_manifests.documents, count.index)
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 resource "kubectl_manifest" "istio_operator_crd_install" {
-  yaml_body = file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-operator.yaml")
+  yaml_body  = file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-operator.yaml")
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 resource "time_sleep" "wait_for_istio_crds" {

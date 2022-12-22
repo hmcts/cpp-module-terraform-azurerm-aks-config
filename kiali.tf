@@ -6,6 +6,7 @@ resource "kubernetes_namespace" "kiali_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 data "vault_generic_secret" "kiali_auth" {
@@ -67,6 +68,7 @@ resource "helm_release" "kiali_operator_install" {
   timeout = 300
 
   depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
     null_resource.download_charts,
     kubernetes_secret.kiali_pass
   ]

@@ -6,6 +6,7 @@ resource "kubernetes_namespace" "prometheus_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 data "vault_generic_secret" "grafana_spn_creds" {

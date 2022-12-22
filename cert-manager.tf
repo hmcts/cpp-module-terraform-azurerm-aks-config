@@ -6,6 +6,7 @@ resource "kubernetes_namespace" "cert_manager_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 data "kubectl_path_documents" "cert_manager_manifests" {

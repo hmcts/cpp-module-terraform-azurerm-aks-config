@@ -3,7 +3,7 @@ locals {
 }
 
 resource "kubectl_manifest" "custom_coredns" {
-  yaml_body = <<YAML
+  yaml_body  = <<YAML
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -17,4 +17,5 @@ data:
       forward . ${local.addns.resolvers}
     }
 YAML
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
