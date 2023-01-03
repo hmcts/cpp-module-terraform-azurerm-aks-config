@@ -6,6 +6,7 @@ resource "kubernetes_namespace" "kiali_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 data "vault_generic_secret" "kiali_auth" {
@@ -67,6 +68,7 @@ resource "helm_release" "kiali_operator_install" {
   timeout = 300
 
   depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
     null_resource.download_charts,
     kubernetes_secret.kiali_pass
   ]
@@ -76,7 +78,7 @@ resource "kubectl_manifest" "install_kiali_virtualservice_manifests" {
   yaml_body = templatefile("${path.module}/manifests/kiali/virtualservice.yaml", {
     namespace         = "istio-system"
     gateway           = "istio-ingress/istio-ingressgateway-mgmt"
-    kiali_hostname    = "${var.kiali_hostname_prefix}${split("*", var.istio_ingress_mgmt_domain)[1]}"
+    kiali_hostnames   = var.kiali_hostnames
     kiali_destination = "kiali"
   })
   override_namespace = "istio-system"

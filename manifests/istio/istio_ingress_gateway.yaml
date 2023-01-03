@@ -9,7 +9,9 @@ spec:
     istio: ingressgateway-mgmt
   servers:
   - hosts:
-    - "${istio_ingress_mgmt_domain}"
+    %{~ for host in istio_ingress_mgmt_domains ~}
+    - "${host}"
+    %{~ endfor ~}
     port:
       name: http
       number: 80
@@ -17,7 +19,9 @@ spec:
     tls:
       httpsRedirect: true # sends 301 redirect for http requests
   - hosts:
-    - "${istio_ingress_mgmt_domain}"
+    %{~ for host in istio_ingress_mgmt_domains ~}
+    - "${host}"
+    %{~ endfor ~}
     port:
       name: https
       number: 443
@@ -38,7 +42,9 @@ spec:
     istio: ingressgateway-apps
   servers:
   - hosts:
-    - "${istio_ingress_apps_domain}"
+    %{~ for host in istio_ingress_apps_domains ~}
+    - "${host}"
+    %{~ endfor ~}
     port:
       name: http
       number: 80
@@ -46,7 +52,9 @@ spec:
     tls:
       httpsRedirect: true # sends 301 redirect for http requests
   - hosts:
-    - "${istio_ingress_apps_domain}"
+    %{~ for host in istio_ingress_apps_domains ~}
+    - "${host}"
+    %{~ endfor ~}
     port:
       name: https
       number: 443

@@ -6,6 +6,7 @@ resource "kubernetes_namespace" "istio_system_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 resource "kubernetes_namespace" "istio_ingress_namespace" {
@@ -17,19 +18,23 @@ resource "kubernetes_namespace" "istio_ingress_namespace" {
       "istio-injection"              = "enabled"
     }
   }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
-data "kubectl_file_documents" "istio_crd_manifests" {
-  content = templatefile("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml", {})
+data "kubectl_path_documents" "istio_crd_manifests" {
+  pattern = "${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml"
 }
 
+# https://github.com/gavinbunney/terraform-provider-kubectl/issues/61
 resource "kubectl_manifest" "istio_crd_install" {
-  count     = length(data.kubectl_file_documents.istio_crd_manifests.documents)
-  yaml_body = element(data.kubectl_file_documents.istio_crd_manifests.documents, count.index)
+  count      = length(split("\n---\n", file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml")))
+  yaml_body  = element(data.kubectl_path_documents.istio_crd_manifests.documents, count.index)
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 resource "kubectl_manifest" "istio_operator_crd_install" {
-  yaml_body = file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-operator.yaml")
+  yaml_body  = file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-operator.yaml")
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 resource "time_sleep" "wait_for_istio_crds" {
@@ -204,6 +209,16 @@ resource "helm_release" "istio_ingress_mgmt_install" {
   }
 
   set {
+    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-create"
+    value = "true"
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-name"
+    value = "PLS-${var.aks_cluster_name}-INGRESS-MGMT"
+  }
+
+  set {
     name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-resource-group"
     value = var.istio_ingress_load_balancer_resource_group
   }
@@ -269,6 +284,16 @@ resource "helm_release" "istio_ingress_apps_install" {
   }
 
   set {
+    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-create"
+    value = "true"
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-name"
+    value = "PLS-${var.aks_cluster_name}-INGRESS-APPS"
+  }
+
+  set {
     name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-resource-group"
     value = var.istio_ingress_load_balancer_resource_group
   }
@@ -293,14 +318,14 @@ data "kubectl_file_documents" "istio_ingress_gateway_manifests" {
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway.yaml", {
     istio_gateway_mgmt_cert_secret_name = var.istio_gateway_mgmt_cert_secret_name
     istio_gateway_apps_cert_secret_name = var.istio_gateway_apps_cert_secret_name
-    istio_ingress_apps_domain           = var.istio_ingress_apps_domain
-    istio_ingress_mgmt_domain           = var.istio_ingress_mgmt_domain
+    istio_ingress_apps_domains          = var.istio_ingress_apps_domains
+    istio_ingress_mgmt_domains          = var.istio_ingress_mgmt_domains
     aks_cluster_name                    = var.aks_cluster_name
   })
 }
 
 resource "kubectl_manifest" "install_istio_ingress_gateway_manifests" {
-  count              = length(data.kubectl_file_documents.istio_ingress_gateway_manifests.documents)
+  count              = length(split("\n---\n", file("${path.module}/manifests/istio/istio_ingress_gateway.yaml")))
   yaml_body          = element(data.kubectl_file_documents.istio_ingress_gateway_manifests.documents, count.index)
   override_namespace = "istio-ingress"
   depends_on = [
