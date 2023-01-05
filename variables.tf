@@ -552,6 +552,7 @@ variable "pgadmin_admin_password" {
   type        = string
   description = "enable pgadmin interface within cluster"
   }
+  
 variable "istio_ingress_load_balancer_name" {
   type        = string
   default     = "kubernetes-internal"
