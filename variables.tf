@@ -191,6 +191,7 @@ variable "charts" {
     dynatrace-operator = map(string)
     overprovisioning   = map(string)
     gatekeeper         = map(string)
+    pgadmin            = map(string)
   })
   default = {
     aks-rbac = {
@@ -240,6 +241,10 @@ variable "charts" {
     gatekeeper = {
       path    = "charts/gatekeeper"
       version = "3.10.0"
+    },
+    pgadmin = {
+      path    = "charts/pgadmin"
+      version = "0.1.0"
     },
   }
 }
@@ -531,6 +536,22 @@ variable "gatekeeper_config" {
   }
 }
 
+variable "enable_pgadmin" {
+  type        = bool
+  description = "enable pgadmin interface within cluster"
+  default     = true
+}
+
+variable "pgadmin_admin_user" {
+  type        = string
+  description = "enable pgadmin interface within cluster"
+  default     = "test@example.com"
+}
+variable "pgadmin_admin_password" {
+  type        = string
+  description = "enable pgadmin interface within cluster"
+  default     = "abc123"
+}
 variable "istio_ingress_load_balancer_name" {
   type        = string
   default     = "kubernetes-internal"
