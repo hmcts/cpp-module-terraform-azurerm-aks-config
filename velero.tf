@@ -8,10 +8,4 @@ resource "azurerm_storage_account" "storage_account_velero" {
   account_replication_type  = var.velero_config.account_replication_type
   tags                      = var.tags
   enable_https_traffic_only = true
-
-  blob_properties = {
-    delete_retention_policy = {
-      days = 7
-    }
-  }
 }
