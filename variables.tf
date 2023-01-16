@@ -561,3 +561,8 @@ variable "wait_for_acr_pe_to_be_available" {
   type        = string
   description = "Used to wait ACR PE to be available"
 }
+
+variable "enable_azure_pls_proxy_protocol" {
+  type        = bool
+  description = " TCP PROXY protocol should be enabled/disable on the PLS to pass through connection information, including the link ID and source IP address."
+}
