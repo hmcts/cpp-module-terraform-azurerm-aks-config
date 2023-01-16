@@ -561,3 +561,21 @@ variable "wait_for_acr_pe_to_be_available" {
   type        = string
   description = "Used to wait ACR PE to be available"
 }
+
+variable "velero_config" {
+  type = object({
+    enable                   = bool
+    account_tier             = string
+    account_replication_type = string
+  })
+  default = {
+    enable                   = false
+    account_tier             = "Standard"
+    account_replication_type = "LRS"
+  }
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
+}
