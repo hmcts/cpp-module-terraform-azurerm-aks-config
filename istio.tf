@@ -223,6 +223,11 @@ resource "helm_release" "istio_ingress_mgmt_install" {
     value = var.istio_ingress_load_balancer_resource_group
   }
 
+  set {
+    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-proxy-protocol"
+    value = var.enable_azure_pls_proxy_protocol
+  }
+
   wait    = true
   timeout = 300
 
@@ -354,4 +359,9 @@ resource "kubectl_manifest" "istio_telemetry" {
     time_sleep.wait_for_istio_crds,
     helm_release.istio_base_install
   ]
+}
+
+# Enable PROXY PROTOCOL with EnvoyFilter
+resource "kubectl_manifest" "istio_envoy_filter" {
+  yaml_body = file("${path.module}/manifests/istio/istio_envoy_filter.yaml")
 }
