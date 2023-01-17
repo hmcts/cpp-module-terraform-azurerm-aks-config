@@ -191,6 +191,7 @@ variable "charts" {
     dynatrace-operator = map(string)
     overprovisioning   = map(string)
     gatekeeper         = map(string)
+    velero             = map(string)
   })
   default = {
     aks-rbac = {
@@ -240,6 +241,10 @@ variable "charts" {
     gatekeeper = {
       path    = "charts/gatekeeper"
       version = "3.10.0"
+    },
+    velero = {
+      path    = "charts/velero"
+      version = "3.1.0"
     },
   }
 }
