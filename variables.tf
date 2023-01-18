@@ -566,3 +566,8 @@ variable "enable_azure_pls_proxy_protocol" {
   type        = bool
   description = " TCP PROXY protocol should be enabled/disable on the PLS to pass through connection information, including the link ID and source IP address."
 }
+
+variable "src_ip_range" {
+  type    = list(any)
+  default = []
+}
