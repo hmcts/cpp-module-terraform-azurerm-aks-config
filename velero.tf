@@ -28,14 +28,14 @@ data "vault_generic_secret" "azure_app_secret" {
 
 locals {
   azCreds = {
-    cloud = {
-      AZURE_SUBSCRIPTION_ID = data.azurerm_client_config.current.subscription_id
-      AZURE_TENANT_ID       = data.azurerm_client_config.current.tenant_id
-      AZURE_CLIENT_ID       = data.azurerm_client_config.current.client_id
-      AZURE_CLIENT_SECRET   = data.vault_generic_secret.azure_app_secret.data.value
-      AZURE_RESOURCE_GROUP  = data.azurerm_kubernetes_cluster.aks_cluster.node_resource_group
-      AZURE_CLOUD_NAME      = "AzurePublicCloud"
-    }
+    cloud = <<EOT
+      AZURE_SUBSCRIPTION_ID=${data.azurerm_client_config.current.subscription_id}
+      AZURE_TENANT_ID=${data.azurerm_client_config.current.tenant_id}
+      AZURE_CLIENT_ID=${data.azurerm_client_config.current.client_id}
+      AZURE_CLIENT_SECRET=${data.vault_generic_secret.azure_app_secret.data.value}
+      AZURE_RESOURCE_GROUP=${data.azurerm_kubernetes_cluster.aks_cluster.node_resource_group}
+      AZURE_CLOUD_NAME="AzurePublicCloud"
+    EOT
   }
 }
 
@@ -52,33 +52,37 @@ resource "helm_release" "velero_install" {
     value = "${var.acr_name}.azurecr.io/docker.io/velero/velero"
   }
   set {
-    name  = "initContainers.0.image"
+    name  = "initContainers[0].image"
     value = "${var.acr_name}.azurecr.io/docker.io/velero/velero-plugin-for-microsoft-azure:v1.6.0-rc.1"
   }
   set {
-    name  = "credentials.secretContents.cloud.AZURE_SUBSCRIPTION_ID"
-    value = local.azCreds.cloud.AZURE_SUBSCRIPTION_ID
+    name  = "initContainers[0].name"
+    value = "velero-plugin-for-microsoft-azure"
   }
   set {
-    name  = "credentials.secretContents.cloud.AZURE_TENANT_ID"
-    value = local.azCreds.cloud.AZURE_TENANT_ID
+    name  = "credentials.secretContents.cloud"
+    value = local.azCreds.cloud
   }
-  set {
-    name  = "credentials.secretContents.cloud.AZURE_CLIENT_ID"
-    value = local.azCreds.cloud.AZURE_CLIENT_ID
-  }
-  set {
-    name  = "credentials.secretContents.cloud.AZURE_CLIENT_SECRET"
-    value = local.azCreds.cloud.AZURE_CLIENT_SECRET
-  }
-  set {
-    name  = "credentials.secretContents.cloud.AZURE_RESOURCE_GROUP"
-    value = local.azCreds.cloud.AZURE_RESOURCE_GROUP
-  }
-  set {
-    name  = "credentials.secretContents.cloud.AZURE_CLOUD_NAME"
-    value = local.azCreds.cloud.AZURE_CLOUD_NAME
-  }
+#  set {
+#    name  = "credentials.secretContents.cloud.AZURE_TENANT_ID"
+#    value = local.azCreds.cloud.AZURE_TENANT_ID
+#  }
+#  set {
+#    name  = "credentials.secretContents.cloud.AZURE_CLIENT_ID"
+#    value = local.azCreds.cloud.AZURE_CLIENT_ID
+#  }
+#  set {
+#    name  = "credentials.secretContents.cloud.AZURE_CLIENT_SECRET"
+#    value = local.azCreds.cloud.AZURE_CLIENT_SECRET
+#  }
+#  set {
+#    name  = "credentials.secretContents.cloud.AZURE_RESOURCE_GROUP"
+#    value = local.azCreds.cloud.AZURE_RESOURCE_GROUP
+#  }
+#  set {
+#    name  = "credentials.secretContents.cloud.AZURE_CLOUD_NAME"
+#    value = local.azCreds.cloud.AZURE_CLOUD_NAME
+#  }
   set {
     name  = "configuration.provider"
     value = "azure"
