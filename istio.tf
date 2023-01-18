@@ -365,3 +365,11 @@ resource "kubectl_manifest" "istio_telemetry" {
 resource "kubectl_manifest" "istio_envoy_filter" {
   yaml_body = file("${path.module}/manifests/istio/istio_envoy_filter.yaml")
 }
+
+# Enable AuthorizationPolicy if list is not empty.
+resource "kubectl_manifest" "istio_authorizationPolicy" {
+  count = length(var.src_ip_range) < 1 ? 0 : 1
+  yaml_body = templatefile("${path.module}/manifests/istio/istio_authorizationpolicy.yaml", {
+    src_ip_range = var.src_ip_range
+  })
+}
