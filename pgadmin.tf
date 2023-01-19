@@ -37,6 +37,7 @@ resource "helm_release" "pgadmin" {
     value = var.pgadmin_admin_password
   }
 
+
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.pgadmin_namespace
