@@ -10,6 +10,13 @@ resource "azurerm_storage_account" "storage_account_velero" {
   enable_https_traffic_only = true
 }
 
+resource "azurerm_storage_container" "blob" {
+  count                 = var.velero_config.enable ? 1 : 0
+  name                  = replace(lower("${var.aks_cluster_name}"), "-", "")
+  storage_account_name  = azurerm_storage_account.storage_account_velero.0.name
+  container_access_type = "private"
+}
+
 resource "kubernetes_namespace" "velero_namespace" {
   count = var.velero_config.enable ? 1 : 0
   metadata {
@@ -29,12 +36,12 @@ data "vault_generic_secret" "azure_app_secret" {
 locals {
   azCreds = {
     cloud = <<EOT
-      AZURE_SUBSCRIPTION_ID=${data.azurerm_client_config.current.subscription_id}
-      AZURE_TENANT_ID=${data.azurerm_client_config.current.tenant_id}
-      AZURE_CLIENT_ID=${data.azurerm_client_config.current.client_id}
-      AZURE_CLIENT_SECRET=${data.vault_generic_secret.azure_app_secret.data.value}
-      AZURE_RESOURCE_GROUP=${data.azurerm_kubernetes_cluster.aks_cluster.node_resource_group}
-      AZURE_CLOUD_NAME="AzurePublicCloud"
+AZURE_SUBSCRIPTION_ID=${data.azurerm_client_config.current.subscription_id}
+AZURE_TENANT_ID=${data.azurerm_client_config.current.tenant_id}
+AZURE_CLIENT_ID=${data.azurerm_client_config.current.client_id}
+AZURE_CLIENT_SECRET=${data.vault_generic_secret.azure_app_secret.data.value}
+AZURE_RESOURCE_GROUP=${data.azurerm_kubernetes_cluster.aks_cluster.node_resource_group}
+AZURE_CLOUD_NAME="AzurePublicCloud"
     EOT
   }
 }
@@ -60,47 +67,35 @@ resource "helm_release" "velero_install" {
     value = "velero-plugin-for-microsoft-azure"
   }
   set {
+    name  = "initContainers[0].volumeMounts[0].mountPath"
+    value = "/target"
+  }
+  set {
+    name  = "initContainers[0].volumeMounts[0].name"
+    value = "plugins"
+  }
+  set {
     name  = "credentials.secretContents.cloud"
     value = local.azCreds.cloud
   }
-#  set {
-#    name  = "credentials.secretContents.cloud.AZURE_TENANT_ID"
-#    value = local.azCreds.cloud.AZURE_TENANT_ID
-#  }
-#  set {
-#    name  = "credentials.secretContents.cloud.AZURE_CLIENT_ID"
-#    value = local.azCreds.cloud.AZURE_CLIENT_ID
-#  }
-#  set {
-#    name  = "credentials.secretContents.cloud.AZURE_CLIENT_SECRET"
-#    value = local.azCreds.cloud.AZURE_CLIENT_SECRET
-#  }
-#  set {
-#    name  = "credentials.secretContents.cloud.AZURE_RESOURCE_GROUP"
-#    value = local.azCreds.cloud.AZURE_RESOURCE_GROUP
-#  }
-#  set {
-#    name  = "credentials.secretContents.cloud.AZURE_CLOUD_NAME"
-#    value = local.azCreds.cloud.AZURE_CLOUD_NAME
-#  }
   set {
     name  = "configuration.provider"
     value = "azure"
   }
   set {
-    name  = "configuration.provider.backupStorageLocation.bucket"
-    value = var.aks_cluster_name
+    name  = "configuration.backupStorageLocation.bucket"
+    value = replace(lower("${var.aks_cluster_name}"), "-", "")
   }
   set {
-    name  = "configuration.provider.backupStorageLocation.caCert"
+    name  = "configuration.backupStorageLocation.caCert"
     value = filebase64(var.ca_bundle_path)
   }
   set {
-    name  = "configuration.provider.backupStorageLocation.config.storageAccount"
+    name  = "configuration.backupStorageLocation.config.storageAccount"
     value = azurerm_storage_account.storage_account_velero.0.name
   }
   set {
-    name  = "configuration.provider.backupStorageLocation.config.resourceGroup"
+    name  = "configuration.backupStorageLocation.config.resourceGroup"
     value = var.aks_resource_group_name
   }
 
