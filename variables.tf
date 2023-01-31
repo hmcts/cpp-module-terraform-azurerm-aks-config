@@ -537,3 +537,13 @@ variable "gatekeeper_config" {
     replicas = 3
   }
 }
+
+variable "external_traffic_policy" {
+  type        = string
+  description = "This is for source IP Address for Authorization Policy"
+}
+
+variable "src_ip_range" {
+  type    = list(any)
+  default = []
+}

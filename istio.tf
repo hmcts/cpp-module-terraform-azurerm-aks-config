@@ -208,6 +208,11 @@ resource "helm_release" "istio_ingress_mgmt_install" {
     value = var.istio_ingress_load_balancer_resource_group
   }
 
+  set {
+    name  = "gateways.istio-ingressgateway.externalTrafficPolicy"
+    value = var.external_traffic_policy
+  }
+
   wait    = true
   timeout = 300
 
@@ -329,4 +334,12 @@ resource "kubectl_manifest" "istio_telemetry" {
     time_sleep.wait_for_istio_crds,
     helm_release.istio_base_install
   ]
+}
+
+# Enable AuthorizationPolicy if list is not empty.
+resource "kubectl_manifest" "istio_authorizationPolicy" {
+  count = length(var.src_ip_range) < 1 ? 0 : 1
+  yaml_body = templatefile("${path.module}/manifests/istio/istio_authorizationpolicy.yaml", {
+    src_ip_range = var.src_ip_range
+  })
 }
