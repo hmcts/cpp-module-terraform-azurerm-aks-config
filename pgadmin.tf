@@ -37,6 +37,18 @@ resource "helm_release" "pgadmin" {
     value = var.pgadmin_admin_password
   }
 
+  set {
+    name  = "pgadminoauth2.tenantId"
+    value = var.pgadmin_oauth2_tenantid
+  }
+  set {
+    name  = "pgadminoauth2.clientId"
+    value = var.pgadmin_oauth2_clientid
+  }
+  set {
+    name  = "pgadminoauth2.clientSecret"
+    value = var.pgadmin_oauth2_clientsecret
+  }
 
   depends_on = [
     null_resource.download_charts,

@@ -553,11 +553,6 @@ variable "pgadmin_admin_password" {
   description = "enable pgadmin interface within cluster"
 }
 
-variable "istio_ingress_load_balancer_name" {
-  type        = string
-  default     = "kubernetes-internal"
-  description = "Istio gateway LB name"
-}
 variable "pgadmin_oauth2_tenantid" {
   type        = string
   description = "pgadminoauth2_tenantId from app reg"
@@ -568,10 +563,14 @@ variable "pgadmin_oauth2_clientid" {
   description = "pgadmin_oauth2_clientid"
   default     = "8e94d4eb-cf52-4eba-aeb4-4104b5cc3718"
 }
-
 variable "pgadmin_oauth2_clientsecret" {
   type        = string
   description = "pgadmin_oauth2_clientSecret"
+}
+variable "istio_ingress_load_balancer_name" {
+  type        = string
+  default     = "kubernetes-internal"
+  description = "Istio gateway LB name"
 }
 variable "addns" {
   type        = map(map(string))
