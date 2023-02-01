@@ -243,6 +243,14 @@ variable "charts" {
       path    = "charts/gatekeeper"
       version = "3.10.0"
     },
+    velero = {
+      path    = "charts/velero"
+      version = "3.1.0"
+    },
+    pgadmin = {
+      path    = "charts/pgadmin"
+      version = "0.1.0"
+    },
   }
 }
 
