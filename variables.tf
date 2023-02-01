@@ -192,6 +192,7 @@ variable "charts" {
     overprovisioning   = map(string)
     gatekeeper         = map(string)
     pgadmin            = map(string)
+    velero             = map(string)
   })
   default = {
     aks-rbac = {
@@ -241,10 +242,6 @@ variable "charts" {
     gatekeeper = {
       path    = "charts/gatekeeper"
       version = "3.10.0"
-    },
-    pgadmin = {
-      path    = "charts/pgadmin"
-      version = "0.1.0"
     },
   }
 }
@@ -595,4 +592,32 @@ variable "wait_for_k8s_api_to_be_available" {
 variable "wait_for_acr_pe_to_be_available" {
   type        = string
   description = "Used to wait ACR PE to be available"
+}
+
+variable "enable_azure_pls_proxy_protocol" {
+  type        = bool
+  description = " TCP PROXY protocol should be enabled/disable on the PLS to pass through connection information, including the link ID and source IP address."
+}
+
+variable "src_ip_range" {
+  type    = list(any)
+  default = []
+}
+
+variable "velero_config" {
+  type = object({
+    enable                   = bool
+    account_tier             = string
+    account_replication_type = string
+  })
+  default = {
+    enable                   = false
+    account_tier             = "Standard"
+    account_replication_type = "LRS"
+  }
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
 }
