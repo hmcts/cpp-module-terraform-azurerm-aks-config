@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: istio-ingressgateway-mgmt
-  action: DENY
+  action: ALLOW
   rules:
   - from:
     - source:
