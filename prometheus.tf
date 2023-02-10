@@ -4,6 +4,7 @@ resource "kubernetes_namespace" "prometheus_namespace" {
     labels = {
       "app.kubernetes.io/managed-by" = "Terraform"
       "filebeat_enable"              = "enabled"
+      "backup_enabled"               = "true"
     }
   }
 }
