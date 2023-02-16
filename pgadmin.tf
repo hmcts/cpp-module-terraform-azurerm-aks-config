@@ -49,6 +49,9 @@ resource "helm_release" "pgadmin" {
     name  = "pgadminoauth2.clientSecret"
     value = var.pgadmin_oauth2_clientsecret
   }
+  
+  wait    = true
+  timeout = 300
 
   depends_on = [
     null_resource.download_charts,
