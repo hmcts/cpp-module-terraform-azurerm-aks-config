@@ -50,6 +50,9 @@ resource "helm_release" "pgadmin" {
     value = var.pgadmin_oauth2_clientsecret
   }
 
+  wait    = true
+  timeout = 300
+
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.pgadmin_namespace
