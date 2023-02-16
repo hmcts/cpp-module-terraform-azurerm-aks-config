@@ -49,7 +49,7 @@ resource "helm_release" "pgadmin" {
     name  = "pgadminoauth2.clientSecret"
     value = var.pgadmin_oauth2_clientsecret
   }
-  
+
   wait    = true
   timeout = 300
 
