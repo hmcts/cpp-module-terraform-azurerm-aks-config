@@ -19,7 +19,7 @@ resource "helm_release" "pgadmin" {
 
   set {
     name  = "image.repository"
-    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dpage/pgadmin"
+    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dpage/pgadmin4"
   }
 
   set {
