@@ -51,7 +51,6 @@ resource "helm_release" "pgadmin" {
   }
 
   depends_on = [
-    null_resource.download_charts,
     kubernetes_namespace.pgadmin_namespace
   ]
 }
