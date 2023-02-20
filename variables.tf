@@ -572,7 +572,7 @@ variable "pgadmin_oauth2_clientsecret" {
 }
 
 variable "pgadmin_hostnames" {
-  type        = string
+  type        = list(string)
   description = "pgadmin hostname"
 }
 variable "istio_ingress_load_balancer_name" {
