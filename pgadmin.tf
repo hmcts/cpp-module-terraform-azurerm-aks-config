@@ -51,7 +51,7 @@ resource "helm_release" "pgadmin" {
   }
   set {
     name  = "gateway.host"
-    value = var.pgadmin_hostnames 
+    value = var.pgadmin_hostnames
   }
 
   wait    = true
