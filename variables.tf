@@ -570,6 +570,11 @@ variable "pgadmin_oauth2_clientsecret" {
   type        = string
   description = "pgadmin_oauth2_clientSecret"
 }
+
+variable "pgadmin_hostnames" {
+  type        = string
+  description = "pgadmin hostname"
+}
 variable "istio_ingress_load_balancer_name" {
   type        = string
   default     = "kubernetes-internal"
