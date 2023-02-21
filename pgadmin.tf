@@ -66,7 +66,7 @@ resource "helm_release" "pgadmin" {
 
 resource "kubectl_manifest" "install_pgadmin_virtualservice_manifests" {
   yaml_body = templatefile("${path.module}/manifests/pgadmin/virtualservice.yaml", {
-    namespace           = "istio-system"
+    namespace           = "pgadmin"
     gateway             = "istio-ingress/istio-ingressgateway-mgmt"
     pgadmin_hostnames   = var.pgadmin_hostnames
     pgadmin_destination = "pgadmin"

@@ -10,9 +10,7 @@ spec:
   gateways:
   - ${gateway}
   hosts:
-  %{~ for host in pgadmin_hostnames ~}
-  - "${host}"
-  %{~ endfor ~}
+  - "${pgadmin_hostnames}"
   http:
   - name: pgadmin
     route:
