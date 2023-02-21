@@ -7,6 +7,7 @@ resource "kubernetes_namespace" "pgadmin_namespace" {
       "istio-injection"              = "enabled"
     }
   }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 resource "helm_release" "pgadmin" {
@@ -60,5 +61,19 @@ resource "helm_release" "pgadmin" {
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.pgadmin_namespace
+  ]
+}
+
+resource "kubectl_manifest" "install_kiali_virtualservice_manifests" {
+  yaml_body = templatefile("${path.module}/manifests/pgadmin/virtualservice.yaml", {
+    namespace         = "istio-system"
+    gateway           = "istio-ingress/istio-ingressgateway-mgmt"
+    pgadmin_hostnames   = var.pgadmin_hostnames
+    pgadmin_destination = "pgadmin"
+  })
+  override_namespace = "pgadmin"
+  depends_on = [
+    helm_release.pgadmin,
+    kubectl_manifest.install_istio_ingress_gateway_manifests
   ]
 }

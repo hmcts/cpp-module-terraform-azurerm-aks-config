@@ -1,0 +1,23 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  labels:
+    app: pgadmin
+  name: pgadmin
+  namespace: ${namespace}
+spec:
+  gateways:
+  - ${gateway}
+  hosts:
+  %{~ for host in kiali_hostnames ~}
+  - "${host}"
+  %{~ endfor ~}
+  http:
+  - name: pgadmin
+    route:
+    - destination:
+        host: ${pgadmin_destination}
+        port:
+          number: 80
+
