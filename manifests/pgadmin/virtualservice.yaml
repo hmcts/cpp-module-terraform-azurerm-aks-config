@@ -10,7 +10,7 @@ spec:
   gateways:
   - ${gateway}
   hosts:
-  %{~ for host in kiali_hostnames ~}
+  %{~ for host in pgadmin_hostnames ~}
   - "${host}"
   %{~ endfor ~}
   http:
