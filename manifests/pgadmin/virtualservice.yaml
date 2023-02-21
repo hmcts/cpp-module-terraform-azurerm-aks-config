@@ -20,4 +20,3 @@ spec:
         host: ${pgadmin_destination}
         port:
           number: 80
-
