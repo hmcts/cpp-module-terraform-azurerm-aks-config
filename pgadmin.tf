@@ -63,17 +63,3 @@ resource "helm_release" "pgadmin" {
     kubernetes_namespace.pgadmin_namespace
   ]
 }
-
-resource "kubectl_manifest" "install_pgadmin_virtualservice_manifests" {
-  yaml_body = templatefile("${path.module}/manifests/pgadmin/virtualservice.yaml", {
-    namespace           = "pgadmin"
-    gateway             = "istio-ingress/istio-ingressgateway-mgmt"
-    pgadmin_hostnames   = var.pgadmin_hostnames
-    pgadmin_destination = "pgadmin"
-  })
-  override_namespace = "pgadmin"
-  depends_on = [
-    helm_release.pgadmin,
-    kubectl_manifest.install_istio_ingress_gateway_manifests
-  ]
-}
