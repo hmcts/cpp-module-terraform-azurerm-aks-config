@@ -121,6 +121,7 @@ resource "kubernetes_secret_v1" "jenkins_admin_clusterrole_secret" {
     }
   }
   type = "kubernetes.io/service-account-token"
+  depends_on = [data.kubernetes_service_account.jenkins_admin_clusterrole_sa]
 }
 
 data "kubernetes_secret" "jenkins_admin_clusterrole_secret" {
@@ -148,6 +149,7 @@ resource "kubernetes_secret_v1" "jenkins_deploy_clusterrole_secret" {
     }
   }
   type = "kubernetes.io/service-account-token"
+  depends_on = [data.kubernetes_service_account.jenkins_deploy_clusterrole_sa]
 }
 
 data "kubernetes_secret" "jenkins_deploy_clusterrole_secret" {
