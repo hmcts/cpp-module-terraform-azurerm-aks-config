@@ -114,6 +114,7 @@ data "kubernetes_service_account" "jenkins_admin_clusterrole_sa" {
 
 resource "kubernetes_secret_v1" "jenkins_admin_clusterrole_secret" {
   metadata {
+    name        = "${var.jenkins_admin_sa}-token"
     annotations = {
       "kubernetes.io/service-account.name" = var.jenkins_admin_sa
     }
@@ -139,6 +140,7 @@ data "kubernetes_service_account" "jenkins_deploy_clusterrole_sa" {
 
 resource "kubernetes_secret_v1" "jenkins_deploy_clusterrole_secret" {
   metadata {
+    name        = "${var.jenkins_deploy_sa}-token"
     annotations = {
       "kubernetes.io/service-account.name" = var.jenkins_deploy_sa
     }
