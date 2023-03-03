@@ -126,7 +126,7 @@ resource "kubernetes_secret_v1" "jenkins_admin_clusterrole_secret" {
 
 data "kubernetes_secret" "jenkins_admin_clusterrole_secret" {
   metadata {
-    name      = data.kubernetes_service_account.jenkins_admin_clusterrole_sa.default_secret_name
+    name      = "${var.jenkins_admin_sa}-token"
     namespace = var.aks_rbac_namespace
   }
   depends_on = [kubernetes_secret_v1.jenkins_admin_clusterrole_secret]
@@ -154,7 +154,7 @@ resource "kubernetes_secret_v1" "jenkins_deploy_clusterrole_secret" {
 
 data "kubernetes_secret" "jenkins_deploy_clusterrole_secret" {
   metadata {
-    name      = data.kubernetes_service_account.jenkins_deploy_clusterrole_sa.default_secret_name
+    name      = "${var.jenkins_deploy_sa}-token"
     namespace = var.aks_rbac_namespace
   }
   depends_on = [kubernetes_secret_v1.jenkins_deploy_clusterrole_secret]
