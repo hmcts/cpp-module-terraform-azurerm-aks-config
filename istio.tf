@@ -364,6 +364,7 @@ resource "kubectl_manifest" "istio_telemetry" {
 # Enable PROXY PROTOCOL with EnvoyFilter
 resource "kubectl_manifest" "istio_envoy_filter" {
   yaml_body = file("${path.module}/manifests/istio/istio_envoy_filter.yaml")
+  depends_on = [ kubectl_manifest.istio_telemetry ]
 }
 
 # Enable AuthorizationPolicy if list is not empty.
@@ -372,4 +373,5 @@ resource "kubectl_manifest" "istio_authorizationPolicy" {
   yaml_body = templatefile("${path.module}/manifests/istio/istio_authorizationpolicy.yaml", {
     src_ip_range = var.src_ip_range
   })
+  depends_on = [ kubectl_manifest.istio_telemetry ]
 }
