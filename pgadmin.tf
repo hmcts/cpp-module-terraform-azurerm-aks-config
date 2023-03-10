@@ -1,3 +1,17 @@
+locals {
+  flexible_server = [
+    for fqdn in data.azurerm_postgresql_flexible_server.fl_postgres.*.fqdn :
+    { group_name = "flexible_server", fqdn = fqdn }
+  ]
+  postgres_server = [
+    for fqdn in data.azurerm_postgresql_server.s_postgres.*.fqdn :
+    { group_name = "postgres_server", fqdn = fqdn }
+  ]
+  server_groups              = concat(local.flexible_server, local.postgres_server)
+  server_list_content_base64 = base64encode(templatefile("${path.module}/server_list.tftpl", { server_groups = local.server_groups }))
+}
+
+
 resource "kubernetes_namespace" "pgadmin_namespace" {
   count = 1
   metadata {
@@ -52,6 +66,10 @@ resource "helm_release" "pgadmin" {
   set {
     name  = "gateway.host"
     value = var.pgadmin_hostnames
+  }
+  set {
+    name  = "server_list_base64"
+    value = local.server_list_content_base64
   }
 
   wait    = true

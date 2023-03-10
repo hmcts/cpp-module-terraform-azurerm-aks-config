@@ -46,3 +46,25 @@ data "azurerm_private_link_service" "ingress_mgmt" {
     kubectl_manifest.install_istio_ingress_gateway_manifests
   ]
 }
+
+data "azurerm_resources" "fl_postgres_list" {
+  type                = "Microsoft.DBforPostgreSQL/flexibleservers"
+  resource_group_name = "RG-${upper(var.environment)}-CCM-01"
+}
+
+data "azurerm_postgresql_flexible_server" "fl_postgres" {
+  count               = length(data.azurerm_resources.fl_postgres_list.resources)
+  name                = data.azurerm_resources.fl_postgres_list.resources[count.index].name
+  resource_group_name = "RG-${upper(var.environment)}-CCM-01"
+}
+
+data "azurerm_resources" "s_postgres_list" {
+  type                = "Microsoft.DBforPostgreSQL/servers"
+  resource_group_name = "RG-${upper(var.environment)}-CCM-01"
+}
+
+data "azurerm_postgresql_server" "s_postgres" {
+  count               = length(data.azurerm_resources.s_postgres_list.resources)
+  name                = data.azurerm_resources.s_postgres_list.resources[count.index].name
+  resource_group_name = "RG-${upper(var.environment)}-CCM-01"
+}

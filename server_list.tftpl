@@ -1,0 +1,26 @@
+{
+    "Servers": {
+%{ for ind, server in server_groups }
+        "${ind}": {
+            "Name": "${server.fqdn}",
+            "Group": "${server.group_name}",
+            "Host": "${server.fqdn}",
+            "Port": 5432,
+            "MaintenanceDB": "postgres",
+            "Username": "pgreadonly",
+            "SSLMode": "require",
+            "SSLCert": "<STORAGE_DIR>/.postgresql/postgresql.crt",
+            "SSLKey": "<STORAGE_DIR>/.postgresql/postgresql.key",
+            "SSLCompression": 0,
+            "Timeout": 10,
+            "UseSSHTunnel": 0,
+            "TunnelPort": "22",
+            "TunnelAuthentication": 0
+%{ if ind < length(server_groups)-1 }
+        },
+%{ else }
+        }
+%{ endif }
+%{ endfor ~}
+    }
+}
