@@ -1,3 +1,10 @@
+locals {
+  server_groups = {
+      flexible_servers = data.azurerm_postgresql_flexible_server.fl_postgres.*.fqdn
+  }
+  server_list_content = templatefile("${path.module}/server_list.tftpl",  { server_groups = local.server_groups } )
+}
+
 resource "kubernetes_namespace" "pgadmin_namespace" {
   count = 1
   metadata {
@@ -52,6 +59,10 @@ resource "helm_release" "pgadmin" {
   set {
     name  = "gateway.host"
     value = var.pgadmin_hostnames
+  }
+  set {
+    name  = "server_list"
+    value = local.server_list_content
   }
 
   wait    = true
