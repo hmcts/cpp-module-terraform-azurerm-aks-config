@@ -1,9 +1,16 @@
 locals {
-  server_groups = {
-      flexible_servers = data.azurerm_postgresql_flexible_server.fl_postgres.*.fqdn
-  }
-  server_list_content = templatefile("${path.module}/server_list.tftpl",  { server_groups = local.server_groups } )
+  flexible_server = [
+      for fqdn in data.azurerm_postgresql_flexible_server.fl_postgres.*.fqdn:
+        { group_name = "flexible_server", fqdn = fqdn }
+  ]
+  postgres_server = [
+      for fqdn in data.azurerm_postgresql_server.s_postgres.*.fqdn:
+        { group_name = "postgres_server", fqdn = fqdn }
+  ]
+  server_groups = concat(local.flexible_server, local.postgres_server)
+#  server_list_content = templatefile("${path.module}/server_list.tftpl",  { server_groups = local.server_groups } )
 }
+
 
 resource "kubernetes_namespace" "pgadmin_namespace" {
   count = 1
@@ -62,7 +69,7 @@ resource "helm_release" "pgadmin" {
   }
   set {
     name  = "server_list"
-    value = local.server_list_content
+    value = "${local.server_groups}"
   }
 
   wait    = true

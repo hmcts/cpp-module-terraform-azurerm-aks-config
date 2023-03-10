@@ -1,11 +1,10 @@
 {
     "Servers": {
-%{ for group_name, group_values in server_groups }
-%{ for ind, fqdn in group_values }
+%{ for ind, server in server_groups }
         "${ind}": {
-            "Name": "${fqdn}",
-            "Group": "${group_name}",
-            "Host": "${fqdn}",
+            "Name": "${server.fqdn}",
+            "Group": "${server.group_name}",
+            "Host": "${server.fqdn}",
             "Port": 5432,
             "MaintenanceDB": "postgres",
             "Username": "pgreadonly",
@@ -17,12 +16,11 @@
             "UseSSHTunnel": 0,
             "TunnelPort": "22",
             "TunnelAuthentication": 0
-%{ if ind < length(group_values)-1 }
+%{ if ind < length(server_groups)-1 }
         },
 %{ else }
         }
 %{ endif }
-%{ endfor ~}
 %{ endfor ~}
     }
 }
