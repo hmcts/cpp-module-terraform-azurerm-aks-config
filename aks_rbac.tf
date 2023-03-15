@@ -12,27 +12,30 @@ data "azurerm_kubernetes_cluster" "aks_cluster" {
 
 # Devops group is already admins on the cluster, This group is created if we have to additional admins.
 resource "azuread_group" "aks_admin" {
-  display_name     = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Admin"
-  mail_enabled     = false
-  security_enabled = true
-  owners           = [data.azuread_client_config.current.object_id]
-  members          = var.user_rbac.aks_cluster_admin_members_ids
+  display_name            = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Admin"
+  mail_enabled            = false
+  security_enabled        = true
+  prevent_duplicate_names = true
+  owners                  = [data.azuread_client_config.current.object_id]
+  members                 = var.user_rbac.aks_cluster_admin_members_ids
 }
 
 resource "azuread_group" "aks_reader" {
-  display_name     = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Reader"
-  mail_enabled     = false
-  security_enabled = true
-  owners           = [data.azuread_client_config.current.object_id]
-  members          = var.user_rbac.aks_reader_members_ids
+  display_name            = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Reader"
+  mail_enabled            = false
+  security_enabled        = true
+  prevent_duplicate_names = true
+  owners                  = [data.azuread_client_config.current.object_id]
+  members                 = var.user_rbac.aks_reader_members_ids
 }
 
 resource "azuread_group" "aks_contributor" {
-  display_name     = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Contributor"
-  mail_enabled     = false
-  security_enabled = true
-  owners           = [data.azuread_client_config.current.object_id]
-  members          = var.user_rbac.aks_contributor_members_ids
+  display_name            = "GRP_${local.environment_type_abbreviation}_${var.aks_cluster_name}_Contributor"
+  mail_enabled            = false
+  security_enabled        = true
+  prevent_duplicate_names = true
+  owners                  = [data.azuread_client_config.current.object_id]
+  members                 = var.user_rbac.aks_contributor_members_ids
 }
 
 # Role assignments
