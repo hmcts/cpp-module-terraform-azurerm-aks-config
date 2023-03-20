@@ -13,7 +13,7 @@ locals {
 
 
 resource "kubernetes_namespace" "pgadmin_namespace" {
-  count = 1
+  count = var.enable_pgadmin ? 1 : 0
   metadata {
     name = "pgadmin"
     labels = {
@@ -21,6 +21,7 @@ resource "kubernetes_namespace" "pgadmin_namespace" {
       "istio-injection"              = "enabled"
     }
   }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 resource "helm_release" "pgadmin" {
@@ -77,6 +78,7 @@ resource "helm_release" "pgadmin" {
 
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.pgadmin_namespace
+    kubernetes_namespace.pgadmin_namespace,
+    kubectl_manifest.install_istio_ingress_gateway_manifests
   ]
 }
