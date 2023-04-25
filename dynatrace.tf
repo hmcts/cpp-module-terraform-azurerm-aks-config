@@ -142,6 +142,7 @@ resource "helm_release" "dynatrace_operator" {
 }
 
 resource "kubernetes_secret_v1" "dynatrace_clusterrole_secret" {
+  count = var.enable_dynatrace ? 1 : 0
   metadata {
     name      = "dynatrace-kubernetes-monitoring"
     namespace = "dynatrace"
