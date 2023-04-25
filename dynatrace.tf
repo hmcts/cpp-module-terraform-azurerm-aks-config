@@ -140,3 +140,16 @@ resource "helm_release" "dynatrace_operator" {
     kubectl_manifest.dynatrace_operator_crd_install
   ]
 }
+
+resource "kubernetes_secret_v1" "dynatrace_clusterrole_secret" {
+  count = var.enable_dynatrace ? 1 : 0
+  metadata {
+    name      = "dynatrace-kubernetes-monitoring"
+    namespace = "dynatrace"
+    annotations = {
+      "kubernetes.io/service-account.name" = "dynatrace-kubernetes-monitoring"
+    }
+  }
+  type       = "kubernetes.io/service-account-token"
+  depends_on = [helm_release.dynatrace_operator]
+}
