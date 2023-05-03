@@ -133,6 +133,11 @@ resource "helm_release" "dynatrace_operator" {
     name  = "classicFullStack.env[1].value"
     value = "${var.dynatrace_api}/v1/deployment/installer/agent/unix/default/latest?arch=x86"
   }
+  
+  set {
+		name = "classicFullStack.args[0]"
+		value = "--set-host-group=${var.environment}_CRIME_CP_AKS"
+  }
 
   depends_on = [
     null_resource.download_charts,
