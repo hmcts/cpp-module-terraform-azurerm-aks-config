@@ -193,6 +193,7 @@ variable "charts" {
     gatekeeper         = map(string)
     pgadmin            = map(string)
     velero             = map(string)
+    sonarqube          = map(string)
   })
   default = {
     aks-rbac = {
@@ -250,6 +251,10 @@ variable "charts" {
     pgadmin = {
       path    = "charts/pgadmin"
       version = "0.1.0"
+    },
+    sonarqube = {
+      path    = "charts/sonarqube"
+      version = "9.9.0.1"
     },
   }
 }
@@ -631,4 +636,20 @@ variable "velero_config" {
 variable "tags" {
   type    = map(string)
   default = {}
+}
+
+variable "sonarqube_config" {
+  type = object({
+    enable   = bool
+    jdbcUrl  = string
+    jdbcUser = string
+    jdbcPwd  = string
+  })
+  default = {
+    enable        = false
+    jdbcUrl       = ""
+    jdbcUser      = ""
+    jdbcPwd       = ""
+    sonarqubeUrl  = ""
+  }
 }
