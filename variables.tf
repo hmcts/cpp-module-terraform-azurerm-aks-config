@@ -254,7 +254,7 @@ variable "charts" {
     },
     sonarqube = {
       path    = "charts/sonarqube"
-      version = "9.9.0.1"
+      version = "9.9.2"
     },
   }
 }

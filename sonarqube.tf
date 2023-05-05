@@ -64,6 +64,10 @@ resource "helm_release" "sonarqube_install" {
     value = var.sonarqube_config.sonarqubeUrl
   }
   set {
+    name  = "tests.enabled"
+    value = false
+  }
+  set {
     name  = "sonarProperties"
     value = local.sonarProperties
   }
