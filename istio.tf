@@ -363,7 +363,7 @@ resource "kubectl_manifest" "istio_telemetry" {
 
 # Enable PROXY PROTOCOL with EnvoyFilter
 resource "kubectl_manifest" "istio_envoy_filter" {
-  count      =  var.enable_azure_pls_proxy_protocol ? 1 : 0
+  count      = var.enable_azure_pls_proxy_protocol ? 1 : 0
   yaml_body  = file("${path.module}/manifests/istio/istio_envoy_filter.yaml")
   depends_on = [kubectl_manifest.istio_telemetry]
 }
