@@ -640,16 +640,21 @@ variable "tags" {
 
 variable "sonarqube_config" {
   type = object({
-    enable   = bool
-    jdbcUrl  = string
-    jdbcUser = string
-    jdbcPwd  = string
+    enable       = bool
+    jdbcUrl      = string
+    jdbcUser     = string
+    jdbcPwd      = string
+    sonarqubeUrl = string
+    sp_cert      = string
+    sp_token     = string
   })
   default = {
-    enable        = false
-    jdbcUrl       = ""
-    jdbcUser      = ""
-    jdbcPwd       = ""
-    sonarqubeUrl  = ""
+    enable       = false
+    jdbcUrl      = ""
+    jdbcUser     = ""
+    jdbcPwd      = ""
+    sonarqubeUrl = ""
+    sp_token     = ""
+    sp_cert      = ""
   }
 }
