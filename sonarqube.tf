@@ -52,11 +52,11 @@ resource "helm_release" "sonarqube_install" {
   }
   set {
     name  = "jdbcOverwrite.jdbcUsername"
-    value = data.vault_generic_secret.sonaqube_cred.data["dbUser"]
+    value = data.vault_generic_secret.sonaqube_cred.0.data["dbUser"]
   }
   set {
     name  = "jdbcOverwrite.jdbcPassword"
-    value = data.vault_generic_secret.sonaqube_cred.data["dbPwd"]
+    value = data.vault_generic_secret.sonaqube_cred.0.data["dbPwd"]
   }
   set {
     name  = "gateway.host"
