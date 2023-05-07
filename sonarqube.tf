@@ -49,9 +49,9 @@ resource "helm_release" "sonarqube_install" {
     value = var.sonarqube_config.sonarqubeUrl
   }
   values = [templatefile("${path.module}/manifests/common/sonarProps.yaml", {
-    tenant_id = data.azurerm_client_config.current.tenant_id
+    tenant_id    = data.azurerm_client_config.current.tenant_id
     sonarqubeUrl = var.sonarqube_config.sonarqubeUrl
-    spCert = data.vault_generic_secret.sonaqube_cred.0.data["spCert"]
+    spCert       = data.vault_generic_secret.sonaqube_cred.0.data["spCert"]
   })]
 
   wait    = true
