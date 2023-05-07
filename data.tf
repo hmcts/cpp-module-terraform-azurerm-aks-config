@@ -71,5 +71,5 @@ data "azurerm_postgresql_server" "s_postgres" {
 
 data "vault_generic_secret" "sonaqube_cred" {
   count = var.sonarqube_config.enable ? 1 : 0
-  path  = "/secret/dev/aks_sonarube_config"
+  path  = var.sonarqube_config.sonarVaultPath
 }
