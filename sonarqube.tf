@@ -25,7 +25,7 @@ resource "helm_release" "sonarqube_install" {
     value = "${var.acr_name}.azurecr.io/hmcts/sonarqube/sonarqube"
   }
   set {
-    name  = "postgresql.enable"
+    name  = "postgresql.enabled"
     value = false
   }
   set {
