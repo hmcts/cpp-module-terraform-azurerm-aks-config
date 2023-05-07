@@ -22,7 +22,7 @@ sonar.auth.saml.signature.enabled: false
 sonar.auth.saml.user.login: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
 sonar.auth.saml.user.name: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
 sonar.auth.saml.group.name: http://schemas.microsoft.com/ws/2008/06/identity/claims/groups
-sonar.auth.saml.certificate.secured: ${var.sonarqube_config.sp_cert}
+sonar.auth.saml.certificate.secured: ${data.vault_generic_secret.sonaqube_cred.data["spCert"]}
     EOT
 }
 
@@ -52,11 +52,11 @@ resource "helm_release" "sonarqube_install" {
   }
   set {
     name  = "jdbcOverwrite.jdbcUsername"
-    value = var.sonarqube_config.jdbcUser
+    value = data.vault_generic_secret.sonaqube_cred.data["dbUser"]
   }
   set {
     name  = "jdbcOverwrite.jdbcPassword"
-    value = var.sonarqube_config.jdbcUser
+    value = data.vault_generic_secret.sonaqube_cred.data["dbPwd"]
   }
   set {
     name  = "gateway.host"

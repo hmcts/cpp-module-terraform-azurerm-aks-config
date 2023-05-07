@@ -68,3 +68,8 @@ data "azurerm_postgresql_server" "s_postgres" {
   name                = data.azurerm_resources.s_postgres_list.resources[count.index].name
   resource_group_name = "RG-${upper(var.environment)}-CCM-01"
 }
+
+data "vault_generic_secret" "sonaqube_cred" {
+  count = var.sonarqube_config.enable ? 1 :0
+  path  = "/secret/dev/aks_sonarube_config"
+}
