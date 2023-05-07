@@ -18,7 +18,6 @@ sonar.auth.saml.providerId: https://sts.windows.net/${data.azurerm_client_config
 sonar.auth.saml.applicationId: https://${var.sonarqube_config.sonarqubeUrl}/saml
 sonar.auth.saml.enabled: true
 sonar.core.serverBaseURL: https://${var.sonarqube_config.sonarqubeUrl}
-sonar.auth.saml.sp.privateKey.secured: ${var.sonarqube_config.sp_token}
 sonar.auth.saml.signature.enabled: false
 sonar.auth.saml.user.login: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
 sonar.auth.saml.user.name: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
@@ -62,10 +61,6 @@ resource "helm_release" "sonarqube_install" {
   set {
     name  = "gateway.host"
     value = var.sonarqube_config.sonarqubeUrl
-  }
-  set {
-    name  = "tests.enabled"
-    value = false
   }
   set {
     name  = "sonarProperties"

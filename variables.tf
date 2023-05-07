@@ -646,7 +646,6 @@ variable "sonarqube_config" {
     jdbcPwd      = string
     sonarqubeUrl = string
     sp_cert      = string
-    sp_token     = string
   })
   default = {
     enable       = false
@@ -654,7 +653,6 @@ variable "sonarqube_config" {
     jdbcUser     = ""
     jdbcPwd      = ""
     sonarqubeUrl = ""
-    sp_token     = ""
     sp_cert      = ""
   }
 }
