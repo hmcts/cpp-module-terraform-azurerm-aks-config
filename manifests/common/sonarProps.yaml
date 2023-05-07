@@ -1,0 +1,12 @@
+sonarProperties:
+  sonar.forceAuthentication: true
+  sonar.auth.saml.loginUrl: https://login.microsoftonline.com/${tenant_id}/saml2
+  sonar.auth.saml.providerId: https://sts.windows.net/${tenant_id}/
+  sonar.auth.saml.applicationId: https://${sonarqubeUrl}/saml
+  sonar.auth.saml.enabled: true
+  sonar.core.serverBaseURL: https://${sonarqubeUrl}
+  sonar.auth.saml.signature.enabled: false
+  sonar.auth.saml.user.login: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
+  sonar.auth.saml.user.name: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
+  sonar.auth.saml.group.name: http://schemas.microsoft.com/ws/2008/06/identity/claims/groups
+  sonar.auth.saml.certificate.secured: \"${spCert}\"
