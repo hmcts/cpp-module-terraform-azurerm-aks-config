@@ -22,7 +22,7 @@ sonar.auth.saml.signature.enabled: false
 sonar.auth.saml.user.login: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
 sonar.auth.saml.user.name: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
 sonar.auth.saml.group.name: http://schemas.microsoft.com/ws/2008/06/identity/claims/groups
-sonar.auth.saml.certificate.secured: ${data.vault_generic_secret.sonaqube_cred.data["spCert"]}
+sonar.auth.saml.certificate.secured: ${data.vault_generic_secret.sonaqube_cred.0.data["spCert"]}
     EOT
 }
 
