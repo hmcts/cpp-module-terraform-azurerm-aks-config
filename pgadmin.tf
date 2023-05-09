@@ -30,7 +30,7 @@ resource "helm_release" "pgadmin" {
   chart      = lookup(var.charts.pgadmin, "name", "pgadmin")
   version    = lookup(var.charts.pgadmin, "version", "")
   repository = "./install"
-  namespace  = "pgadmin"
+  namespace  = kubernetes_namespace.pgadmin_namespace[0].metadata.0.name
 
   set {
     name  = "image.repository"
