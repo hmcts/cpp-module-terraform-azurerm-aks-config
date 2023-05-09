@@ -39,7 +39,7 @@ resource "helm_release" "pgadmin" {
 
   set {
     name  = "image.tag"
-    value = "6.14"
+    value = var.pgadmin_tag
   }
 
   set {
