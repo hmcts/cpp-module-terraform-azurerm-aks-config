@@ -30,7 +30,7 @@ resource "helm_release" "pgadmin" {
   chart      = lookup(var.charts.pgadmin, "name", "pgadmin")
   version    = lookup(var.charts.pgadmin, "version", "")
   repository = "./install"
-  namespace  = "pgadmin"
+  namespace  = kubernetes_namespace.pgadmin_namespace[0].metadata.0.name
 
   set {
     name  = "image.repository"
@@ -39,7 +39,7 @@ resource "helm_release" "pgadmin" {
 
   set {
     name  = "image.tag"
-    value = "6.14"
+    value = var.pgadmin_tag
   }
 
   set {
