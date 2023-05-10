@@ -552,6 +552,13 @@ variable "enable_pgadmin" {
   default     = true
 }
 
+
+variable "pgadmin_tag" {
+  type        = string
+  description = "PGadmin Docker image Tag"
+  default     = "6.14"
+}
+
 variable "pgadmin_admin_user" {
   type        = string
   description = "enable pgadmin interface within cluster"
