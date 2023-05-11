@@ -79,20 +79,6 @@ kube-state-metrics:
       operator: "Exists"
       effect: "NoSchedule"
 
-prometheus-node-exporter:
-  image:
-    repository: ${node_exporter_image}
-    tag: ${node_exporter_image_tag}
-    pullPolicy: IfNotPresent
-
-  tolerations:
-    - key: "CriticalAddonsOnly"
-      operator: "Exists"
-      effect: "NoSchedule"
-    - key: "PrometheusOnly"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
 
 prometheusOperator:
   image:
