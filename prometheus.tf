@@ -29,6 +29,8 @@ resource "helm_release" "prometheus" {
     grafana_auth_azuread_tenant_id       = data.azurerm_client_config.current.tenant_id
     kube_state_metrics_image             = "${var.acr_name}.azurecr.io/k8s.gcr.io/kube-state-metrics/kube-state-metrics"
     kube_state_metrics_image_tag         = var.prometheus.kube_state_metrics_image_tag
+    node_exporter_image                  = "${var.acr_name}.azurecr.io/quay.io/prometheus/node-exporter"
+    node_exporter_image_tag              = var.prometheus.node_exporter_image_tag
     prometheus_operator_image            = "${var.acr_name}.azurecr.io/quay.io/prometheus-operator/prometheus-operator"
     prometheus_operator_image_tag        = var.prometheus.prometheus_operator_image_tag
     prometheus_config_reloader_image     = "${var.acr_name}.azurecr.io/quay.io/prometheus-operator/prometheus-config-reloader"

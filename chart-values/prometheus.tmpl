@@ -79,6 +79,23 @@ kube-state-metrics:
       operator: "Exists"
       effect: "NoSchedule"
 
+nodeExporter:
+  enabled: false
+
+prometheus-node-exporter:
+  image:
+    repository: ${node_exporter_image}
+    tag: ${node_exporter_image_tag}
+    pullPolicy: IfNotPresent
+
+  tolerations:
+    - key: "CriticalAddonsOnly"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "PrometheusOnly"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
 
 prometheusOperator:
   image:
@@ -200,6 +217,33 @@ prometheus:
         action: drop
       - source_labels: [__name__]
         regex: 'envoy_cluster.*'
+        action: drop
+       - source_labels: [ cluster_name ]
+        regex: '(outbound|inbound|prometheus_stats).*'
+        action: drop
+      - source_labels: [ tcp_prefix ]
+        regex: '(outbound|inbound|PassthroughClusterprometheus_stats).*'
+        action: drop
+      - source_labels: [ listener_address ]
+        regex: '(.+)'
+        action: drop
+      - source_labels: [ http_conn_manager_listener_prefix ]
+        regex: '(.+)'
+        action: drop
+      - source_labels: [ http_conn_manager_prefix ]
+        regex: '(.+)'
+        action: drop
+      - source_labels: [ __name__ ]
+        regex: 'envoy_tls.*'
+        action: drop
+      - source_labels: [ __name__ ]
+        regex: 'envoy_tcp_downstream.*'
+        action: drop
+      - source_labels: [ __name__ ]
+        regex: 'envoy_http_(stats|admin).*'
+        action: drop
+      - source_labels: [ __name__ ]
+        regex: 'envoy_cluster_(lb|retry|bind|internal|max|original).*'
         action: drop
 
 kubelet:
