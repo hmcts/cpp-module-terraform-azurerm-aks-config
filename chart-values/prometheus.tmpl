@@ -81,7 +81,7 @@ kube-state-metrics:
 
 nodeExporter:
   enabled: false
-  
+
 prometheus-node-exporter:
   image:
     repository: ${node_exporter_image}
@@ -251,7 +251,7 @@ prometheus:
       - source_labels: [ __name__ ]
         regex: 'envoy_listener.*'
         action: drop
-      
+
 
 kubelet:
   serviceMonitor:
