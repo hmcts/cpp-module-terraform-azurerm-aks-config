@@ -218,7 +218,7 @@ prometheus:
       - source_labels: [__name__]
         regex: 'envoy_cluster.*'
         action: drop
-       - source_labels: [ cluster_name ]
+      - source_labels: [ cluster_name ]
         regex: '(outbound|inbound|prometheus_stats).*'
         action: drop
       - source_labels: [ tcp_prefix ]
