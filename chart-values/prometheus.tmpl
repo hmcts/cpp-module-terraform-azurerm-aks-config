@@ -237,14 +237,21 @@ prometheus:
         regex: 'envoy_tls.*'
         action: drop
       - source_labels: [ __name__ ]
-        regex: 'envoy_tcp_downstream.*'
+        regex: 'envoy_tcp.*'
         action: drop
       - source_labels: [ __name__ ]
-        regex: 'envoy_http_(stats|admin).*'
+        regex: 'envoy_http.*'
         action: drop
       - source_labels: [ __name__ ]
-        regex: 'envoy_cluster_(lb|retry|bind|internal|max|original).*'
+        regex: 'envoy_cluster.*'
         action: drop
+      - source_labels: [ __name__ ]
+        regex: 'envoy_server.*'
+        action: drop
+      - source_labels: [ __name__ ]
+        regex: 'envoy_listener.*'
+        action: drop
+
 
 kubelet:
   serviceMonitor:
