@@ -217,6 +217,9 @@ prometheus:
         action: keep
 
 kubelet:
+  enabled: false
+
+kubelet:
   serviceMonitor:
     cAdvisorMetricRelabelings:
       - action: drop
