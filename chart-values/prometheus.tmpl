@@ -216,10 +216,10 @@ prometheus:
         regex: istio_requests_total
         action: keep
 
-kubelet:
-  enabled: false
+
 
 kubelet:
+  enabled: false
   serviceMonitor:
     cAdvisorMetricRelabelings:
       - action: drop
