@@ -212,46 +212,12 @@ prometheus:
         action: keep
         regex: '.*-envoy-prom'
       metric_relabel_configs:
-      - source_labels: [ http_conn_manager_prefix ]
-        regex: '(0\.0\.0\.0_).*'
-        action: drop
-      - source_labels: [__name__]
-        regex: 'envoy_cluster.*'
-        action: drop
-      - source_labels: [ cluster_name ]
-        regex: '(outbound|inbound|prometheus_stats).*'
-        action: drop
-      - source_labels: [ tcp_prefix ]
-        regex: '(outbound|inbound|PassthroughClusterprometheus_stats).*'
-        action: drop
-      - source_labels: [ listener_address ]
-        regex: '(.+)'
-        action: drop
-      - source_labels: [ http_conn_manager_listener_prefix ]
-        regex: '(.+)'
-        action: drop
-      - source_labels: [ http_conn_manager_prefix ]
-        regex: '(.+)'
-        action: drop
       - source_labels: [ __name__ ]
-        regex: 'envoy_tls.*'
-        action: drop
-      - source_labels: [ __name__ ]
-        regex: 'envoy_tcp.*'
-        action: drop
-      - source_labels: [ __name__ ]
-        regex: 'envoy_http.*'
-        action: drop
-      - source_labels: [ __name__ ]
-        regex: 'envoy_cluster.*'
-        action: drop
-      - source_labels: [ __name__ ]
-        regex: 'envoy_server.*'
-        action: drop
-      - source_labels: [ __name__ ]
-        regex: 'envoy_listener.*'
-        action: drop
+        regex: /^istio_requests_total$/
+        action: keep
 
+kubelet:
+  enabled: false
 
 kubelet:
   serviceMonitor:
