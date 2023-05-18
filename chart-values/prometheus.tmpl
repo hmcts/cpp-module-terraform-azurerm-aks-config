@@ -213,7 +213,7 @@ prometheus:
         regex: '.*-envoy-prom'
       metric_relabel_configs:
       - source_labels: [ __name__ ]
-        regex: /^istio_requests_total$/
+        regex: istio_requests_total
         action: keep
 
 kubelet:
