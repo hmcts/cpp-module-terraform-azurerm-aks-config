@@ -14,7 +14,7 @@ resources:
     - repository: cppAzureDevOpsTemplates
       type: github
       name: hmcts/cpp-azure-devops-templates
-      endpoint: 'cpp-apps'
+      endpoint: 'hmcts'
 
 stages:
   - stage: precommit
