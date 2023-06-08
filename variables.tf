@@ -583,6 +583,11 @@ variable "pgadmin_oauth2_clientsecret" {
   description = "pgadmin_oauth2_clientSecret"
 }
 
+variable "pgadmin_postgres_rg" {
+  type        = string
+  description = "Resource Group where all postgres instances are, to look them up for pgadmin"
+}
+
 variable "pgadmin_hostnames" {
   type        = string
   description = "pgadmin hostname"
