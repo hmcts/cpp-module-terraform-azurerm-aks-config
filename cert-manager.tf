@@ -41,10 +41,8 @@ data "kubectl_file_documents" "cert_issuer_manifests" {
     ca_bundle                           = filebase64(var.ca_bundle_path)
     istio_gateway_mgmt_cert_secret_name = var.istio_gateway_mgmt_cert_secret_name
     istio_gateway_apps_cert_secret_name = var.istio_gateway_apps_cert_secret_name
-    istio_gateway_web_cert_secret_name  = var.istio_gateway_web_cert_secret_name
     istio_ingress_apps_domains          = var.istio_ingress_apps_domains
     istio_ingress_mgmt_domains          = var.istio_ingress_mgmt_domains
-    istio_ingress_web_domains           = var.istio_ingress_web_domains
   })
 }
 
