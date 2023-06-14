@@ -321,7 +321,7 @@ resource "helm_release" "istio_ingress_apps_install" {
 
 # Ingress for web
 resource "helm_release" "istio_ingress_web_install" {
-  name       = lookup(var.charts.istio-ingress, "name", "istio-ingress")
+  name       = lookup(var.charts.istio-ingress, "name", "istio-ingress-web")
   chart      = lookup(var.charts.istio-ingress, "name", "istio-ingress")
   version    = lookup(var.charts.istio-ingress, "version", "")
   repository = "./install"
