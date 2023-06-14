@@ -319,93 +319,12 @@ resource "helm_release" "istio_ingress_apps_install" {
   ]
 }
 
-# Ingress for web
-resource "helm_release" "istio_ingress_web_install" {
-  name       = lookup(var.charts.istio-ingress, "name", "istio-ingress")
-  chart      = lookup(var.charts.istio-ingress, "name", "istio-ingress")
-  version    = lookup(var.charts.istio-ingress, "version", "")
-  repository = "./install"
-  namespace  = "istio-ingress"
-
-  set {
-    name  = "gateways.istio-ingressgateway.name"
-    value = "istio-ingressgateway-web"
-  }
-
-  set {
-    name  = "gateways.istio-ingressgateway.labels.app"
-    value = "istio-ingressgateway-web"
-  }
-
-  set {
-    name  = "gateways.istio-ingressgateway.labels.istio"
-    value = "ingressgateway-web"
-  }
-
-  set {
-    name  = "global.hub"
-    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/istio"
-  }
-
-  set {
-    name  = "gateways.istio-ingressgateway.autoscaleEnabled"
-    value = "true"
-  }
-
-  set {
-    name  = "gateways.istio-ingressgateway.autoscaleMin"
-    value = var.istio_components_hpa_spec.istio_ingress_web_min_replicas
-  }
-
-  set {
-    name  = "gateways.istio-ingressgateway.autoscaleMax"
-    value = var.istio_components_hpa_spec.istio_ingress_web_max_replicas
-  }
-
-  set {
-    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-internal"
-    value = "true"
-  }
-
-  set {
-    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-create"
-    value = "true"
-  }
-
-  set {
-    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-name"
-    value = "PLS-${var.aks_cluster_name}-INGRESS-WEB"
-  }
-
-  set {
-    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-resource-group"
-    value = var.istio_ingress_load_balancer_resource_group
-  }
-
-  set {
-    name  = "gateways.istio-ingressgateway.env.ISTIO_META_HTTP10"
-    value = "1"
-  }
-
-  wait    = true
-  timeout = 300
-
-  depends_on = [
-    null_resource.download_charts,
-    kubernetes_namespace.istio_ingress_namespace,
-    helm_release.istio_base_install,
-    helm_release.istiod_install
-  ]
-}
-
 data "kubectl_file_documents" "istio_ingress_gateway_manifests" {
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway.yaml", {
     istio_gateway_mgmt_cert_secret_name = var.istio_gateway_mgmt_cert_secret_name
     istio_gateway_apps_cert_secret_name = var.istio_gateway_apps_cert_secret_name
-    istio_gateway_web_cert_secret_name  = var.istio_gateway_web_cert_secret_name
     istio_ingress_apps_domains          = var.istio_ingress_apps_domains
     istio_ingress_mgmt_domains          = var.istio_ingress_mgmt_domains
-    istio_ingress_web_domains           = var.istio_ingress_web_domains
     aks_cluster_name                    = var.aks_cluster_name
   })
 }
@@ -418,8 +337,7 @@ resource "kubectl_manifest" "install_istio_ingress_gateway_manifests" {
     kubectl_manifest.cert-manager-install,
     kubectl_manifest.cert_issuer_install,
     helm_release.istio_ingress_apps_install,
-    helm_release.istio_ingress_mgmt_install,
-    helm_release.istio_ingress_web_install
+    helm_release.istio_ingress_mgmt_install
   ]
 }
 

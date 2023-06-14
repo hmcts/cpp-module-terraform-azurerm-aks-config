@@ -18,18 +18,10 @@ output "ingress_lb_private_ip_address_mgmt" {
   value = data.kubernetes_service.mgmt_gateway_svc.status.0.load_balancer.0.ingress.0.ip
 }
 
-# output "ingress_lb_private_ip_address_web" {
-#   value = data.kubernetes_service.web_gateway_svc.status.0.load_balancer.0.ingress.0.ip
-# }
-
 output "private_link_service_ingress_apps_id" {
   value = data.azurerm_private_link_service.ingress_apps.id
 }
 
 output "private_link_service_ingress_mgmt_id" {
   value = data.azurerm_private_link_service.ingress_mgmt.id
-}
-
-output "private_link_service_ingress_web_id" {
-  value = data.azurerm_private_link_service.ingress_web.id
 }
