@@ -83,11 +83,6 @@ variable "istio_ingress_mgmt_domains" {
   description = "Ingress domain name FQDN for mgmt"
 }
 
-variable "istio_ingress_web_domains" {
-  type        = list(string)
-  description = "Ingress domain name FQDN for web"
-}
-
 variable "kiali_hostnames" {
   type        = list(string)
   description = "Hostnames used for kiali"
@@ -155,11 +150,6 @@ variable "istio_gateway_apps_cert_secret_name" {
   default = "istio-ingressgateway-apps-cert"
 }
 
-variable "istio_gateway_web_cert_secret_name" {
-  type    = string
-  default = "istio-ingressgateway-web-cert"
-}
-
 variable "istio_components_hpa_spec" {
   type = map(number)
   default = {
@@ -169,8 +159,6 @@ variable "istio_components_hpa_spec" {
     istio_ingress_mgmt_max_replicas = 5
     istio_ingress_apps_min_replicas = 1
     istio_ingress_apps_max_replicas = 5
-    istio_ingress_web_min_replicas  = 1
-    istio_ingress_web_max_replicas  = 5
   }
 }
 
