@@ -21,7 +21,7 @@ resource "helm_release" "sonarqube_install" {
   namespace  = "sonarqube"
 
   set {
-    name  = "image.repo"
+    name  = "image.repository"
     value = "${var.acr_name}.azurecr.io/hmcts/sonarqube"
   }
   set {
