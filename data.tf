@@ -27,15 +27,15 @@ data "kubernetes_service" "app_gateway_svc" {
   ]
 }
 
-# data "kubernetes_service" "web_gateway_svc" {
-#   metadata {
-#     name      = "istio-ingressgateway-web"
-#     namespace = "istio-ingress"
-#   }
-#   depends_on = [
-#     time_sleep.wait_for_loadbalancer
-#   ]
-# }
+data "kubernetes_service" "web_gateway_svc" {
+  metadata {
+    name      = "istio-ingressgateway-web"
+    namespace = "istio-ingress"
+  }
+  depends_on = [
+    time_sleep.wait_for_loadbalancer
+  ]
+}
 
 data "azurerm_private_link_service" "ingress_apps" {
   name                = "PLS-${upper(var.aks_cluster_name)}-INGRESS-APPS"
