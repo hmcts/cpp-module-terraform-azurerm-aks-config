@@ -79,6 +79,9 @@ kube-state-metrics:
       operator: "Exists"
       effect: "NoSchedule"
 
+nodeExporter:
+  enabled: false
+
 prometheus-node-exporter:
   image:
     repository: ${node_exporter_image}
@@ -209,14 +212,14 @@ prometheus:
         action: keep
         regex: '.*-envoy-prom'
       metric_relabel_configs:
-      - source_labels: [ http_conn_manager_prefix ]
-        regex: '(0\.0\.0\.0_).*'
-        action: drop
-      - source_labels: [__name__]
-        regex: 'envoy_cluster.*'
-        action: drop
+      - source_labels: [ __name__ ]
+        regex: istio_requests_total
+        action: keep
+
+
 
 kubelet:
+  enabled: false
   serviceMonitor:
     cAdvisorMetricRelabelings:
       - action: drop

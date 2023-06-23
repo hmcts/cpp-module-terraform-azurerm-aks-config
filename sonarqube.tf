@@ -21,8 +21,8 @@ resource "helm_release" "sonarqube_install" {
   namespace  = "sonarqube"
 
   set {
-    name  = "image.repo"
-    value = "${var.acr_name}.azurecr.io/hmcts/sonarqube/sonarqube"
+    name  = "image.repository"
+    value = "${var.acr_name}.azurecr.io/hmcts/sonarqube"
   }
   set {
     name  = "postgresql.enabled"

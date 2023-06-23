@@ -57,3 +57,21 @@ spec:
     kind: ClusterIssuer
     name: vault-issuer
   secretName: ${istio_gateway_apps_cert_secret_name}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: istio-ingressgateway-web-cert
+  namespace: "istio-ingress"
+spec:
+  commonName: "${element(istio_ingress_web_domains, 0)}"
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  dnsNames:
+    %{~ for dnsname in istio_ingress_web_domains ~}
+    - "${dnsname}"
+    %{~ endfor ~}
+  issuerRef:
+    kind: ClusterIssuer
+    name: vault-issuer
+  secretName: ${istio_gateway_web_cert_secret_name}
