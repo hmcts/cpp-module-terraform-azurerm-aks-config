@@ -136,7 +136,7 @@ resource "helm_release" "dynatrace_operator" {
 
   set {
     name  = "classicFullStack.args[0]"
-    value = "--set-host-group=${var.environment}_CRIME_CP_AKS"
+    value = "--set-host-group=${upper(var.environment)}_CRIME_CP_AKS"
   }
 
   depends_on = [
