@@ -98,6 +98,14 @@ resource "helm_release" "velero_install" {
     name  = "configuration.backupStorageLocation.config.resourceGroup"
     value = var.aks_resource_group_name
   }
+  set {
+    name  = "resources.limits.cpu"
+    value = "2000m"
+  }
+  set {
+    name  = "resources.limits.memory"
+    value = "1024Mi"
+  }
 
   wait    = true
   timeout = 300
