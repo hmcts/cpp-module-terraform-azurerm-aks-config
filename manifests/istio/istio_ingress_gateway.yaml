@@ -3,7 +3,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: istio-ingressgateway-mgmt
-  namespace: istio-ingress
+  namespace: istio-ingress-mgmt
 spec:
   selector:
     istio: ingressgateway-mgmt
@@ -69,7 +69,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: istio-ingressgateway-web
-  namespace: istio-ingress
+  namespace: istio-ingress-web
 spec:
   selector:
     istio: ingressgateway-web

@@ -21,6 +21,30 @@ resource "kubernetes_namespace" "istio_ingress_namespace" {
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
+resource "kubernetes_namespace" "istio_ingress_mgmt_namespace" {
+  metadata {
+    name = "istio-ingress-mgmt"
+    labels = {
+      "app.kubernetes.io/managed-by" = "Terraform"
+      "filebeat_enable"              = "enabled"
+      "istio-injection"              = "enabled"
+    }
+  }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+}
+
+resource "kubernetes_namespace" "istio_ingress_web_namespace" {
+  metadata {
+    name = "istio-ingress-web"
+    labels = {
+      "app.kubernetes.io/managed-by" = "Terraform"
+      "filebeat_enable"              = "enabled"
+      "istio-injection"              = "enabled"
+    }
+  }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+}
+
 data "kubectl_path_documents" "istio_crd_manifests" {
   pattern = "${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml"
 }
@@ -146,7 +170,7 @@ resource "helm_release" "istio_ingress_mgmt_install" {
   chart      = lookup(var.charts.istio-ingress, "name", "istio-ingress")
   version    = lookup(var.charts.istio-ingress, "version", "")
   repository = "./install"
-  namespace  = "istio-ingress"
+  namespace  = "istio-ingress-mgmt"
 
   set {
     name  = "gateways.istio-ingressgateway.name"
@@ -233,7 +257,7 @@ resource "helm_release" "istio_ingress_mgmt_install" {
 
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.istio_ingress_namespace,
+    kubernetes_namespace.istio_ingress_mgmt_namespace,
     helm_release.istio_base_install,
     helm_release.istiod_install
   ]
@@ -325,7 +349,7 @@ resource "helm_release" "istio_ingress_web_install" {
   chart      = lookup(var.charts.istio-ingress, "name", "istio-ingress")
   version    = lookup(var.charts.istio-ingress, "version", "")
   repository = "./install"
-  namespace  = "istio-ingress"
+  namespace  = "istio-ingress-web"
 
   set {
     name  = "gateways.istio-ingressgateway.name"
@@ -392,7 +416,7 @@ resource "helm_release" "istio_ingress_web_install" {
 
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.istio_ingress_namespace,
+    kubernetes_namespace.istio_ingress_web_namespace,
     helm_release.istio_base_install,
     helm_release.istiod_install
   ]

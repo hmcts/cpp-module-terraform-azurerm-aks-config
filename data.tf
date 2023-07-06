@@ -10,10 +10,11 @@ resource "time_sleep" "wait_for_loadbalancer" {
 data "kubernetes_service" "mgmt_gateway_svc" {
   metadata {
     name      = "istio-ingressgateway-mgmt"
-    namespace = "istio-ingress"
+    namespace = "istio-ingress-mgmt"
   }
   depends_on = [
-    time_sleep.wait_for_loadbalancer
+    time_sleep.wait_for_loadbalancer,
+    kubernetes_namespace.istio_ingress_mgmt_namespace
   ]
 }
 
@@ -23,17 +24,19 @@ data "kubernetes_service" "app_gateway_svc" {
     namespace = "istio-ingress"
   }
   depends_on = [
-    time_sleep.wait_for_loadbalancer
+    time_sleep.wait_for_loadbalancer,
+    kubernetes_namespace.istio_ingress_namespace
   ]
 }
 
 data "kubernetes_service" "web_gateway_svc" {
   metadata {
     name      = "istio-ingressgateway-web"
-    namespace = "istio-ingress"
+    namespace = "istio-ingress-web"
   }
   depends_on = [
-    time_sleep.wait_for_loadbalancer
+    time_sleep.wait_for_loadbalancer,
+    kubernetes_namespace.istio_ingress_web_namespace
   ]
 }
 
