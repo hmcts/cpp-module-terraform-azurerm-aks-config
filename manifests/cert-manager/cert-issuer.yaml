@@ -26,7 +26,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: istio-ingressgateway-mgmt-cert
-  namespace: "istio-ingress"
+  namespace: "istio-ingress-mgmt"
 spec:
   commonName: "${element(istio_ingress_mgmt_domains, 0)}"
   duration: 2160h # 90d
@@ -62,7 +62,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: istio-ingressgateway-web-cert
-  namespace: "istio-ingress"
+  namespace: "istio-ingress-web"
 spec:
   commonName: "${element(istio_ingress_web_domains, 0)}"
   duration: 2160h # 90d

@@ -65,6 +65,10 @@ resource "helm_release" "pgadmin" {
     value = var.pgadmin_oauth2_clientsecret
   }
   set {
+    name  = "gateway.name"
+    value = "istio-ingress-mgmt/istio-ingressgateway-mgmt"
+  }
+  set {
     name  = "gateway.host"
     value = var.pgadmin_hostnames
   }
