@@ -437,7 +437,6 @@ data "kubectl_file_documents" "istio_ingress_gateway_manifests" {
 resource "kubectl_manifest" "install_istio_ingress_gateway_manifests" {
   count              = length(split("\n---\n", file("${path.module}/manifests/istio/istio_ingress_gateway.yaml")))
   yaml_body          = element(data.kubectl_file_documents.istio_ingress_gateway_manifests.documents, count.index)
-  override_namespace = "istio-ingress"
   depends_on = [
     kubectl_manifest.cert-manager-install,
     kubectl_manifest.cert_issuer_install,
