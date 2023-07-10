@@ -77,7 +77,7 @@ resource "helm_release" "prometheus_adapter_install" {
 resource "kubectl_manifest" "install_grafana_virtualservice_manifests" {
   yaml_body = templatefile("${path.module}/manifests/prometheus/virtualservice_grafana.yaml", {
     namespace           = "prometheus"
-    gateway             = "istio-ingress/istio-ingressgateway-mgmt"
+    gateway             = "istio-ingress-mgmt/istio-ingressgateway-mgmt"
     grafana_hostnames   = var.grafana_hostnames
     grafana_destination = "${helm_release.prometheus.name}-grafana"
   })

@@ -77,7 +77,7 @@ resource "helm_release" "kiali_operator_install" {
 resource "kubectl_manifest" "install_kiali_virtualservice_manifests" {
   yaml_body = templatefile("${path.module}/manifests/kiali/virtualservice.yaml", {
     namespace         = "istio-system"
-    gateway           = "istio-ingress/istio-ingressgateway-mgmt"
+    gateway           = "istio-ingress-mgmt/istio-ingressgateway-mgmt"
     kiali_hostnames   = var.kiali_hostnames
     kiali_destination = "kiali"
   })

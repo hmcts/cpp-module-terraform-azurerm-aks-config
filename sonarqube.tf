@@ -48,6 +48,10 @@ resource "helm_release" "sonarqube_install" {
     name  = "gateway.host"
     value = var.sonarqube_config.sonarqubeUrl
   }
+  set {
+    name  = "gateway.name"
+    value = "istio-ingress-mgmt/istio-ingressgateway-mgmt"
+  }
   values = [templatefile("${path.module}/manifests/common/sonarProps.yaml", {
     tenant_id    = data.azurerm_client_config.current.tenant_id
     sonarqubeUrl = var.sonarqube_config.sonarqubeUrl
