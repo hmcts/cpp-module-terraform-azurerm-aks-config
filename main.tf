@@ -28,6 +28,12 @@ data "kubectl_file_documents" "network_policy_manifests" {
 resource "kubectl_manifest" "install_mgmt_networkpolicies" {
   count              = length(split("\n---\n", file("${path.module}/manifests/common/networkpolicy.yaml")))
   yaml_body          = element(data.kubectl_file_documents.network_policy_manifests.documents, count.index)
-  override_namespace = [for ns in var.system_namespaces : ns]
+
+  dynamic override_namespace {
+    for_each = toset(var.system_namespaces)
+    content {
+      override_namespace = "$each.key"
+    }
+  }
   depends_on         = [kubernetes_namespace.prometheus_namespace, kubernetes_namespace.sonarqube_namespace, kubernetes_namespace.kiali_namespace, kubernetes_namespace.pgadmin_namespace]
 }
