@@ -21,9 +21,11 @@ resource "time_sleep" "wait_for_aks_api_dns_propagation" {
 
 resource "kubectl_manifest" "install_mgmt_networkpolicies" {
   yaml_body = templatefile("${path.module}/manifests/common/networkpolicy.yaml", {
-    namespace           = "istio-ingress-mgmt"
-    system_namespaces   = var.system_namespaces
+    namespace = "istio-ingress-mgmt"
   })
+  count              = length(var.system_namespaces)
+  override_namespace = var.system_namespaces[count.index]
+
   depends_on = [
     kubernetes_namespace.prometheus_namespace,
     kubernetes_namespace.sonarqube_namespace,
