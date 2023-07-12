@@ -678,6 +678,6 @@ variable "sonarqube_config" {
 }
 
 variable "system_namespaces" {
-  type        = list(string)
+  type        = set(string)
   description = "System component namespace list"
 }
