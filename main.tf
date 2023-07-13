@@ -28,7 +28,7 @@ data "kubectl_file_documents" "network_policy_manifests" {
 
 
 resource "kubectl_manifest" "install_mgmt_networkpolicies" {
-  count      = length(data.kubectl_file_documents.network_policy_manifests.documents)
-  yaml_body  = element(data.kubectl_file_documents.network_policy_manifests.documents, count.index)
+  for_each      = toset(data.kubectl_file_documents.network_policy_manifests.documents)
+  yaml_body  = each.value
   depends_on = [kubernetes_namespace.prometheus_namespace, kubernetes_namespace.sonarqube_namespace, kubernetes_namespace.kiali_namespace, kubernetes_namespace.pgadmin_namespace]
 }
