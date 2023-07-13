@@ -1,25 +1,22 @@
-%{~ for sys_namespaces in system_namespaces ~}
+%{~ for namespaces in system_namespaces ~}
 ---
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
   name: default-deny-from-other-namespaces
-  namespace: "${sys_namespaces}"
+  namespace: ${namespaces}
 spec:
   podSelector:
     matchLabels:
   ingress:
     - from:
         - podSelector: {}
-%{~ endfor ~}
-  
-%{~ for sys_namespaces in system_namespaces ~}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-from-namespaces
-  namespace: "${sys_namespaces}"
+  namespace: ${namespaces}
 spec:
   podSelector: {}
   ingress:
@@ -29,4 +26,5 @@ spec:
             kubernetes.io/metadata.name: ${namespace}
   policyTypes:
     - Ingress
-  %{~ endfor ~}
+---
+%{~ endfor ~}
