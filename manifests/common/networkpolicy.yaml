@@ -1,0 +1,30 @@
+%{~ for namespaces in system_namespaces ~}
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: default-deny-from-other-namespaces
+  namespace: ${namespaces}
+spec:
+  podSelector:
+    matchLabels:
+  ingress:
+    - from:
+        - podSelector: {}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-namespaces
+  namespace: ${namespaces}
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: ${namespace}
+  policyTypes:
+    - Ingress
+---
+%{~ endfor ~}

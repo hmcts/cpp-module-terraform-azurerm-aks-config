@@ -18,3 +18,17 @@ resource "time_sleep" "wait_for_aks_api_dns_propagation" {
   ]
   create_duration = "60s"
 }
+
+data "kubectl_file_documents" "network_policy_manifests" {
+  content = templatefile("${path.module}/manifests/common/networkpolicy.yaml", {
+    namespace         = "istio-ingress-mgmt"
+    system_namespaces = var.system_namespaces
+  })
+}
+
+
+resource "kubectl_manifest" "install_mgmt_networkpolicies" {
+  for_each   = toset(data.kubectl_file_documents.network_policy_manifests.documents)
+  yaml_body  = each.value
+  depends_on = [kubernetes_namespace.prometheus_namespace, kubernetes_namespace.sonarqube_namespace, kubernetes_namespace.kiali_namespace, kubernetes_namespace.pgadmin_namespace]
+}

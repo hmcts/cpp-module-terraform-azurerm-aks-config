@@ -676,3 +676,8 @@ variable "sonarqube_config" {
     sonarqubeUrl   = ""
   }
 }
+
+variable "system_namespaces" {
+  type        = list(string)
+  description = "System component namespace list"
+}
