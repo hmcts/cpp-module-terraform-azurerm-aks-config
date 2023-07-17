@@ -24,6 +24,11 @@ spec:
       - namespaceSelector:
           matchLabels:
             kubernetes.io/metadata.name: ${namespace}
+      %{ if "${namespaces}" == "prometheus" }
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: "istio-system"
+      %{ endif }
   policyTypes:
     - Ingress
 ---
