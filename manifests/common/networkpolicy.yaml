@@ -21,9 +21,11 @@ spec:
   podSelector: {}
   ingress:
     - from:
+      %{~ for ns in namespace ~}
       - namespaceSelector:
           matchLabels:
-            kubernetes.io/metadata.name: ${namespace}
+            kubernetes.io/metadata.name: ${ns}
+      %{~ endfor ~}
   policyTypes:
     - Ingress
 ---
