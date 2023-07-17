@@ -21,14 +21,11 @@ spec:
   podSelector: {}
   ingress:
     - from:
+      %{~ for ns in namespace ~}
       - namespaceSelector:
           matchLabels:
-            kubernetes.io/metadata.name: ${namespace}
-      %{ if "${namespaces}" == "prometheus" }
-      - namespaceSelector:
-          matchLabels:
-            kubernetes.io/metadata.name: "istio-system"
-      %{ endif }
+            kubernetes.io/metadata.name: ${ns}
+      %{~ endfor ~}
   policyTypes:
     - Ingress
 ---
