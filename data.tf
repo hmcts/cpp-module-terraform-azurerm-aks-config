@@ -1,8 +1,23 @@
-resource "time_sleep" "wait_for_loadbalancer" {
+resource "time_sleep" "wait_for_loadbalancer_apps" {
+  depends_on = [
+    helm_release.istio_ingress_apps_install,
+    kubectl_manifest.install_istio_ingress_gateway_apps_manifests
+  ]
+  create_duration = "120s"
+}
+
+resource "time_sleep" "wait_for_loadbalancer_mgmt" {
   depends_on = [
     helm_release.istio_ingress_mgmt_install,
-    helm_release.istio_ingress_apps_install,
-    kubectl_manifest.install_istio_ingress_gateway_manifests
+    kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests
+  ]
+  create_duration = "120s"
+}
+
+resource "time_sleep" "wait_for_loadbalancer_web" {
+  depends_on = [
+    helm_release.istio_ingress_web_install,
+    kubectl_manifest.install_istio_ingress_gateway_web_manifests
   ]
   create_duration = "120s"
 }
@@ -13,7 +28,7 @@ data "kubernetes_service" "mgmt_gateway_svc" {
     namespace = "istio-ingress-mgmt"
   }
   depends_on = [
-    time_sleep.wait_for_loadbalancer,
+    time_sleep.wait_for_loadbalancer_mgmt,
     kubernetes_namespace.istio_ingress_mgmt_namespace
   ]
 }
@@ -24,7 +39,7 @@ data "kubernetes_service" "app_gateway_svc" {
     namespace = "istio-ingress"
   }
   depends_on = [
-    time_sleep.wait_for_loadbalancer,
+    time_sleep.wait_for_loadbalancer_apps,
     kubernetes_namespace.istio_ingress_namespace
   ]
 }
@@ -35,7 +50,7 @@ data "kubernetes_service" "web_gateway_svc" {
     namespace = "istio-ingress-web"
   }
   depends_on = [
-    time_sleep.wait_for_loadbalancer,
+    time_sleep.wait_for_loadbalancer_web,
     kubernetes_namespace.istio_ingress_web_namespace
   ]
 }
@@ -44,9 +59,8 @@ data "azurerm_private_link_service" "ingress_apps" {
   name                = "PLS-${upper(var.aks_cluster_name)}-INGRESS-APPS"
   resource_group_name = var.istio_ingress_load_balancer_resource_group
   depends_on = [
-    helm_release.istio_ingress_mgmt_install,
     helm_release.istio_ingress_apps_install,
-    kubectl_manifest.install_istio_ingress_gateway_manifests
+    kubectl_manifest.install_istio_ingress_gateway_apps_manifests
   ]
 }
 
@@ -55,8 +69,7 @@ data "azurerm_private_link_service" "ingress_mgmt" {
   resource_group_name = var.istio_ingress_load_balancer_resource_group
   depends_on = [
     helm_release.istio_ingress_mgmt_install,
-    helm_release.istio_ingress_apps_install,
-    kubectl_manifest.install_istio_ingress_gateway_manifests
+    kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests
   ]
 }
 
@@ -64,9 +77,8 @@ data "azurerm_private_link_service" "ingress_web" {
   name                = "PLS-${upper(var.aks_cluster_name)}-INGRESS-WEB"
   resource_group_name = var.istio_ingress_load_balancer_resource_group
   depends_on = [
-    helm_release.istio_ingress_mgmt_install,
     helm_release.istio_ingress_web_install,
-    kubectl_manifest.install_istio_ingress_gateway_manifests
+    kubectl_manifest.install_istio_ingress_gateway_web_manifests
   ]
 }
 
