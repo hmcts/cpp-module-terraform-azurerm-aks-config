@@ -48,10 +48,10 @@ resource "helm_release" "sonarqube_install" {
 #    name  = "gateway.host"
 #    value = var.sonarqube_config.sonarqubeUrl
 #  }
-  set {
-    name  = "gateway.hosts"
-    value = var.sonarqube_config.hosts
-  }
+#  set {
+#    name  = "gateway.hosts"
+#    value = var.sonarqube_config.hosts
+#  }
   set {
     name  = "gateway.name"
     value = "istio-ingress-mgmt/istio-ingressgateway-mgmt"
