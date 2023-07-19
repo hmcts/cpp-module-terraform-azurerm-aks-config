@@ -38,7 +38,7 @@ data "kubectl_file_documents" "cert_issuer_manifests" {
     vault_token                         = base64encode(var.vault_token)
     vault_path                          = var.vault_path
     vault_url                           = var.vault_url
-    ca_bundle                           = filebase64(var.ca_bundle_path)
+    ca_bundle                           = data.vault_generic_secret.ca_cert.data.issuing_ca
     istio_gateway_mgmt_cert_secret_name = var.istio_gateway_mgmt_cert_secret_name
     istio_gateway_apps_cert_secret_name = var.istio_gateway_apps_cert_secret_name
     istio_gateway_web_cert_secret_name  = var.istio_gateway_web_cert_secret_name

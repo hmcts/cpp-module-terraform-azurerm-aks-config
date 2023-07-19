@@ -88,7 +88,7 @@ resource "helm_release" "velero_install" {
   }
   set {
     name  = "configuration.backupStorageLocation.caCert"
-    value = filebase64(var.ca_bundle_path)
+    value = data.vault_generic_secret.ca_cert.data.issuing_ca
   }
   set {
     name  = "configuration.backupStorageLocation.config.storageAccount"
