@@ -44,9 +44,13 @@ resource "helm_release" "sonarqube_install" {
     name  = "jdbcOverwrite.jdbcPassword"
     value = data.vault_generic_secret.sonaqube_cred.0.data["dbPwd"]
   }
+#  set {
+#    name  = "gateway.host"
+#    value = var.sonarqube_config.sonarqubeUrl
+#  }
   set {
-    name  = "gateway.host"
-    value = var.sonarqube_config.sonarqubeUrl
+    name  = "gateway.hosts"
+    value = join(",", var.sonarqube_config.hosts)
   }
   set {
     name  = "gateway.name"
