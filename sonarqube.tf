@@ -50,7 +50,7 @@ resource "helm_release" "sonarqube_install" {
 #  }
   set {
     name  = "gateway.hosts"
-    value = "{${join(",", var.sonarqube_config.hosts)}}"
+    value = var.sonarqube_config.hosts
   }
   set {
     name  = "gateway.name"
