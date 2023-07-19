@@ -668,14 +668,14 @@ variable "sonarqube_config" {
     jdbcUrl        = string
     sonarVaultPath = string
     sonarqubeUrl   = string
-    hosts          = list(string)
+    hosts          = string
   })
   default = {
     enable         = false
     jdbcUrl        = ""
     sonarVaultPath = ""
     sonarqubeUrl   = ""
-    hosts          = []
+    hosts          = ""
   }
 }
 

@@ -50,11 +50,7 @@ resource "helm_release" "sonarqube_install" {
 #  }
   set {
     name  = "gateway.hosts"
-    value = var.sonarqube_config.hosts[0]
-  }
-  set {
-    name  = "gateway.hosts"
-    value = var.sonarqube_config.hosts[1]
+    value = var.sonarqube_config.hosts
   }
   set {
     name  = "gateway.name"
