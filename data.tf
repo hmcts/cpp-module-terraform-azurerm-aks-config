@@ -98,5 +98,5 @@ data "vault_generic_secret" "sonaqube_cred" {
 }
 
 data "vault_generic_secret" "ca_cert" {
-  path  = var.ca_bundle_path
+  path = var.ca_bundle_path
 }
