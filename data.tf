@@ -96,3 +96,7 @@ data "vault_generic_secret" "sonaqube_cred" {
   count = var.sonarqube_config.enable ? 1 : 0
   path  = var.sonarqube_config.sonarVaultPath
 }
+
+data "vault_generic_secret" "ca_cert" {
+  path = var.ca_bundle_path
+}
