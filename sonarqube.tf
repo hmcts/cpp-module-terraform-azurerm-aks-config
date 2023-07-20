@@ -50,7 +50,7 @@ resource "helm_release" "sonarqube_install" {
 #  }
   set {
     name  = "sonarUrls"
-    value = "sonarqube.mgmt01.dev.nl.cjscp.org.uk"
+    value = "sonarqube.mgmt01.dev.nl.cjscp.org.uk_sonarqube.mgmt.cs01cl02.dev.nl.cjscp.org.uk"
   }
   set {
     name  = "gateway.name"
