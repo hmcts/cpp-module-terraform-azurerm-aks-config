@@ -45,8 +45,8 @@ resource "helm_release" "sonarqube_install" {
     value = data.vault_generic_secret.sonaqube_cred.0.data["dbPwd"]
   }
   set {
-    name  = "gateway.host"
-    value = var.sonarqube_config.sonarqubeUrl
+    name  = "gateway.hosts"
+    value = var.sonarqube_config.hosts
   }
   set {
     name  = "gateway.name"
