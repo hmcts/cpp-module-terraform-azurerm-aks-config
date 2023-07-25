@@ -422,26 +422,56 @@ resource "helm_release" "istio_ingress_web_install" {
   ]
 }
 
-data "kubectl_file_documents" "istio_ingress_gateway_manifests" {
-  content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway.yaml", {
-    istio_gateway_mgmt_cert_secret_name = var.istio_gateway_mgmt_cert_secret_name
+data "kubectl_file_documents" "istio_ingress_gateway_apps_manifests" {
+  content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_apps.yaml", {
     istio_gateway_apps_cert_secret_name = var.istio_gateway_apps_cert_secret_name
-    istio_gateway_web_cert_secret_name  = var.istio_gateway_web_cert_secret_name
     istio_ingress_apps_domains          = var.istio_ingress_apps_domains
-    istio_ingress_mgmt_domains          = var.istio_ingress_mgmt_domains
-    istio_ingress_web_domains           = var.istio_ingress_web_domains
     aks_cluster_name                    = var.aks_cluster_name
   })
 }
 
-resource "kubectl_manifest" "install_istio_ingress_gateway_manifests" {
-  count     = length(split("\n---\n", file("${path.module}/manifests/istio/istio_ingress_gateway.yaml")))
-  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_manifests.documents, count.index)
+data "kubectl_file_documents" "istio_ingress_gateway_mgmt_manifests" {
+  content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_mgmt.yaml", {
+    istio_gateway_mgmt_cert_secret_name = var.istio_gateway_mgmt_cert_secret_name
+    istio_ingress_mgmt_domains          = var.istio_ingress_mgmt_domains
+    aks_cluster_name                    = var.aks_cluster_name
+  })
+}
+
+data "kubectl_file_documents" "istio_ingress_gateway_web_manifests" {
+  content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_web.yaml", {
+    istio_gateway_web_cert_secret_name = var.istio_gateway_web_cert_secret_name
+    istio_ingress_web_domains          = var.istio_ingress_web_domains
+    aks_cluster_name                   = var.aks_cluster_name
+  })
+}
+
+resource "kubectl_manifest" "install_istio_ingress_gateway_apps_manifests" {
+  count     = length(data.kubectl_file_documents.istio_ingress_gateway_apps_manifests.documents)
+  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_apps_manifests.documents, count.index)
   depends_on = [
     kubectl_manifest.cert-manager-install,
     kubectl_manifest.cert_issuer_install,
-    helm_release.istio_ingress_apps_install,
-    helm_release.istio_ingress_mgmt_install,
+    helm_release.istio_ingress_apps_install
+  ]
+}
+
+resource "kubectl_manifest" "install_istio_ingress_gateway_mgmt_manifests" {
+  count     = length(data.kubectl_file_documents.istio_ingress_gateway_mgmt_manifests.documents)
+  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_mgmt_manifests.documents, count.index)
+  depends_on = [
+    kubectl_manifest.cert-manager-install,
+    kubectl_manifest.cert_issuer_install,
+    helm_release.istio_ingress_mgmt_install
+  ]
+}
+
+resource "kubectl_manifest" "install_istio_ingress_gateway_web_manifests" {
+  count     = length(data.kubectl_file_documents.istio_ingress_gateway_web_manifests.documents)
+  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_web_manifests.documents, count.index)
+  depends_on = [
+    kubectl_manifest.cert-manager-install,
+    kubectl_manifest.cert_issuer_install,
     helm_release.istio_ingress_web_install
   ]
 }

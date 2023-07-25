@@ -85,6 +85,6 @@ resource "kubectl_manifest" "install_grafana_virtualservice_manifests" {
   depends_on = [
     helm_release.prometheus,
     helm_release.prometheus_adapter_install,
-    kubectl_manifest.install_istio_ingress_gateway_manifests
+    kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests
   ]
 }

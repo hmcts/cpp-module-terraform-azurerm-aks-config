@@ -1,0 +1,33 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: istio-ingressgateway-mgmt
+  namespace: istio-ingress-mgmt
+spec:
+  selector:
+    istio: ingressgateway-mgmt
+  servers:
+  - hosts:
+    %{~ for host in istio_ingress_mgmt_domains ~}
+    - "${host}"
+    %{~ endfor ~}
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+    tls:
+      httpsRedirect: true # sends 301 redirect for http requests
+  - hosts:
+    %{~ for host in istio_ingress_mgmt_domains ~}
+    - "${host}"
+    %{~ endfor ~}
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: ${istio_gateway_mgmt_cert_secret_name}
+      mode: SIMPLE
+      privateKey: sds
+      serverCertificate: sds
