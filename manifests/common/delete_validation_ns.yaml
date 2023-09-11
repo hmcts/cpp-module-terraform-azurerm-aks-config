@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: delete-validation-ns-new
+  name: delete-validation-ns
   namespace: kube-system
 spec:
   schedule: "*/5 * * * *"
