@@ -5,7 +5,7 @@ metadata:
   name: delete-validation-ns
   namespace: kube-system
 spec:
-  schedule: "0 19 * * *"
+  schedule: "*/5 * * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:
@@ -17,7 +17,9 @@ spec:
             - name: cleanup
               image: crmdvrepo01.azurecr.io/hmcts/jenkins-agent-java11:v1.0.4-jdk11
               imagePullPolicy: IfNotPresent
-              command: ["/bin/bash", "-c", "helm delete $(kubectl get ns -l is_validation==true  --output=custom-columns='NAME:.metadata.name' --no-headers=true) -n namespace-management || true"]
+              command: ["/bin/bash", "-c", "helm delete $(kubectl get ns -l is_validation==true  --output=custom-columns='NAME:.metadata.name,CREATION_TIME:.metadata.creationTimestamp' --no-headers=true | awk '{ namespace = $1; creation_time = $2; cmd =\"date -d \" creation_time \" +%s\"; cmd | getline creation_timestamp; close(cmd);
+                current_timestamp = systime(); age_in_seconds = current_timestamp -
+                creation_timestamp; if (age_in_seconds > 10800) { print namespace;}}') -n namespace-management || true"]
               resources:
                 requests:
                   memory: "64Mi"
