@@ -64,6 +64,7 @@ resource "helm_release" "sonarqube_install" {
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
     null_resource.download_charts,
-    kubernetes_namespace.sonarqube_namespace
+    kubernetes_namespace.sonarqube_namespace,
+    kubectl_manifest.install_gatekeeper_whitelistedimages_manifests
   ]
 }

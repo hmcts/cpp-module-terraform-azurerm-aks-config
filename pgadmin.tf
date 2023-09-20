@@ -83,6 +83,7 @@ resource "helm_release" "pgadmin" {
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.pgadmin_namespace,
-    kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests
+    kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests,
+    kubectl_manifest.install_gatekeeper_whitelistedimages_manifests
   ]
 }
