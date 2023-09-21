@@ -70,7 +70,8 @@ resource "helm_release" "kiali_operator_install" {
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
     null_resource.download_charts,
-    kubernetes_secret.kiali_pass
+    kubernetes_secret.kiali_pass,
+    kubectl_manifest.install_gatekeeper_whitelistedimages_manifests
   ]
 }
 

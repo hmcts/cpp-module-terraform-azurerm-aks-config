@@ -76,6 +76,10 @@ resource "helm_release" "pgadmin" {
     name  = "server_list_base64"
     value = local.server_list_content_base64
   }
+  set {
+    name  = "initContainers.image"
+    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/library/busybox"
+  }
 
   wait    = true
   timeout = 300
@@ -83,6 +87,7 @@ resource "helm_release" "pgadmin" {
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.pgadmin_namespace,
-    kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests
+    kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests,
+    kubectl_manifest.install_gatekeeper_whitelistedimages_manifests
   ]
 }
