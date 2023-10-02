@@ -206,6 +206,7 @@ variable "charts" {
     pgadmin            = map(string)
     velero             = map(string)
     sonarqube          = map(string)
+    smashing           = map(string)
   })
   default = {
     aks-rbac = {
@@ -268,6 +269,10 @@ variable "charts" {
       path    = "charts/sonarqube"
       version = "9.9.2"
     },
+    smashing = {
+      path    = "charts/smashing"
+      version = "0.1.2"
+    }
   }
 }
 
@@ -682,4 +687,34 @@ variable "sonarqube_config" {
 variable "system_namespaces" {
   type        = list(string)
   description = "System component namespace list"
+}
+
+variable "enable_smashing" {
+  type        = bool
+  description = "enable smashing dashboards"
+  default     = false
+}
+
+variable "smashing_image_tag" {
+  type        = string
+  description = "Image tag to use for smashing deployment"
+  default     = "v1.3.8"
+}
+
+variable "smashing_scheduler_render_dashboards_interval" {
+  type        = string
+  description = "How frequently the home dashboard should be updated"
+  default     = "2m"
+}
+
+variable "smashing_scheduler_environment_info_interval" {
+  type        = string
+  description = "How frequently environment info should be updated"
+  default     = "2m"
+}
+
+variable "smashing_gateway_host_name" {
+  type        = string
+  description = "Hostname for istio gateway"
+  default     = "smashing.mgmt01.dev.nl.cjscp.org.uk"
 }
