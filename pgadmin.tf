@@ -76,6 +76,10 @@ resource "helm_release" "pgadmin" {
     name  = "server_list_base64"
     value = local.server_list_content_base64
   }
+  set {
+    name  = "initContainers.image"
+    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/library/busybox"
+  }
 
   wait    = true
   timeout = 300

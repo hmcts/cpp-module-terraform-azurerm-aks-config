@@ -6,8 +6,6 @@ pr:
 parameters:
   - name: tfversion
     default: 1.0.1
-  - name: pythonVersion
-    default: 3.8.14
 
 resources:
   repositories:
@@ -26,4 +24,3 @@ stages:
       - template: steps/terraform/terraform-precommit.yaml@cppAzureDevOpsTemplates
         parameters:
           tfversion: ${{ parameters.tfversion }}
-          pythonVersion: ${{ parameters.pythonVersion }}
