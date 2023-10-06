@@ -640,7 +640,6 @@ variable "pgadmin_shared_storage_path" {
 }
 variable "pgadmin_restrict_storage_access" {
   type        = string
-  default     = "False"
   description = "Enable or disable pgadmin shared storage restrictive permissions"
 }
 
