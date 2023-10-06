@@ -52,35 +52,35 @@ resource "helm_release" "pgadmin" {
     value = var.pgadmin_admin_password
   }
   set {
-    name = "pgadmin_port"
+    name  = "pgadmin_port"
     value = var.pgadmin_port
   }
   set {
-    name = "externaldb_host"
+    name  = "externaldb_host"
     value = var.externaldb_host
   }
   set {
-    name = "externaldb_port"
+    name  = "externaldb_port"
     value = var.externaldb_port
   }
   set {
-    name = "externaldb_name"
+    name  = "externaldb_name"
     value = var.externaldb_name
   }
   set {
-    name = "externaldb_admin_user"
+    name  = "externaldb_admin_user"
     value = var.externaldb_admin_user
   }
   set {
-    name = "externaldb_admin_password"
+    name  = "externaldb_admin_password"
     value = var.externaldb_admin_password
   }
   set {
-    name = "pgadmin_shared_storage_path"
+    name  = "pgadmin_shared_storage_path"
     value = var.pgadmin_shared_storage_path
   }
-  set{
-    name = "pgadmin_restrict_storage_access"
+  set {
+    name  = "pgadmin_restrict_storage_access"
     value = var.pgadmin_restrict_storage_access
   }
 

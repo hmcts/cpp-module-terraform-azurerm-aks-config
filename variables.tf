@@ -611,36 +611,36 @@ variable "pgadmin_hostnames" {
 }
 
 variable "pgadmin_port" {
-  type = string
+  type        = string
   description = "pgadmin port"
 }
 variable "externaldb_host" {
-  type = string
+  type        = string
   description = "pgadmin external DB host"
 }
 variable "externaldb_port" {
-  type = string
+  type        = string
   description = "pgadmin external DB port"
 }
 variable "externaldb_name" {
-  type = string
+  type        = string
   description = "pgadmin external DB name"
 }
 variable "externaldb_admin_user" {
-  type = string
+  type        = string
   description = "external DB admin user"
 }
 variable "externaldb_admin_password" {
-  type = string
+  type        = string
   description = "external DB admin password"
 }
 variable "pgadmin_shared_storage_path" {
-  type = string
+  type        = string
   description = "pgadmin Shared storage path"
 }
 variable "pgadmin_restrict_storage_access" {
-  type = bool
-  default = false
+  type        = string
+  default     = "False"
   description = "Enable or disable pgadmin shared storage restrictive permissions"
 }
 
