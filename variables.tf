@@ -609,6 +609,40 @@ variable "pgadmin_hostnames" {
   type        = string
   description = "pgadmin hostname"
 }
+
+variable "pgadmin_port" {
+  type        = string
+  description = "pgadmin port"
+}
+variable "externaldb_host" {
+  type        = string
+  description = "pgadmin external DB host"
+}
+variable "externaldb_port" {
+  type        = string
+  description = "pgadmin external DB port"
+}
+variable "externaldb_name" {
+  type        = string
+  description = "pgadmin external DB name"
+}
+variable "externaldb_admin_user" {
+  type        = string
+  description = "external DB admin user"
+}
+variable "externaldb_admin_password" {
+  type        = string
+  description = "external DB admin password"
+}
+variable "pgadmin_shared_storage_path" {
+  type        = string
+  description = "pgadmin Shared storage path"
+}
+variable "pgadmin_restrict_storage_access" {
+  type        = string
+  description = "Enable or disable pgadmin shared storage restrictive permissions"
+}
+
 variable "istio_ingress_load_balancer_name" {
   type        = string
   default     = "kubernetes-internal"
