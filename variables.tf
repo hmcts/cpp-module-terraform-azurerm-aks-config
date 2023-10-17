@@ -752,3 +752,21 @@ variable "smashing_gateway_host_name" {
   description = "Hostname for istio gateway"
   default     = "smashing.mgmt01.dev.nl.cjscp.org.uk"
 }
+
+variable "enable_azure_keyvault" {
+  description = "Enable writing Hashicorp Secret to AZ KV Secret"
+  type        = bool
+  default     = false
+}
+
+variable "keyvault_name" {
+  description = "Name of Azure Keyvault"
+  type        = string
+  default     = ""
+}
+
+variable "keyvault_resource_group_name" {
+  description = "Name of Azure Keyvault RG"
+  type        = string
+  default     = ""
+}
