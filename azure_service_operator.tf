@@ -12,8 +12,8 @@ resource "kubernetes_namespace" "azure_service_operator_namespace" {
 
 resource "helm_release" "azure_service_operator" {
   count      = var.enable_azure_service_operator ? 1 : 0
-  name       = lookup(var.charts.azure_service_operator, "name", "aso")
-  chart      = lookup(var.charts.azure_service_operator, "name", "aso")
+  name       = lookup(var.charts.azure_service_operator, "name", "azure-service-operator")
+  chart      = lookup(var.charts.azure_service_operator, "name", "azure-service-operator")
   version    = lookup(var.charts.azure_service_operator, "version", "")
   repository = "./install"
   namespace  = kubernetes_namespace.azure_service_operator_namespace[0].metadata.0.name
@@ -33,7 +33,7 @@ resource "helm_release" "azure_service_operator" {
 
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.aso_namespace,
+    kubernetes_namespace.azure_service_operator_namespace,
     kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests,
     kubectl_manifest.install_gatekeeper_whitelistedimages_manifests
   ]
