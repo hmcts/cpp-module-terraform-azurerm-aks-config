@@ -596,7 +596,6 @@ variable "kube_rbac_proxy_tag" {
 variable "azure_service_operator_crdpattern" {
   type        = string
   description = "Azure Service Operator crdPattern"
-  default     = ""
 }
 
 variable "pgadmin_tag" {

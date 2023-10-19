@@ -53,7 +53,6 @@ resource "helm_release" "azure_service_operator" {
     value = var.azure_service_operator_crdpattern
   }
 
-
   wait    = true
   timeout = 300
 
