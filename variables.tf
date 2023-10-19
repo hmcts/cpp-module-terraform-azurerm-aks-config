@@ -571,7 +571,7 @@ variable "gatekeeper_config" {
 variable "enable_azure_service_operator" {
   type        = bool
   description = "enable azure service operator"
-  default     = true
+  default     = false
 }
 
 variable "enable_pgadmin" {
