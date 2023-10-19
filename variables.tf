@@ -593,6 +593,12 @@ variable "kube_rbac_proxy_tag" {
   default     = "v0.13.1"
 }
 
+variable "azure_service_operator_crdpattern" {
+  type        = string
+  description = "Azure Service Operator crdPattern"
+  default     = ""
+}
+
 variable "pgadmin_tag" {
   type        = string
   description = "PGadmin Docker image Tag"

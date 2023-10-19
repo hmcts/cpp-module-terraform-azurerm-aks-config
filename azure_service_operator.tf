@@ -28,6 +28,32 @@ resource "helm_release" "azure_service_operator" {
     value = "${var.acr_name}/gcr.io/kubebuilder/kube-rbac-proxy:${var.kube_rbac_proxy_tag}"
   }
 
+  set {
+    name  = "azureSubscriptionID"
+    value = data.azurerm_client_config.current.subscription_id
+  }
+
+  set {
+    name  = "azureTenantID"
+    value = data.azurerm_client_config.current.tenant_id
+  }
+
+  set {
+    name  = "azureClientID"
+    value = data.azurerm_client_config.current.client_id
+  }
+
+  set_sensitive {
+    name  = "azureClientSecret"
+    value = data.vault_generic_secret.azure_app_secret.data.value
+  }
+
+  set {
+    name  = "crdPattern"
+    value = var.azure_service_operator_crdpattern
+  }
+
+
   wait    = true
   timeout = 300
 
