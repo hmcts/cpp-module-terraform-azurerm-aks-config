@@ -12,9 +12,9 @@ resource "kubernetes_namespace" "azure_service_operator_namespace" {
 
 resource "helm_release" "azure_service_operator" {
   count      = var.enable_azure_service_operator ? 1 : 0
-  name       = lookup(var.charts.azure_service_operator, "name", "azure-service-operator")
-  chart      = lookup(var.charts.azure_service_operator, "name", "azure-service-operator")
-  version    = lookup(var.charts.azure_service_operator, "version", "")
+  name       = lookup(var.charts.azure-service-operator, "name", "azure-service-operator")
+  chart      = lookup(var.charts.azure-service-operator, "name", "azure-service-operator")
+  version    = lookup(var.charts.azure-service-operator, "version", "")
   repository = "./install"
   namespace  = kubernetes_namespace.azure_service_operator_namespace[0].metadata.0.name
 
