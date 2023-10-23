@@ -814,3 +814,15 @@ variable "aso_resources" {
     }
   }
 }
+
+variable "resource_types" {
+  description = "List of Azure resource types for which to retrieve predefined roles"
+  type        = list(string)
+  default     = ["Microsoft.Storage/storageAccounts", "Microsoft.KeyVault/vaults"]
+}
+
+variable "enable_azureinfo" {
+  type        = bool
+  description = "enable pgadmin interface within cluster"
+  default     = true
+}
