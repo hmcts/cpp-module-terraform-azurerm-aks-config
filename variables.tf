@@ -580,7 +580,6 @@ variable "enable_pgadmin" {
   default     = true
 }
 
-
 variable "azure_service_operator_tag" {
   type        = string
   description = "Azure Service Operator Docker image Tag"
@@ -797,4 +796,21 @@ variable "keyvault_resource_group_name" {
   description = "Name of Azure Keyvault RG"
   type        = string
   default     = ""
+}
+
+variable "aso_resources" {
+  type = object({
+    requests = map(string)
+    limits   = map(string)
+  })
+  default = {
+    requests = {
+      cpu    = "1"
+      memory = "3Gi"
+    }
+    limits = {
+      cpu    = "2"
+      memory = "4Gi"
+    }
+  }
 }
