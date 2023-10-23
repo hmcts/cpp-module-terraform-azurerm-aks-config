@@ -33,7 +33,7 @@ data:
   oidc_url: ${data.azurerm_kubernetes_cluster.aks_cluster.oidc_issuer_url}
   subscription_id: ${data.azurerm_client_config.current.subscription_id}
   tenant_id: ${data.azurerm_client_config.current.tenant_id}
-  ARMID: ${local.role_definitions}
+  ARMID: $${for attribute, value in local.role_definitions : attribute => value}
 
 YAML
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
