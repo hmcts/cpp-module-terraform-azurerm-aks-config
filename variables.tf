@@ -806,11 +806,11 @@ variable "aso_resources" {
   default = {
     requests = {
       cpu    = "1"
-      memory = "4Gi"
+      memory = "3Gi"
     }
     limits = {
       cpu    = "2"
-      memory = "3Gi"
+      memory = "4Gi"
     }
   }
 }

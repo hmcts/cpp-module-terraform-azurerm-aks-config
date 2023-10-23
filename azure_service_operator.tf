@@ -78,8 +78,6 @@ resource "helm_release" "azure_service_operator" {
 
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.azure_service_operator_namespace,
-    kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests,
-    kubectl_manifest.install_gatekeeper_whitelistedimages_manifests
+    kubernetes_namespace.azure_service_operator_namespace
   ]
 }
