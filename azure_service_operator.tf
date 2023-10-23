@@ -25,7 +25,7 @@ resource "helm_release" "azure_service_operator" {
 
   set {
     name  = "image.kubeRBACProxy"
-    value = "${var.acr_name}/gcr.io/kubebuilder/kube-rbac-proxy:${var.kube_rbac_proxy_tag}"
+    value = "${var.acr_name}.azurecr.io/gcr.io/kubebuilder/kube-rbac-proxy:${var.kube_rbac_proxy_tag}"
   }
 
   set {
