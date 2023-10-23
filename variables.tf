@@ -818,7 +818,7 @@ variable "aso_resources" {
 variable "resource_types" {
   description = "List of Azure resource types for which to retrieve predefined roles"
   type        = list(string)
-  default     = ["Microsoft.Storage/storageAccounts", "Microsoft.KeyVault/vaults"]
+  default     = ["Key Vault Administrator", "Key Vault Contributor", "Storage Account Contributor", "Storage Blob Data Owner"]
 }
 
 variable "enable_azureinfo" {
