@@ -28,12 +28,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: azure_info
-  namespace: kubernetes_namespace.azure_info_namespace[0].metadata.0.name
+  namespace: ${kubernetes_namespace.azure_info_namespace[0].metadata.0.name}
 data:
-  oidc_url: data.azurerm_kubernetes_cluster.aks_cluster.oidc_issuer_url
-  subscription_id: data.azurerm_client_config.current.subscription_id
-  tenant_id: data.azurerm_client_config.current.tenant_id
-  ARMID: local.role_definitions
+  oidc_url: ${data.azurerm_kubernetes_cluster.aks_cluster.oidc_issuer_url}
+  subscription_id: ${data.azurerm_client_config.current.subscription_id}
+  tenant_id: ${data.azurerm_client_config.current.tenant_id}
+  ARMID: ${local.role_definitions}
 
 YAML
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
