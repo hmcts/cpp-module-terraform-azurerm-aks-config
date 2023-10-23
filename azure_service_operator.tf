@@ -53,6 +53,26 @@ resource "helm_release" "azure_service_operator" {
     value = var.azure_service_operator_crdpattern
   }
 
+  set {
+    name  = "resources.limits.cpu"
+    value = var.aso_resources.limits.cpu
+  }
+
+  set {
+    name  = "resources.limits.memory"
+    value = var.aso_resources.limits.memory
+  }
+
+  set {
+    name  = "resources.requests.cpu"
+    value = var.aso_resources.requests.cpu
+  }
+
+  set {
+    name  = "resources.requests.memory"
+    value = var.aso_resources.requests.memory
+  }
+
   wait    = true
   timeout = 300
 
