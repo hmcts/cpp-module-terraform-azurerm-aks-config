@@ -193,3 +193,39 @@ resource "vault_generic_secret" "jenkins_deploy_clusterrole_rbac" {
     })
   })
 }
+
+data "azurerm_key_vault" "keyvault" {
+  count               = var.enable_azure_keyvault ? 1 : 0
+  name                = var.keyvault_name
+  resource_group_name = var.keyvault_resource_group_name
+}
+
+resource "azurerm_key_vault_secret" "jenkins_admin_clusterrole_rbac" {
+  count        = var.enable_azure_keyvault ? 1 : 0
+  name         = "${var.aks_cluster_name}-jenkins-admin-clusterrole-kubeconfig"
+  content_type = "json"
+  key_vault_id = data.azurerm_key_vault.keyvault[0].id
+  value = templatefile("${path.module}/kubeconfig.tpl", {
+    cluster_name    = var.aks_cluster_name
+    server          = var.aks_server_endpoint
+    service_account = var.jenkins_admin_sa
+    namespace       = var.aks_rbac_namespace
+    token           = data.kubernetes_secret.jenkins_admin_clusterrole_secret.data.token
+    ca_data         = var.aks_ca_certificate
+  })
+}
+
+resource "azurerm_key_vault_secret" "jenkins_deploy_clusterrole_rbac" {
+  count        = var.enable_azure_keyvault ? 1 : 0
+  name         = "${var.aks_cluster_name}-jenkins-deploy-clusterrole-kubeconfig"
+  content_type = "json"
+  key_vault_id = data.azurerm_key_vault.keyvault[0].id
+  value = templatefile("${path.module}/kubeconfig.tpl", {
+    cluster_name    = var.aks_cluster_name
+    server          = var.aks_server_endpoint
+    service_account = var.jenkins_deploy_sa
+    namespace       = var.aks_rbac_namespace
+    token           = data.kubernetes_secret.jenkins_deploy_clusterrole_secret.data.token
+    ca_data         = var.aks_ca_certificate
+  })
+}

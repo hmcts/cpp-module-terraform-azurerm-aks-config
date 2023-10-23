@@ -6,6 +6,14 @@ output "jenkins_rbac_admin" {
   value = vault_generic_secret.jenkins_admin_clusterrole_rbac.path
 }
 
+output "akv_jenkins_rbac_deploy" {
+  value = var.enable_azure_keyvault ? azurerm_key_vault_secret.jenkins_deploy_clusterrole_rbac[0].id : ""
+}
+
+output "akv_jenkins_rbac_admin" {
+  value = var.enable_azure_keyvault ? azurerm_key_vault_secret.jenkins_admin_clusterrole_rbac[0].id : ""
+}
+
 output "ingress_apps_domain_name" {
   value = split("*", var.istio_ingress_apps_domains[0])[1]
 }

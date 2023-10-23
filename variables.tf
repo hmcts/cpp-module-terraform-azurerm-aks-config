@@ -191,22 +191,23 @@ variable "filebeat_namespace" {
 
 variable "charts" {
   type = object({
-    aks-rbac           = map(string)
-    istio-base         = map(string)
-    istiod             = map(string)
-    istio-ingress      = map(string)
-    filebeat-mgm       = map(string)
-    filebeat-app       = map(string)
-    kiali-operator     = map(string)
-    prometheus         = map(string)
-    prometheus-adapter = map(string)
-    dynatrace-operator = map(string)
-    overprovisioning   = map(string)
-    gatekeeper         = map(string)
-    pgadmin            = map(string)
-    velero             = map(string)
-    sonarqube          = map(string)
-    smashing           = map(string)
+    aks-rbac               = map(string)
+    istio-base             = map(string)
+    istiod                 = map(string)
+    istio-ingress          = map(string)
+    filebeat-mgm           = map(string)
+    filebeat-app           = map(string)
+    kiali-operator         = map(string)
+    prometheus             = map(string)
+    prometheus-adapter     = map(string)
+    dynatrace-operator     = map(string)
+    overprovisioning       = map(string)
+    gatekeeper             = map(string)
+    pgadmin                = map(string)
+    velero                 = map(string)
+    sonarqube              = map(string)
+    smashing               = map(string)
+    azure-service-operator = map(string)
   })
   default = {
     aks-rbac = {
@@ -272,7 +273,12 @@ variable "charts" {
     smashing = {
       path    = "charts/smashing"
       version = "0.1.2"
+    },
+    azure-service-operator = {
+      path    = "charts/azure-service-operator"
+      version = "v2.3.0"
     }
+
   }
 }
 
@@ -562,6 +568,11 @@ variable "gatekeeper_config" {
     replicas = 3
   }
 }
+variable "enable_azure_service_operator" {
+  type        = bool
+  description = "enable azure service operator"
+  default     = false
+}
 
 variable "enable_pgadmin" {
   type        = bool
@@ -569,6 +580,23 @@ variable "enable_pgadmin" {
   default     = true
 }
 
+
+variable "azure_service_operator_tag" {
+  type        = string
+  description = "Azure Service Operator Docker image Tag"
+  default     = "v2.3.0"
+}
+
+variable "kube_rbac_proxy_tag" {
+  type        = string
+  description = "Azure Service Operator KubeRbacProxy Docker image Tag"
+  default     = "v0.13.1"
+}
+
+variable "azure_service_operator_crdpattern" {
+  type        = string
+  description = "Azure Service Operator crdPattern"
+}
 
 variable "pgadmin_tag" {
   type        = string
@@ -609,6 +637,40 @@ variable "pgadmin_hostnames" {
   type        = string
   description = "pgadmin hostname"
 }
+
+variable "pgadmin_port" {
+  type        = string
+  description = "pgadmin port"
+}
+variable "externaldb_host" {
+  type        = string
+  description = "pgadmin external DB host"
+}
+variable "externaldb_port" {
+  type        = string
+  description = "pgadmin external DB port"
+}
+variable "externaldb_name" {
+  type        = string
+  description = "pgadmin external DB name"
+}
+variable "externaldb_admin_user" {
+  type        = string
+  description = "external DB admin user"
+}
+variable "externaldb_admin_password" {
+  type        = string
+  description = "external DB admin password"
+}
+variable "pgadmin_shared_storage_path" {
+  type        = string
+  description = "pgadmin Shared storage path"
+}
+variable "pgadmin_restrict_storage_access" {
+  type        = string
+  description = "Enable or disable pgadmin shared storage restrictive permissions"
+}
+
 variable "istio_ingress_load_balancer_name" {
   type        = string
   default     = "kubernetes-internal"
@@ -717,4 +779,22 @@ variable "smashing_gateway_host_name" {
   type        = string
   description = "Hostname for istio gateway"
   default     = "smashing.mgmt01.dev.nl.cjscp.org.uk"
+}
+
+variable "enable_azure_keyvault" {
+  description = "Enable writing Hashicorp Secret to AZ KV Secret"
+  type        = bool
+  default     = false
+}
+
+variable "keyvault_name" {
+  description = "Name of Azure Keyvault"
+  type        = string
+  default     = ""
+}
+
+variable "keyvault_resource_group_name" {
+  description = "Name of Azure Keyvault RG"
+  type        = string
+  default     = ""
 }
