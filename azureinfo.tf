@@ -11,7 +11,7 @@ resource "kubernetes_namespace" "azure_info_namespace" {
 
 
 data "azurerm_role_definition" "predefined_roles" {
-  for_each = toset(var.resource_types)
+  for_each = { for role in var.resource_types : role => role }
 
   name = each.value
 }
@@ -22,19 +22,15 @@ locals {
   }
 }
 
-resource "kubectl_manifest" "store_azure_info" {
-  yaml_body  = <<YAML
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: azure_info
-  namespace: ${kubernetes_namespace.azure_info_namespace[0].metadata.0.name}
-data:
-  oidc_url: ${data.azurerm_kubernetes_cluster.aks_cluster.oidc_issuer_url}
-  subscription_id: ${data.azurerm_client_config.current.subscription_id}
-  tenant_id: ${data.azurerm_client_config.current.tenant_id}
-  ARMID: $${for attribute, value in local.role_definitions : attribute => value}
 
-YAML
+resource "kubectl_manifest" "store_azure_info" {
+  count = var.enable_azureinfo ? 1 : 0
+  yaml_body = templatefile("${path.module}/manifests/common/azureinfo.yaml", {
+    oidc_issuer_url  = data.azurerm_kubernetes_cluster.aks_cluster.oidc_issuer_url
+    subscription_id  = data.azurerm_client_config.current.subscription_id
+    tenant_id        = data.azurerm_client_config.current.tenant_id
+    role_definitions = join("\n", [for role_name, role_id in local.role_definitions : "${role_name}: ${role_id}"])
+    namespace        = kubernetes_namespace.azure_info_namespace[0].metadata.0.name
+  })
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }

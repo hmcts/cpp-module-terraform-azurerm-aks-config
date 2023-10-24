@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: azure_info
+  namespace: ${namespace}
+data:
+  oidc_url: ${oidc_issuer_url}
+  subscription_id: ${subscription_id}
+  tenant_id: ${tenant_id}
+  ARMID:
+    ${role_definitions}
