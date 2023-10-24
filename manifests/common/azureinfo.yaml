@@ -16,5 +16,4 @@ metadata:
   name: role-definition
   namespace: ${namespace}
 data:
-  ARMID:
-    ${role_definitions}
+  ${role_definitions}
