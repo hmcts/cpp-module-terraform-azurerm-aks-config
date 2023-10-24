@@ -17,4 +17,4 @@ metadata:
   namespace: ${namespace}
 data:
   ARMID:
-    "${role_definitions}"
+    ${role_definitions}
