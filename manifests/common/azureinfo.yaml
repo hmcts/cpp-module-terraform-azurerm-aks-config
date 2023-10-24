@@ -2,19 +2,19 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: azure_info
+  name: azure-info
   namespace: ${namespace}
 data:
-  oidc_url: ${oidc_issuer_url}
-  subscription_id: ${subscription_id}
-  tenant_id: ${tenant_id}
-  mi_resource_group: ${mi_resource_group}
+  oidc_url: "${oidc_issuer_url}"
+  subscription_id: "${subscription_id}"
+  tenant_id: "${tenant_id}"
+  mi_resource_group: "${mi_resource_group}"
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: role_definition
+  name: role-definition
   namespace: ${namespace}
 data:
   ARMID:
-    ${role_definitions}
+    "${role_definitions}"
