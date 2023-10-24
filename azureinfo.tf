@@ -42,9 +42,9 @@ data "kubectl_file_documents" "azure_info_manifests" {
 }
 
 resource "kubectl_manifest" "store_azure_info" {
-  for_each   = { for i, value in data.kubectl_file_documents.azure_info_manifests.documents : i => value }
-  yaml_body = each.value
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation, kubernetes_namespace.azure_info_namespace]
+  count      = length(split("\n---\n", file("${path.module}/manifests/common/azureinfo.yaml")))
+  yaml_body  = element(data.kubectl_file_documents.azure_info_manifests.documents, count.index)
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation, kubernetes_namespace.azure_info_namespace, data.kubectl_file_documents.azure_info_manifests]
 }
 
 #resource "kubectl_manifest" "store_azure_info" {
