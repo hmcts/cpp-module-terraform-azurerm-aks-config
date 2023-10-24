@@ -19,7 +19,7 @@ resource "azurerm_resource_group" "aks" {
 }
 
 data "azurerm_role_definition" "predefined_roles" {
-  for_each = { for role in var.resource_types : replace(role, " ", "_") => role }
+  for_each = { for role in var.resource_types : replace(replace(replace(role, " ", ""), "(", ""), ")", "") => role }
 
   name = each.value
 }
