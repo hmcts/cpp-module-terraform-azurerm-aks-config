@@ -35,7 +35,7 @@ data "kubectl_file_documents" "azure_info_manifests" {
     oidc_issuer_url   = data.azurerm_kubernetes_cluster.aks_cluster.oidc_issuer_url
     subscription_id   = data.azurerm_client_config.current.subscription_id
     tenant_id         = data.azurerm_client_config.current.tenant_id
-    role_definitions  = join("\n    ", [for role_name, role_id in local.role_definitions : "${role_name}: ${role_id}"])
+    role_definitions  = join("\n  ", [for role_name, role_id in local.role_definitions : "${role_name}: ${role_id}"])
     namespace         = kubernetes_namespace.azure_info_namespace[0].metadata.0.name
     mi_resource_group = azurerm_resource_group.aks.name
   })
