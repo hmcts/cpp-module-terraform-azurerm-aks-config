@@ -823,6 +823,6 @@ variable "resource_types" {
 
 variable "enable_azureinfo" {
   type        = bool
-  description = "enable pgadmin interface within cluster"
+  description = "enable azure info details configmap"
   default     = true
 }
