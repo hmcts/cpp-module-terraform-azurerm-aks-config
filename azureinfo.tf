@@ -37,7 +37,8 @@ data "kubectl_file_documents" "azure_info_manifests" {
     tenant_id         = data.azurerm_client_config.current.tenant_id
     role_definitions  = join("\n  ", [for role_name, role_id in local.role_definitions : "${role_name}: ${role_id}"])
     namespace         = kubernetes_namespace.azure_info_namespace[0].metadata.0.name
-    mi_resource_group = azurerm_resource_group.aks.name
+    mi_resource_group = azurerm_resource_group.aks.id
+    cluster_name      = var.aks_cluster_name
   })
 }
 

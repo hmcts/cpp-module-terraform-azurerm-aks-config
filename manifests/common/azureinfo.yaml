@@ -9,6 +9,7 @@ data:
   subscription_id: "${subscription_id}"
   tenant_id: "${tenant_id}"
   mi_resource_group: "${mi_resource_group}"
+  cluster_name: "${cluster_name}"
 ---
 apiVersion: v1
 kind: ConfigMap
