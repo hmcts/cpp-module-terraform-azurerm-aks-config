@@ -1,3 +1,9 @@
+locals {
+  privatelink_service_mgmt_ingress_name = "PLS-${var.aks_cluster_name}-INGRESS-MGMT"
+  privatelink_service_apps_ingress_name = "PLS-${var.aks_cluster_name}-INGRESS-APPS"
+  privatelink_service_web_ingress_name  = "PLS-${var.aks_cluster_name}-INGRESS-WEB"
+}
+
 resource "kubernetes_namespace" "istio_system_namespace" {
   metadata {
     name = "istio-system"
@@ -239,7 +245,7 @@ resource "helm_release" "istio_ingress_mgmt_install" {
 
   set {
     name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-name"
-    value = "PLS-${var.aks_cluster_name}-INGRESS-MGMT"
+    value = local.privatelink_service_mgmt_ingress_name
   }
 
   set {
@@ -319,7 +325,7 @@ resource "helm_release" "istio_ingress_apps_install" {
 
   set {
     name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-name"
-    value = "PLS-${var.aks_cluster_name}-INGRESS-APPS"
+    value = local.privatelink_service_apps_ingress_name
   }
 
   set {
@@ -398,7 +404,7 @@ resource "helm_release" "istio_ingress_web_install" {
 
   set {
     name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-name"
-    value = "PLS-${var.aks_cluster_name}-INGRESS-WEB"
+    value = local.privatelink_service_web_ingress_name
   }
 
   set {
@@ -510,4 +516,25 @@ resource "kubectl_manifest" "istio_authorizationPolicy" {
     src_ip_range = var.src_ip_range
   })
   depends_on = [kubectl_manifest.istio_telemetry]
+}
+
+resource "null_resource" "ingress_apps" {
+  triggers = {
+    resource_1 = helm_release.istio_ingress_apps_install.id
+    resource_2 = kubectl_manifest.install_istio_ingress_gateway_apps_manifests[0].id
+  }
+}
+
+resource "null_resource" "ingress_mgmt" {
+  triggers = {
+    resource_1 = helm_release.istio_ingress_mgmt_install.id
+    resource_2 = kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests[0].id
+  }
+}
+
+resource "null_resource" "ingress_web" {
+  triggers = {
+    resource_1 = helm_release.istio_ingress_web_install.id
+    resource_2 = kubectl_manifest.install_istio_ingress_gateway_web_manifests[0].id
+  }
 }

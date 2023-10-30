@@ -31,13 +31,16 @@ output "ingress_lb_private_ip_address_web" {
 }
 
 output "private_link_service_ingress_apps_id" {
-  value = data.azurerm_private_link_service.ingress_apps.id
+  value      = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${var.istio_ingress_load_balancer_resource_group}/providers/Microsoft.Network/privateLinkServices/${local.privatelink_service_apps_ingress_name}"
+  depends_on = [null_resource.ingress_apps]
 }
 
 output "private_link_service_ingress_mgmt_id" {
-  value = data.azurerm_private_link_service.ingress_mgmt.id
+  value      = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${var.istio_ingress_load_balancer_resource_group}/providers/Microsoft.Network/privateLinkServices/${local.privatelink_service_mgmt_ingress_name}"
+  depends_on = [null_resource.ingress_mgmt]
 }
 
 output "private_link_service_ingress_web_id" {
-  value = data.azurerm_private_link_service.ingress_web.id
+  value      = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${var.istio_ingress_load_balancer_resource_group}/providers/Microsoft.Network/privateLinkServices/${local.privatelink_service_web_ingress_name}"
+  depends_on = [null_resource.ingress_web]
 }
