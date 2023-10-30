@@ -1,4 +1,5 @@
 data "azurerm_client_config" "current" {}
+data "azurerm_subscription" "current" {}
 
 resource "kubectl_manifest" "delete_validation_ns" {
   count      = var.delete_validation_ns ? 1 : 0
