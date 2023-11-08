@@ -26,6 +26,11 @@ spec:
           matchLabels:
             kubernetes.io/metadata.name: ${ns}
       %{~ endfor ~}
+      %{~ if namespaces == "prometheus" ~}
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: "smashing"
+      %{~ endif ~}
   policyTypes:
     - Ingress
 ---
