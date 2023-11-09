@@ -50,22 +50,53 @@ resource "helm_release" "smashing_install" {
 
   set {
     name  = "env[2].name"
-    value = "SCHEDULER_RENDER_DASHBOARDS_INTERVAL"
+    value = "SCHEDULER_HMCTS_DASHBOARD_REFRESH_INTERVAL"
   }
 
   set {
     name  = "env[2].value"
-    value = var.smashing_scheduler_render_dashboards_interval
+    value = var.smashing_scheduler_hmcts_dashboards_interval
   }
 
   set {
     name  = "env[3].name"
-    value = "SCHEDULER_ENVIRONMENT_INFO_INTERVAL"
+    value = "SCHEDULER_NAMESPACE_INFO_REFRESH_INTERVAL"
   }
 
   set {
     name  = "env[3].value"
-    value = var.smashing_scheduler_environment_info_interval
+    value = var.smashing_scheduler_namespace_info_interval
+  }
+
+  set {
+    name  = "env[4].name"
+    value = "SCHEDULER_SUSPEND_STACKS_REFRESH_INTERVAL"
+  }
+
+  set {
+    name  = "env[4].value"
+    value = var.smashing_scheduler_suspend_stacks_refresh_interval
+  }
+
+  set {
+    name  = "env[5].name"
+    value = "IDLE_TIME_MINUTES"
+  }
+
+  set {
+    name  = "env[5].value"
+    value = var.smashing_idle_time_minutes
+    type  = "string"
+  }
+
+  set {
+    name  = "env[6].name"
+    value = "PROMETHEUS_URL"
+  }
+
+  set {
+    name  = "env[6].value"
+    value = "http://kube-prometheus-stack-prometheus.prometheus\\.svc\\.cluster\\.local:9090"
   }
 
   set {

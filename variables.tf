@@ -762,16 +762,28 @@ variable "smashing_image_tag" {
   default     = "v1.3.8"
 }
 
-variable "smashing_scheduler_render_dashboards_interval" {
+variable "smashing_scheduler_hmcts_dashboards_interval" {
   type        = string
   description = "How frequently the home dashboard should be updated"
-  default     = "2m"
+  default     = "5m"
 }
 
-variable "smashing_scheduler_environment_info_interval" {
+variable "smashing_scheduler_namespace_info_interval" {
   type        = string
   description = "How frequently environment info should be updated"
-  default     = "2m"
+  default     = "5m"
+}
+
+variable "smashing_scheduler_suspend_stacks_refresh_interval" {
+  type        = string
+  description = "How frequently environment info should be updated"
+  default     = "5m"
+}
+
+variable "smashing_idle_time_minutes" {
+  type        = string
+  description = "What is the idle time for environments"
+  default     = "120"
 }
 
 variable "smashing_gateway_host_name" {
