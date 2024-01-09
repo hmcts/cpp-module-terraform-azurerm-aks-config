@@ -79,7 +79,7 @@ resource "helm_release" "velero_install" {
     value = local.azCreds.cloud
   }
   set {
-    name  = "configuration.provider"
+    name  = "configuration.backupStorageLocation.provider"
     value = "azure"
   }
   set {
