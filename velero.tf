@@ -60,7 +60,7 @@ resource "helm_release" "velero_install" {
   }
   set {
     name  = "initContainers[0].image"
-    value = "${var.acr_name}.azurecr.io/docker.io/velero/velero-plugin-for-microsoft-azure:v1.6.0"
+    value = "${var.acr_name}.azurecr.io/docker.io/velero/velero-plugin-for-microsoft-azure:v1.8.2"
   }
   set {
     name  = "initContainers[0].name"
