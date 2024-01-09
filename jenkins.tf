@@ -26,6 +26,9 @@ subjects:
 - kind: ServiceAccount
   name: jenkins-deploy
   namespace: kube-system
+- kind: ServiceAccount
+  name: default
+  namespace: jenkins
 YAML
 
   depends_on = [
