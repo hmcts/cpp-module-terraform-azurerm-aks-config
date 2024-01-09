@@ -79,23 +79,23 @@ resource "helm_release" "velero_install" {
     value = local.azCreds.cloud
   }
   set {
-    name  = "configuration.backupStorageLocation.provider"
+    name  = "configuration.backupStorageLocation[0].provider"
     value = "azure"
   }
   set {
-    name  = "configuration.backupStorageLocation.bucket"
+    name  = "configuration.backupStorageLocation[0].bucket"
     value = replace(lower("${var.aks_cluster_name}"), "-", "")
   }
   set {
-    name  = "configuration.backupStorageLocation.caCert"
+    name  = "configuration.backupStorageLocation[0].caCert"
     value = data.vault_generic_secret.ca_cert.data.issuing_ca
   }
   set {
-    name  = "configuration.backupStorageLocation.config.storageAccount"
+    name  = "configuration.backupStorageLocation[0].config.storageAccount"
     value = azurerm_storage_account.storage_account_velero.0.name
   }
   set {
-    name  = "configuration.backupStorageLocation.config.resourceGroup"
+    name  = "configuration.backupStorageLocation[0].config.resourceGroup"
     value = var.aks_resource_group_name
   }
   set {
