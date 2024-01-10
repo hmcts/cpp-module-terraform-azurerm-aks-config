@@ -73,7 +73,7 @@ resource "helm_release" "prometheus_adapter_install" {
 
   set {
     name  = "image.repository"
-    value = "${var.acr_name}.azurecr.io/k8s.gcr.io/prometheus-adapter/prometheus-adapter"
+    value = "${var.acr_name}.azurecr.io/registry.k8s.io/prometheus-adapter/prometheus-adapter"
   }
 
   wait    = true
