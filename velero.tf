@@ -83,6 +83,10 @@ resource "helm_release" "velero_install" {
     value = "azure"
   }
   set {
+    name  = "configuration.volumeSnapshotLocation[0].provider"
+    value = "azure"
+  }
+  set {
     name  = "configuration.backupStorageLocation[0].bucket"
     value = replace(lower("${var.aks_cluster_name}"), "-", "")
   }
