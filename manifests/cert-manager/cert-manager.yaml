@@ -5339,7 +5339,7 @@ metadata:
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.13.3"
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: cainjector
@@ -5372,13 +5372,19 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          resources:
+            {}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop:
               - ALL
+      tolerations:
+        - key: "CriticalAddonsOnly"
+          operator: "Exists"
+          effect: "NoSchedule"
       nodeSelector:
-        kubernetes.io/os: linux
+        agentpool: sysagentpool
 ---
 # Source: cert-manager/templates/deployment.yaml
 apiVersion: apps/v1
@@ -5393,7 +5399,7 @@ metadata:
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.13.3"
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: cert-manager
@@ -5445,8 +5451,14 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          resources:
+            {}
+      tolerations:
+        - key: "CriticalAddonsOnly"
+          operator: "Exists"
+          effect: "NoSchedule"
       nodeSelector:
-        kubernetes.io/os: linux
+        agentpool: sysagentpool
 ---
 # Source: cert-manager/templates/webhook-deployment.yaml
 apiVersion: apps/v1
@@ -5461,7 +5473,7 @@ metadata:
     app.kubernetes.io/component: "webhook"
     app.kubernetes.io/version: "v1.13.3"
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: webhook
@@ -5532,8 +5544,15 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          resources:
+            requests:
+              cpu: 1000m
+      tolerations:
+        - key: "CriticalAddonsOnly"
+          operator: "Exists"
+          effect: "NoSchedule"
       nodeSelector:
-        kubernetes.io/os: linux
+        agentpool: sysagentpool
 ---
 # Source: cert-manager/templates/webhook-mutating-webhook.yaml
 apiVersion: admissionregistration.k8s.io/v1
