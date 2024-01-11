@@ -15,7 +15,7 @@ data "kubectl_path_documents" "cert_manager_manifests" {
     docker_image_certmanager_cainjector = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-cainjector"
     docker_image_certmanager_controller = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-controller"
     docker_image_certmanager_webhook    = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-webhook"
-    docker_tag_certmanager              = "v1.6.1"
+    docker_tag_certmanager              = "v1.13.3"
   }
 }
 

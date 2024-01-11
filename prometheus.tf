@@ -19,31 +19,39 @@ resource "helm_release" "prometheus" {
   chart   = lookup(var.charts.prometheus, "name", "kube-prometheus-stack")
   version = lookup(var.charts.prometheus, "version", "")
   values = [templatefile("${path.module}/chart-values/prometheus.tmpl", {
-    grafana_image                        = "${var.acr_name}.azurecr.io/grafana/grafana"
-    grafana_image_tag                    = var.prometheus.grafana_image_tag
-    grafana_k8s_sidecar_image            = "${var.acr_name}.azurecr.io/quay.io/kiwigrid/k8s-sidecar"
-    grafana_k8s_sidecar_image_tag        = var.prometheus.grafana_k8s_sidecar_image_tag
-    grafana_url                          = "https://${var.grafana_hostnames[1]}"
-    grafana_auth_azuread_client_id       = data.vault_generic_secret.grafana_spn_creds.data["client_id"]
-    grafana_auth_azuread_client_secret   = data.vault_generic_secret.grafana_spn_creds.data["client_secret"]
-    grafana_auth_azuread_tenant_id       = data.azurerm_client_config.current.tenant_id
-    kube_state_metrics_image             = "${var.acr_name}.azurecr.io/k8s.gcr.io/kube-state-metrics/kube-state-metrics"
-    kube_state_metrics_image_tag         = var.prometheus.kube_state_metrics_image_tag
-    node_exporter_image                  = "${var.acr_name}.azurecr.io/quay.io/prometheus/node-exporter"
-    node_exporter_image_tag              = var.prometheus.node_exporter_image_tag
-    prometheus_operator_image            = "${var.acr_name}.azurecr.io/quay.io/prometheus-operator/prometheus-operator"
-    prometheus_operator_image_tag        = var.prometheus.prometheus_operator_image_tag
-    prometheus_config_reloader_image     = "${var.acr_name}.azurecr.io/quay.io/prometheus-operator/prometheus-config-reloader"
-    prometheus_config_reloader_image_tag = var.prometheus.prometheus_config_reloader_image_tag
-    kube_webhook_certgen_image           = "${var.acr_name}.azurecr.io/k8s.gcr.io/ingress-nginx/kube-webhook-certgen"
-    kube_webhook_certgen_image_tag       = var.prometheus.kube_webhook_certgen_image_tag
-    prometheus_image                     = "${var.acr_name}.azurecr.io/quay.io/prometheus/prometheus"
-    prometheus_replica                   = var.prometheus.prometheus_replica
-    prometheus_image_tag                 = var.prometheus.prometheus_image_tag
-    prometheus_retention                 = var.prometheus.prometheus_retention
-    prometheus_storage_class_name        = var.prometheus.prometheus_storage_class_name
-    prometheus_storage_size              = var.prometheus.prometheus_storage_size
-    drop_envoy_stats_for_context_pods    = var.prometheus.prometheus_drop_envoy_stats_for_context_pods
+    grafana_image_registry                      = "${var.acr_name}.azurecr.io/docker.io"
+    grafana_image_repository                    = "grafana/grafana"
+    grafana_image_tag                           = var.prometheus.grafana_image_tag
+    grafana_k8s_sidecar_image_registry          = "${var.acr_name}.azurecr.io/quay.io"
+    grafana_k8s_sidecar_image_repository        = "kiwigrid/k8s-sidecar"
+    grafana_k8s_sidecar_image_tag               = var.prometheus.grafana_k8s_sidecar_image_tag
+    grafana_url                                 = "https://${var.grafana_hostnames[1]}"
+    grafana_auth_azuread_client_id              = data.vault_generic_secret.grafana_spn_creds.data["client_id"]
+    grafana_auth_azuread_client_secret          = data.vault_generic_secret.grafana_spn_creds.data["client_secret"]
+    grafana_auth_azuread_tenant_id              = data.azurerm_client_config.current.tenant_id
+    kube_state_metrics_image_registry           = "${var.acr_name}.azurecr.io/registry.k8s.io"
+    kube_state_metrics_image_repository         = "kube-state-metrics/kube-state-metrics"
+    kube_state_metrics_image_tag                = var.prometheus.kube_state_metrics_image_tag
+    node_exporter_image_registry                = "${var.acr_name}.azurecr.io/quay.io"
+    node_exporter_image_repository              = "prometheus/node-exporter"
+    node_exporter_image_tag                     = var.prometheus.node_exporter_image_tag
+    prometheus_operator_image_registry          = "${var.acr_name}.azurecr.io/quay.io"
+    prometheus_operator_image_repository        = "prometheus-operator/prometheus-operator"
+    prometheus_operator_image_tag               = var.prometheus.prometheus_operator_image_tag
+    prometheus_config_reloader_image_registry   = "${var.acr_name}.azurecr.io/quay.io"
+    prometheus_config_reloader_image_repository = "prometheus-operator/prometheus-config-reloader"
+    prometheus_config_reloader_image_tag        = var.prometheus.prometheus_config_reloader_image_tag
+    kube_webhook_certgen_image_registry         = "${var.acr_name}.azurecr.io/k8s.gcr.io"
+    kube_webhook_certgen_image_repository       = "ingress-nginx/kube-webhook-certgen"
+    kube_webhook_certgen_image_tag              = var.prometheus.kube_webhook_certgen_image_tag
+    prometheus_image_registry                   = "${var.acr_name}.azurecr.io/quay.io"
+    prometheus_image_repository                 = "prometheus/prometheus"
+    prometheus_replica                          = var.prometheus.prometheus_replica
+    prometheus_image_tag                        = var.prometheus.prometheus_image_tag
+    prometheus_retention                        = var.prometheus.prometheus_retention
+    prometheus_storage_class_name               = var.prometheus.prometheus_storage_class_name
+    prometheus_storage_size                     = var.prometheus.prometheus_storage_size
+    drop_envoy_stats_for_context_pods           = var.prometheus.prometheus_drop_envoy_stats_for_context_pods
   })]
   repository        = "./install"
   namespace         = "prometheus"
@@ -65,7 +73,7 @@ resource "helm_release" "prometheus_adapter_install" {
 
   set {
     name  = "image.repository"
-    value = "${var.acr_name}.azurecr.io/k8s.gcr.io/prometheus-adapter/prometheus-adapter"
+    value = "${var.acr_name}.azurecr.io/registry.k8s.io/prometheus-adapter/prometheus-adapter"
   }
 
   wait    = true
