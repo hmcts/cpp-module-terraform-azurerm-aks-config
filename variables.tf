@@ -281,7 +281,7 @@ variable "charts" {
     },
     keda = {
       path    = "charts/keda"
-      version = "2.12.1"
+      version = "2.13.0"
     },
   }
 }
@@ -751,45 +751,71 @@ variable "sonarqube_config" {
 
 variable "keda_config" {
   type = object({
-    enable    = bool
-    image_tag = string
+    enable           = bool
+    image_tag        = string
+    managed-identity = string
+    tenant-id        = string
+    replica_count    = string
+    requests_mem     = string
+    requests_cpu     = string
+    limits_mem       = string
+    limits_cpu       = string
+
   })
   default = {
-    enable    = false
-    image_tag = "2.12.1"
+    enable           = false
+    image_tag        = "2.13.0"
+    managed-identity = "52cd0539-fbf7-4e98-9b26-ee6cb4f89688" #from hcmts.net
+    tenant-id        = "531ff96d-0ae9-462a-8d2d-bec7c0b42082"
+    replica_count    = "2"
+    requests_mem     = "1000Mi"
+    requests_cpu     = "1"
+    limits_mem       = "2000Mi"
+    limits_cpu       = "2"
   }
 }
 
 
 variable "ado-agents_config" {
   type = object({
-    enable     = bool
-    namespace  = string
-    azpurl     = string
-    poolname   = string
-    secretname = string
-    secretkey  = string
+    enable           = bool
+    namespace        = string
+    sa_name          = string
+    azpurl           = string
+    poolname         = string
+    secretname       = string
+    secretkey        = string
+    managed-identity = string
+    tenant-id        = string
+    subscription-id  = string
     agents = list(object({
-      agent_name     = string
-      image_name     = string
-      image_tag      = string
-      identifier     = string
-      requests_mem   = string
-      requests_cpu   = string
-      limits_mem     = string
-      limits_cpu     = string
-      scaled_min_job = number
-      scaled_max_job = number
+      agent_name                 = string
+      image_name                 = string
+      image_tag                  = string
+      identifier                 = string
+      requests_mem               = string
+      requests_cpu               = string
+      limits_mem                 = string
+      limits_cpu                 = string
+      scaled_min_job             = number
+      scaled_max_job             = number
+      pollinginterval            = number
+      successfuljobshistorylimit = number
+      failedjobshistorylimit     = number
     }))
   })
   default = {
-    enable     = false
-    namespace  = "ado-agent"
-    azpurl     = "https://dev.azure.com/hmcts-cpp/"
-    poolname   = "MDV-ADO-Agent-Aks"
-    secretname = "azdevops"
-    secretkey  = "AZP_TOKEN"
-    agents     = []
+    enable           = false
+    namespace        = "ado-agent"
+    sa_name          = "ado-agent"
+    azpurl           = "https://dev.azure.com/hmcts-cpp/"
+    poolname         = "MDV-ADO-Agent-Aks"
+    secretname       = "azdevops"
+    secretkey        = "AZP_TOKEN"
+    managed-identity = "52cd0539-fbf7-4e98-9b26-ee6cb4f89688" #from hcmts.net
+    tenant-id        = "531ff96d-0ae9-462a-8d2d-bec7c0b42082"
+    subscription-id  = "ef8dd153-3fba-47a4-be65-15775bcde240"
+    agents           = []
   }
 }
 
