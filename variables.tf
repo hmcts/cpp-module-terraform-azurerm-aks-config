@@ -205,6 +205,7 @@ variable "charts" {
     gatekeeper             = map(string)
     pgadmin                = map(string)
     velero                 = map(string)
+    keda                   = map(string)
     sonarqube              = map(string)
     smashing               = map(string)
     azure-service-operator = map(string)
@@ -277,8 +278,11 @@ variable "charts" {
     azure-service-operator = {
       path    = "charts/azure-service-operator"
       version = "v2.3.0"
-    }
-
+    },
+    keda = {
+      path    = "charts/keda"
+      version = "2.12.1"
+    },
   }
 }
 
@@ -745,6 +749,57 @@ variable "sonarqube_config" {
   }
 }
 
+variable "keda_config" {
+  type = object({
+    enable    = bool
+    image_tag = string
+  })
+  default = {
+    enable    = false
+    image_tag = "2.12.1"
+  }
+}
+
+
+variable "ado-agents_config" {
+  type = object({
+    enable     = bool
+    scaledjob  = bool
+    namespace  = string
+    azpurl     = string
+    poolname   = string
+    secretname = string
+    secretkey  = string
+    agents = list(object({
+      agent_name     = string
+      image_name     = string
+      image_tag      = string
+      java_version   = string
+      identifier     = string
+      parallelism    = string
+      completions    = string
+      backoff_limit  = string
+      requests_mem   = string
+      requests_cpu   = string
+      limits_mem     = string
+      limits_cpu     = string
+      scaled_min_job = number
+      scaled_max_job = number
+    }))
+  })
+  default = {
+    enable     = false
+    scaledjob  = false
+    namespace  = "ado-agent"
+    azpurl     = "https://dev.azure.com/hmcts-cpp/"
+    poolname   = "MDV-ADO-Agent-Aks"
+    secretname = "azdevops"
+    secretkey  = "AZP_TOKEN"
+    agents     = []
+  }
+}
+
+
 variable "system_namespaces" {
   type        = list(string)
   description = "System component namespace list"
@@ -837,4 +892,23 @@ variable "enable_azureinfo" {
   type        = bool
   description = "enable azure info details configmap"
   default     = true
+}
+
+variable "ado-pat" {
+  type        = string
+  description = "ADO PAT"
+  default     = ""
+}
+
+
+variable "aks_cluster_set" {
+  type        = string
+  description = "AKS to pass cluster set example: cs01"
+  default     = ""
+}
+
+variable "aks_cluster_number" {
+  type        = string
+  description = "AKS to pass cluster number example: cl01"
+  default     = ""
 }
