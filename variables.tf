@@ -764,7 +764,6 @@ variable "keda_config" {
 variable "ado-agents_config" {
   type = object({
     enable     = bool
-    scaledjob  = bool
     namespace  = string
     azpurl     = string
     poolname   = string
@@ -774,11 +773,7 @@ variable "ado-agents_config" {
       agent_name     = string
       image_name     = string
       image_tag      = string
-      java_version   = string
       identifier     = string
-      parallelism    = string
-      completions    = string
-      backoff_limit  = string
       requests_mem   = string
       requests_cpu   = string
       limits_mem     = string
@@ -789,7 +784,6 @@ variable "ado-agents_config" {
   })
   default = {
     enable     = false
-    scaledjob  = false
     namespace  = "ado-agent"
     azpurl     = "https://dev.azure.com/hmcts-cpp/"
     poolname   = "MDV-ADO-Agent-Aks"

@@ -50,7 +50,7 @@ spec:
         poolName: "${var.ado-agents_config.poolname}"
         organizationURLFromEnv: "AZP_URL"
         personalAccessTokenFromEnv: "AZP_TOKEN"
-        demands: "java_version -equals ${each.value.java_version}"
+        demands: "identifier -equals ${each.value.identifier}"
   jobTargetRef:
     activeDeadlineSeconds: 14400  # 4h
     template:
@@ -70,8 +70,8 @@ spec:
                   secretKeyRef:
                     key: AZP_TOKEN
                     name: "${var.ado-agents_config.secretname}"
-              - name: java_version
-                value: "${each.value.java_version}"
+              - name: identifier
+                value: "${each.value.identifier}"
         resources:
           limits:
             cpu: "${each.value.limits_cpu}"
