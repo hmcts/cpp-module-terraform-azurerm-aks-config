@@ -10,25 +10,6 @@ resource "kubernetes_namespace" "ado-agents_namespace" {
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
-/*
-resource "kubernetes_secret" "azdevops" {
-  count = var.ado-agents_config.enable ? 1 : 0
-  metadata {
-    name      = var.ado-agents_config.secretname
-    namespace = var.ado-agents_config.namespace
-  }
-
-  data = {
-    "${var.ado-agents_config.secretkey}" = var.ado-pat
-  }
-
-  type = "Opaque"
-  depends_on = [
-    kubernetes_namespace.ado-agents_namespace
-  ]
-}
-*/
-
 resource "kubernetes_service_account" "ado_agent" {
   metadata {
     name      = var.ado-agents_config.sa_name
