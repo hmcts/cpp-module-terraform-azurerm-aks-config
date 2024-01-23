@@ -52,7 +52,6 @@ spec:
         personalAccessTokenFromEnv: "AZP_TOKEN"
         demands: "identifier -equals ${each.value.identifier}"
   jobTargetRef:
-    activeDeadlineSeconds: 14400  # 4h
     template:
       spec:
         restartPolicy: Never
@@ -80,8 +79,8 @@ spec:
             cpu: "${each.value.requests_cpu}"
             memory: "${each.value.requests_mem}"
   pollingInterval: 10
-  successfulJobsHistoryLimit: 5
-  failedJobsHistoryLimit: 5
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 0
   minReplicaCount: ${each.value.scaled_min_job}
   maxReplicaCount: ${each.value.scaled_max_job}
   rollout:
