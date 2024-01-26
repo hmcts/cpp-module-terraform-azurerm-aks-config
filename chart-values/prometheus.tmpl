@@ -17,14 +17,16 @@ alertmanager:
 
 grafana:
   image:
-    repository: ${grafana_image}
+    registry: ${grafana_image_registry}
+    repository: ${grafana_image_repository}
     tag: ${grafana_image_tag}
     sha: ""
     pullPolicy: IfNotPresent
 
   sidecar:
     image:
-      repository: ${grafana_k8s_sidecar_image}
+      registry: ${grafana_k8s_sidecar_image_registry}
+      repository: ${grafana_k8s_sidecar_image_repository}
       tag: ${grafana_k8s_sidecar_image_tag}
       sha: ""
 
@@ -60,7 +62,8 @@ grafana:
 
 kube-state-metrics:
   image:
-    repository: ${kube_state_metrics_image}
+    registry: ${kube_state_metrics_image_registry}
+    repository: ${kube_state_metrics_image_repository}
     tag: ${kube_state_metrics_image_tag}
     pullPolicy: IfNotPresent
 
@@ -84,7 +87,8 @@ nodeExporter:
 
 prometheus-node-exporter:
   image:
-    repository: ${node_exporter_image}
+    registry: ${node_exporter_image_registry}
+    repository: ${node_exporter_image_repository}
     tag: ${node_exporter_image_tag}
     pullPolicy: IfNotPresent
 
@@ -99,14 +103,16 @@ prometheus-node-exporter:
 
 prometheusOperator:
   image:
-    repository: ${prometheus_operator_image}
+    registry: ${prometheus_operator_image_registry}
+    repository: ${prometheus_operator_image_repository}
     tag: ${prometheus_operator_image_tag}
     sha: ""
     pullPolicy: IfNotPresent
 
   prometheusConfigReloader:
     image:
-      repository: ${prometheus_config_reloader_image}
+      registry: ${prometheus_config_reloader_image_registry}
+      repository: ${prometheus_config_reloader_image_repository}
       tag: ${prometheus_config_reloader_image_tag}
       sha: ""
 
@@ -130,7 +136,8 @@ prometheusOperator:
     patch:
       enabled: true
       image:
-        repository: ${kube_webhook_certgen_image}
+        registry: ${kube_webhook_certgen_image_registry}
+        repository: ${kube_webhook_certgen_image_repository}
         tag: ${kube_webhook_certgen_image_tag}
         sha: ""
         pullPolicy: IfNotPresent
@@ -151,7 +158,8 @@ prometheusOperator:
 prometheus:
   prometheusSpec:
     image:
-      repository: ${prometheus_image}
+      registry: ${prometheus_image_registry}
+      repository: ${prometheus_image_repository}
       tag: ${prometheus_image_tag}
       sha: ""
     retention: ${prometheus_retention}
