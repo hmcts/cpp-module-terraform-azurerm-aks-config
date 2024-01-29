@@ -46,7 +46,54 @@ resource "helm_release" "keda_install" {
     value = var.keda_config.image_tag
   }
 
+  set {
+    name  = "podIdentity.azureWorkload.enabled"
+    value = true
+  }
 
+  set {
+    name  = "podIdentity.azureWorkload.clientId"
+    value = var.keda_config.managed-identity
+  }
+
+  set {
+    name  = "podIdentity.azureWorkload.tenantId"
+    value = var.keda_config.tenant-id
+  }
+  set {
+    name  = "operator.replicaCount"
+    value = var.keda_config.replica_count
+  }
+
+  set {
+    name  = "resources.operator.requests.memory"
+    value = var.keda_config.requests_mem
+  }
+  set {
+    name  = "resources.operator.requests.cpu"
+    value = var.keda_config.requests_cpu
+  }
+
+  set {
+    name  = "resources.operator.limits.memory"
+    value = var.keda_config.limits_mem
+  }
+
+  set {
+    name  = "resources.operator.limits.cpu"
+    value = var.keda_config.limits_cpu
+  }
+
+
+
+
+  /*
+  # Enabled Workload Identity on Job
+  set {
+    name  = "additionalLabels.azure\\.workload\\.identity\\/use"
+    value = "true"
+  }
+*/
   wait    = true
   timeout = 300
 
