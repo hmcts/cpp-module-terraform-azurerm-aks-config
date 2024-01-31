@@ -104,6 +104,8 @@ spec:
                 value: "${var.ado-agents_config.subscription-id}"
               - name: identifier
                 value: "${each.value.identifier}"
+              - name: CLUSTER
+                value: ${var.aks_cluster_name}
             resources:
               limits:
                 cpu: "${each.value.limits_cpu}"

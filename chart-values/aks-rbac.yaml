@@ -11,6 +11,10 @@ clusterRoles:
         kind: ServiceAccount
         name: jenkins-admin
         namespace: kube-system
+      adoAgent:
+        kind: ServiceAccount
+        name: ado-agent
+        namespace: ado-agent
   contributor-role:
     create: true
     createBinding: false
