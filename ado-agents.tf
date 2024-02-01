@@ -11,6 +11,7 @@ resource "kubernetes_namespace" "ado-agents_namespace" {
 }
 
 resource "kubernetes_service_account" "ado_agent" {
+  count = var.ado-agents_config.enable ? 1 : 0
   metadata {
     name      = var.ado-agents_config.sa_name
     namespace = var.ado-agents_config.namespace
