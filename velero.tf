@@ -106,6 +106,14 @@ resource "helm_release" "velero_install" {
     name  = "resources.limits.memory"
     value = "1024Mi"
   }
+  set {
+    name  = "kubectl.image.repository"
+    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/bitnami/kubectl"
+  }
+  set {
+    name  = "kubectl.image.tag"
+    value = "latest"
+  }
 
   wait    = true
   timeout = 300
