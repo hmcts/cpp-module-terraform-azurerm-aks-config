@@ -914,13 +914,6 @@ variable "enable_azureinfo" {
   default     = true
 }
 
-variable "ado-pat" {
-  type        = string
-  description = "ADO PAT"
-  default     = ""
-}
-
-
 variable "aks_cluster_set" {
   type        = string
   description = "AKS to pass cluster set example: cs01"
