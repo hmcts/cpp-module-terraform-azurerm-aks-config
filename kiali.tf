@@ -44,12 +44,36 @@ resource "helm_release" "kiali_operator_install" {
     value = "istio-system"
   }
   set {
+    name  = "replicaCount"
+    value = var.kiali_operator_replicas
+  }
+  set {
     name  = "image.repo"
     value = "${var.acr_name}.azurecr.io/quay.io/kiali/kiali-operator"
   }
   set {
     name  = "cr.spec.deployment.image_name"
     value = "${var.acr_name}.azurecr.io/quay.io/kiali/kiali"
+  }
+  set {
+    name  = "cr.spec.deployment.replicas"
+    value = var.kiali_cr_spec.replica_count
+  }
+  set {
+    name  = "cr.spec.deployment.resources.requests.cpu"
+    value = var.kiali_cr_spec.resources.requests.cpu
+  }
+  set {
+    name  = "cr.spec.deployment.resources.requests.memory"
+    value = var.kiali_cr_spec.resources.requests.memory
+  }
+  set {
+    name  = "cr.spec.deployment.resources.limits.cpu"
+    value = var.kiali_cr_spec.resources.limits.cpu
+  }
+  set {
+    name  = "cr.spec.deployment.resources.limits.memory"
+    value = var.kiali_cr_spec.resources.limits.memory
   }
   set {
     name  = "cr.spec.auth.openid.client_id"

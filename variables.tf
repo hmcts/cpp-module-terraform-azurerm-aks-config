@@ -925,3 +925,25 @@ variable "aks_cluster_number" {
   description = "AKS to pass cluster number example: cl01"
   default     = ""
 }
+
+variable "istiod_memory_request" {
+  type        = string
+  description = "memory for istiod pod"
+  default     = "2Gi"
+}
+
+variable "kiali_operator_replicas" {
+  type        = string
+  description = "no of kiali operator pods"
+  default     = "1"
+}
+
+variable "kiali_cr_spec" {
+  type = object({
+    replica_count = number
+    resources = object({
+      requests = map(string)
+      limits   = map(string)
+    })
+  })
+}

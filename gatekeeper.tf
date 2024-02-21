@@ -47,6 +47,15 @@ resource "helm_release" "gatekeeper_install" {
     name  = "preUninstall.deleteWebhookConfigurations.image.repository"
     value = "${var.acr_name}.azurecr.io/docker.io/openpolicyagent/gatekeeper-crds"
   }
+  set {
+    name  = "audit.resources.requests.memory"
+    value = "512Mi"
+  }
+  set {
+    name  = "audit.resources.limits.memory"
+    value = "1Gi"
+  }
+
 
   wait    = true
   timeout = 300
