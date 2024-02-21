@@ -157,6 +157,11 @@ resource "helm_release" "istiod_install" {
     value = var.istio_components_hpa_spec.istiod_min_replicas
   }
 
+  set {
+    name = "pilot.resources.request.memory"
+    value = var.istiod_memory_request
+  }
+
   values = ["${file("${path.module}/manifests/istio/istiod_overrides.yaml")}"]
 
   wait    = true
