@@ -941,7 +941,7 @@ variable "kiali_operator_replicas" {
 variable "kiali_cr_spec" {
   type = object({
     replica_count = number
-    resources     = object({
+    resources = object({
       requests = map(string)
       limits   = map(string)
     })

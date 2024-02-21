@@ -158,7 +158,7 @@ resource "helm_release" "istiod_install" {
   }
 
   set {
-    name = "pilot.resources.request.memory"
+    name  = "pilot.resources.request.memory"
     value = var.istiod_memory_request
   }
 
