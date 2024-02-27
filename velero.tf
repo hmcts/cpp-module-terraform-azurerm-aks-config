@@ -104,7 +104,7 @@ resource "helm_release" "velero_install" {
   }
   set {
     name  = "resources.limits.memory"
-    value = "1024Mi"
+    value = "3072Mi"
   }
   set {
     name  = "kubectl.image.repository"
