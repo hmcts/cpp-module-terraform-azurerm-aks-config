@@ -60,7 +60,7 @@ resource "helm_release" "velero_install" {
   }
   set {
     name  = "initContainers[0].image"
-    value = "${var.acr_name}.azurecr.io/docker.io/velero/velero-plugin-for-microsoft-azure:v1.6.0"
+    value = "${var.acr_name}.azurecr.io/docker.io/velero/velero-plugin-for-microsoft-azure:v1.8.2"
   }
   set {
     name  = "initContainers[0].name"
@@ -79,23 +79,23 @@ resource "helm_release" "velero_install" {
     value = local.azCreds.cloud
   }
   set {
-    name  = "configuration.provider"
+    name  = "configuration.backupStorageLocation[0].provider"
     value = "azure"
   }
   set {
-    name  = "configuration.backupStorageLocation.bucket"
+    name  = "configuration.backupStorageLocation[0].bucket"
     value = replace(lower("${var.aks_cluster_name}"), "-", "")
   }
   set {
-    name  = "configuration.backupStorageLocation.caCert"
+    name  = "configuration.backupStorageLocation[0].caCert"
     value = data.vault_generic_secret.ca_cert.data.issuing_ca
   }
   set {
-    name  = "configuration.backupStorageLocation.config.storageAccount"
+    name  = "configuration.backupStorageLocation[0].config.storageAccount"
     value = azurerm_storage_account.storage_account_velero.0.name
   }
   set {
-    name  = "configuration.backupStorageLocation.config.resourceGroup"
+    name  = "configuration.backupStorageLocation[0].config.resourceGroup"
     value = var.aks_resource_group_name
   }
   set {
@@ -104,7 +104,7 @@ resource "helm_release" "velero_install" {
   }
   set {
     name  = "resources.limits.memory"
-    value = "1024Mi"
+    value = "3072Mi"
   }
   set {
     name  = "kubectl.image.repository"
