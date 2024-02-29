@@ -114,6 +114,10 @@ resource "helm_release" "velero_install" {
     name  = "kubectl.image.tag"
     value = "latest"
   }
+  set {
+    name  = "configuration.volumeSnapshotLocation[0].provider"
+    value = "azure"
+  }
 
   wait    = true
   timeout = 300
