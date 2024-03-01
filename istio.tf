@@ -348,11 +348,11 @@ resource "helm_release" "istio_ingress_apps_install" {
   }
 
   set {
-    name  = "gateways.resources.requests.memory"
+    name  = "gateways.istio-ingressgateway.resources.requests.memory"
     value = var.isito_ingress_spec.resources.requests.memory
   }
   set {
-    name  = "gateways.resources.limits.memory"
+    name  = "gateways.istio-ingressgateway.resources.limits.memory"
     value = var.isito_ingress_spec.resources.limits.memory
   }
 
