@@ -161,6 +161,10 @@ resource "helm_release" "istiod_install" {
     name  = "pilot.resources.requests.memory"
     value = var.istiod_memory_request
   }
+  set {
+    name  = "pilot.resources.requests.cpu"
+    value = var.istiod_cpu_request
+  }
 
   values = ["${file("${path.module}/manifests/istio/istiod_overrides.yaml")}"]
 

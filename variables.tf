@@ -932,6 +932,12 @@ variable "istiod_memory_request" {
   default     = "2Gi"
 }
 
+variable "istiod_cpu_request" {
+  type        = string
+  description = "cpu for istiod pod"
+  default     = "500m"
+}
+
 variable "kiali_operator_replicas" {
   type        = string
   description = "no of kiali operator pods"
