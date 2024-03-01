@@ -48,6 +48,14 @@ resource "helm_release" "kiali_operator_install" {
     value = var.kiali_operator_replicas
   }
   set {
+    name  = "resources.requests.memory"
+    value = var.kiali_operator_memory_request
+  }
+  set {
+    name  = "resources.requests.cpu"
+    value = var.kiali_operator_cpu_request
+  }
+  set {
     name  = "image.repo"
     value = "${var.acr_name}.azurecr.io/quay.io/kiali/kiali-operator"
   }

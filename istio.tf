@@ -161,6 +161,10 @@ resource "helm_release" "istiod_install" {
     name  = "pilot.resources.requests.memory"
     value = var.istiod_memory_request
   }
+  set {
+    name  = "pilot.resources.requests.cpu"
+    value = var.istiod_cpu_request
+  }
 
   values = ["${file("${path.module}/manifests/istio/istiod_overrides.yaml")}"]
 
@@ -341,6 +345,15 @@ resource "helm_release" "istio_ingress_apps_install" {
   set {
     name  = "gateways.istio-ingressgateway.env.ISTIO_META_HTTP10"
     value = "1"
+  }
+
+  set {
+    name  = "gateways.resources.requests.memory"
+    value = var.isito_ingress_spec.resources.requests.memory
+  }
+  set {
+    name  = "gateways.resources.limits.memory"
+    value = var.isito_ingress_spec.resources.limits.memory
   }
 
   wait    = true

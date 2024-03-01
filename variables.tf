@@ -932,6 +932,12 @@ variable "istiod_memory_request" {
   default     = "2Gi"
 }
 
+variable "istiod_cpu_request" {
+  type        = string
+  description = "cpu for istiod pod"
+  default     = "500m"
+}
+
 variable "kiali_operator_replicas" {
   type        = string
   description = "no of kiali operator pods"
@@ -946,4 +952,25 @@ variable "kiali_cr_spec" {
       limits   = map(string)
     })
   })
+}
+
+variable "isito_ingress_spec" {
+  type = object({
+    resources = object({
+      requests = map(string)
+      limits   = map(string)
+    })
+  })
+}
+
+variable "kiali_operator_memory_request" {
+  type        = string
+  description = "memory for kiali operator pod"
+  default     = "64Mi"
+}
+
+variable "kiali_operator_cpu_request" {
+  type        = string
+  description = "cpu for kiali operator pod"
+  default     = "10m"
 }
