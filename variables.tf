@@ -953,3 +953,12 @@ variable "kiali_cr_spec" {
     })
   })
 }
+
+variable "isito_ingress_spec" {
+  type = object({
+    resources = object({
+      requests = map(string)
+      limits   = map(string)
+    })
+  })
+}
