@@ -266,14 +266,6 @@ resource "helm_release" "istio_ingress_mgmt_install" {
     name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-proxy-protocol"
     value = var.enable_azure_pls_proxy_protocol
   }
-  set {
-    name  = "gateways.resources.requests.memory"
-    value = var.isito_ingress_spec.resources.requests.memory
-  }
-  set {
-    name  = "gateways.resources.limits.memory"
-    value = var.isito_ingress_spec.resources.limits.memory
-  }
 
   wait    = true
   timeout = 300
@@ -353,6 +345,15 @@ resource "helm_release" "istio_ingress_apps_install" {
   set {
     name  = "gateways.istio-ingressgateway.env.ISTIO_META_HTTP10"
     value = "1"
+  }
+
+  set {
+    name  = "gateways.resources.requests.memory"
+    value = var.isito_ingress_spec.resources.requests.memory
+  }
+  set {
+    name  = "gateways.resources.limits.memory"
+    value = var.isito_ingress_spec.resources.limits.memory
   }
 
   wait    = true
