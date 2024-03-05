@@ -4,7 +4,7 @@ resource "kubernetes_namespace" "ado-agents_namespace" {
     name = var.ado-agents_config.namespace
     labels = {
       "app.kubernetes.io/managed-by" = "Terraform"
-      "istio-injection"              = "disabled"
+      "istio-injection"              = "enabled"
     }
   }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
@@ -87,6 +87,9 @@ spec:
       metadata:
         labels:
           azure.workload.identity/use: "true"
+          sidecar.istio.io/inject: "${each.value.enable_istio_proxy}"
+        annotations:
+          proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": ${each.value.enable_istio_proxy} }'
       spec:
         serviceAccountName: "${var.ado-agents_config.sa_name}"
         restartPolicy: Never

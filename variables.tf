@@ -802,6 +802,7 @@ variable "ado-agents_config" {
       pollinginterval            = number
       successfuljobshistorylimit = number
       failedjobshistorylimit     = number
+      enable_istio_proxy         = bool
     }))
   })
   default = {
