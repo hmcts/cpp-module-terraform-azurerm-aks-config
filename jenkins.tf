@@ -4,7 +4,7 @@ resource "kubernetes_namespace" "jenkins_namespace" {
     name = "jenkins"
     labels = {
       "app.kubernetes.io/managed-by" = "Terraform"
-      "istio-injection"              = "enabled"
+      "istio-injection"              = "disabled"
     }
   }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
