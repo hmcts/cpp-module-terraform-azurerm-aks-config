@@ -502,7 +502,9 @@ resource "kubectl_manifest" "install_istio_ingress_gateway_web_manifests" {
 
 # PeerAuthentication menifest - Enable mtls
 resource "kubectl_manifest" "enable_mtls" {
-  yaml_body = file("${path.module}/manifests/istio/istio_peerauthentication.yaml")
+  yaml_body = templatefile("${path.module}/manifests/istio/istio_peerauthentication.yaml", {
+    istio_peer_authentication_mode = var.istio_peer_authentication_mode
+  })
   depends_on = [
     kubernetes_namespace.istio_system_namespace,
     time_sleep.wait_for_istio_crds,

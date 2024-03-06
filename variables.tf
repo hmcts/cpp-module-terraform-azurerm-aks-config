@@ -674,6 +674,12 @@ variable "pgadmin_restrict_storage_access" {
   description = "Enable or disable pgadmin shared storage restrictive permissions"
 }
 
+variable "istio_peer_authentication_mode" {
+  type        = string
+  default     = "STRICT"
+  description = "This is istio mtls peer auth mode"
+}
+
 variable "istio_ingress_load_balancer_name" {
   type        = string
   default     = "kubernetes-internal"
