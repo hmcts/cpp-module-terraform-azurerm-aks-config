@@ -473,6 +473,7 @@ data "kubectl_file_documents" "istio_ingress_gateway_web_manifests" {
 resource "kubectl_manifest" "install_istio_ingress_gateway_apps_manifests" {
   count     = length(data.kubectl_file_documents.istio_ingress_gateway_apps_manifests.documents)
   yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_apps_manifests.documents, count.index)
+  ignore_fields = ["metadata.field_manager"]
   depends_on = [
     kubectl_manifest.cert-manager-install,
     kubectl_manifest.cert_issuer_install,
