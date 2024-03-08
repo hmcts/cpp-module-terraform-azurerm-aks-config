@@ -66,7 +66,10 @@ resource "kubectl_manifest" "istio_crd_install" {
 }
 
 resource "kubectl_manifest" "istio_operator_crd_install" {
-  yaml_body  = file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-operator.yaml")
+  yaml_body = file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-operator.yaml")
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
