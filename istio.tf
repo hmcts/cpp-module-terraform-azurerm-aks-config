@@ -59,6 +59,9 @@ data "kubectl_path_documents" "istio_crd_manifests" {
 resource "kubectl_manifest" "istio_crd_install" {
   count      = length(split("\n---\n", file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml")))
   yaml_body  = element(data.kubectl_path_documents.istio_crd_manifests.documents, count.index)
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
@@ -474,7 +477,7 @@ resource "kubectl_manifest" "install_istio_ingress_gateway_apps_manifests" {
   count     = length(data.kubectl_file_documents.istio_ingress_gateway_apps_manifests.documents)
   yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_apps_manifests.documents, count.index)
   lifecycle {
-    ignore_changes = ["field_manager"]
+    ignore_changes = [field_manager]
   }
   depends_on = [
     kubectl_manifest.cert-manager-install,
