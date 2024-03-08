@@ -981,3 +981,24 @@ variable "kiali_operator_cpu_request" {
   description = "cpu for kiali operator pod"
   default     = "10m"
 }
+
+variable "smashing_spec" {
+  type = object({
+    resources = object({
+      requests = map(string)
+      limits   = map(string)
+    })
+  })
+  default = {
+    resources = {
+      requests = {
+        cpu    = "3000m"
+        memory = "3Gi"
+      }
+      limits = {
+        cpu    = "3000m"
+        memory = "3Gi"
+      }
+    }
+  }
+}
