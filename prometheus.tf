@@ -89,6 +89,9 @@ resource "kubectl_manifest" "install_grafana_virtualservice_manifests" {
     grafana_destination = "${helm_release.prometheus.name}-grafana"
   })
   override_namespace = "prometheus"
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     helm_release.prometheus,
     helm_release.prometheus_adapter_install,

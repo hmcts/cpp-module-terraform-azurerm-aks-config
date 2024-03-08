@@ -1,5 +1,5 @@
 resource "kubectl_manifest" "custom_storageclass_file_alfresco" {
-  yaml_body  = <<YAML
+  yaml_body = <<YAML
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
@@ -18,11 +18,14 @@ parameters:
   skuName: Standard_LRS
 reclaimPolicy: Retain
 YAML
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 resource "kubectl_manifest" "custom_storageclass_disk_alfresco" {
-  yaml_body  = <<YAML
+  yaml_body = <<YAML
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -34,5 +37,8 @@ parameters:
   cachingMode: None
 reclaimPolicy: Delete
 YAML
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }

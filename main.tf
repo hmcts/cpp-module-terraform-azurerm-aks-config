@@ -29,7 +29,10 @@ data "kubectl_file_documents" "network_policy_manifests" {
 
 
 resource "kubectl_manifest" "install_mgmt_networkpolicies" {
-  for_each   = { for i, value in data.kubectl_file_documents.network_policy_manifests.documents : i => value }
-  yaml_body  = each.value
+  for_each  = { for i, value in data.kubectl_file_documents.network_policy_manifests.documents : i => value }
+  yaml_body = each.value
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [kubernetes_namespace.prometheus_namespace, kubernetes_namespace.sonarqube_namespace, kubernetes_namespace.kiali_namespace, kubernetes_namespace.pgadmin_namespace]
 }

@@ -60,7 +60,7 @@ resource "azurerm_role_assignment" "aks_contributor" {
 
 # store Groupids in the configmap
 resource "kubectl_manifest" "store_aks_rbac_groupids" {
-  yaml_body  = <<YAML
+  yaml_body = <<YAML
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -71,6 +71,9 @@ data:
   readerGroupID: ${azuread_group.aks_reader.object_id}
   contributorGroupID: ${azuread_group.aks_contributor.object_id}
 YAML
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 

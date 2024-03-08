@@ -11,8 +11,11 @@ resource "kubernetes_namespace" "dynatrace_namespace" {
 }
 
 resource "kubectl_manifest" "dynatrace_operator_crd_install" {
-  count      = var.enable_dynatrace ? 1 : 0
-  yaml_body  = file("${path.module}/manifests/dynatrace/dynatrace.com_dynakubes.yaml")
+  count     = var.enable_dynatrace ? 1 : 0
+  yaml_body = file("${path.module}/manifests/dynatrace/dynatrace.com_dynakubes.yaml")
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
