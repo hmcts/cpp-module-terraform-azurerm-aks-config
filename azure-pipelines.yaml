@@ -15,6 +15,7 @@ resources:
       endpoint: 'hmcts'
 
 stages:
+- ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
   - stage: precommit
     pool:
       name: "MDV-ADO-AGENTS-01"
