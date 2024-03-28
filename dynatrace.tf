@@ -145,7 +145,7 @@ resource "kubernetes_secret" "dynatrace_token" {
     namespace = "dynatrace"
   }
   data = {
-    apiToken = data.vault_generic_secret.kiali_auth.data["client_secret"]
+    apiToken = var.dynatrace_api_token
     paasToken = var.dynatrace_paas_token
   }
   type = "Opaque"
