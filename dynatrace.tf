@@ -161,7 +161,7 @@ resource "kubectl_manifest" "dynatrace_cr_install" {
     hostGroup = "${upper(var.environment)}_CRIME_CP_AKS"
 
   })
-  depends_on = [ helm_release.dynatrace_operator]
+  depends_on = [ helm_release.dynatrace_operator, kubernetes_secret.dynatrace_token]
 }
 
 resource "kubernetes_secret_v1" "dynatrace_clusterrole_secret" {
