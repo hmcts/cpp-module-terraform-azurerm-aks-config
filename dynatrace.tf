@@ -159,7 +159,6 @@ resource "kubectl_manifest" "dynatrace_cr_install" {
     networkZone = var.dynatrace_networkzone
     systempool_taint_key = var.systempool_taint_key
     hostGroup = "${upper(var.environment)}_CRIME_CP_AKS"
-
   })
   depends_on = [ helm_release.dynatrace_operator, kubernetes_secret.dynatrace_token]
 }
