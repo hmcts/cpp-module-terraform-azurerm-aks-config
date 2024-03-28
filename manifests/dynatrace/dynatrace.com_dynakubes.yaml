@@ -61,7 +61,7 @@ spec:
       # The version is expected to be provided in the semver format
       # Example: {major.minor.release}, e.g., "1.200.0"
       #
-      version: "latest"
+      version: ${version}
 
       # Optional: Sets the URI for the image containing the OneAgent installer used by the DaemonSet
       # Defaults to the latest OneAgent image on the tenant's registry
