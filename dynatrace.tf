@@ -10,12 +10,6 @@ resource "kubernetes_namespace" "dynatrace_namespace" {
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
-resource "kubectl_manifest" "dynatrace_operator_crd_install" {
-  count      = var.enable_dynatrace ? 1 : 0
-  yaml_body  = file("${path.module}/manifests/dynatrace/dynatrace.com_dynakubes.yaml")
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
-}
-
 resource "helm_release" "dynatrace_operator" {
   count      = var.enable_dynatrace ? 1 : 0
   name       = lookup(var.charts.dynatrace-operator, "name", "dynatrace-operator")
@@ -45,105 +39,129 @@ resource "helm_release" "dynatrace_operator" {
   }
 
   set {
-    name  = "operator.image"
-    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/dynatrace-operator:v0.5.1"
+    name  = "image"
+    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/dynatrace-operator:v1.0.0"
   }
 
-  set {
-    name  = "apiUrl"
-    value = var.dynatrace_api
-  }
-
-  set {
-    name  = "apiToken"
-    value = var.dynatrace_api_token
-  }
-
-  set {
-    name  = "paasToken"
-    value = var.dynatrace_paas_token
-  }
-
-  set {
-    name  = "dataIngestToken"
-    value = ""
-  }
-
-  set {
-    name  = "networkZone"
-    value = var.dynatrace_networkzone
-  }
-
-  set {
-    name  = "classicFullStack.enabled"
-    value = true
-  }
-
-  set {
-    name  = "classicFullStack.tolerations[0].key"
-    value = var.systempool_taint_key
-  }
-
-  set {
-    name  = "classicFullStack.tolerations[0].operator"
-    value = "Exists"
-  }
-
-  set {
-    name  = "classicFullStack.tolerations[0].effect"
-    value = "NoSchedule"
-  }
-
-  set {
-    name  = "classicFullStack.image"
-    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/oneagent"
-  }
-
-  set {
-    name  = "classicFullStack.version"
-    value = "latest"
-  }
-
-  set {
-    name  = "classicFullStack.env[0].name"
-    value = "ONEAGENT_INSTALLER_DOWNLOAD_TOKEN"
-  }
-
-  set {
-    name  = "classicFullStack.env[0].valueFrom.secretKeyRef.name"
-    value = "dynakube"
-  }
-
-  set {
-    name  = "classicFullStack.env[0].valueFrom.secretKeyRef.key"
-    value = "paasToken"
-  }
-
-  set {
-    name  = "classicFullStack.env[0].valueFrom.secretKeyRef.key"
-    value = "paasToken"
-  }
-
-  set {
-    name  = "classicFullStack.env[1].name"
-    value = "ONEAGENT_INSTALLER_SCRIPT_URL"
-  }
-
-  set {
-    name  = "classicFullStack.env[1].value"
-    value = "${var.dynatrace_api}/v1/deployment/installer/agent/unix/default/latest?arch=x86"
-  }
-
-  set {
-    name  = "classicFullStack.args[0]"
-    value = "--set-host-group=${upper(var.environment)}_CRIME_CP_AKS"
-  }
+#  set {
+#    name  = "apiUrl"
+#    value = var.dynatrace_api
+#  }
+#
+#  set {
+#    name  = "apiToken"
+#    value = var.dynatrace_api_token
+#  }
+#
+#  set {
+#    name  = "paasToken"
+#    value = var.dynatrace_paas_token
+#  }
+#
+#  set {
+#    name  = "dataIngestToken"
+#    value = ""
+#  }
+#
+#  set {
+#    name  = "networkZone"
+#    value = var.dynatrace_networkzone
+#  }
+#
+#  set {
+#    name  = "classicFullStack.enabled"
+#    value = true
+#  }
+#
+#  set {
+#    name  = "classicFullStack.tolerations[0].key"
+#    value = var.systempool_taint_key
+#  }
+#
+#  set {
+#    name  = "classicFullStack.tolerations[0].operator"
+#    value = "Exists"
+#  }
+#
+#  set {
+#    name  = "classicFullStack.tolerations[0].effect"
+#    value = "NoSchedule"
+#  }
+#
+#  set {
+#    name  = "classicFullStack.image"
+#    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/oneagent"
+#  }
+#
+#  set {
+#    name  = "classicFullStack.version"
+#    value = "latest"
+#  }
+#  set {
+#    name  = "classicFullStack.env[0].name"
+#    value = "ONEAGENT_INSTALLER_DOWNLOAD_TOKEN"
+#  }
+#
+#  set {
+#    name  = "classicFullStack.env[0].valueFrom.secretKeyRef.name"
+#    value = "dynakube"
+#  }
+#
+#  set {
+#    name  = "classicFullStack.env[0].valueFrom.secretKeyRef.key"
+#    value = "paasToken"
+#  }
+#
+#  set {
+#    name  = "classicFullStack.env[0].valueFrom.secretKeyRef.key"
+#    value = "paasToken"
+#  }
+#
+#  set {
+#    name  = "classicFullStack.env[1].name"
+#    value = "ONEAGENT_INSTALLER_SCRIPT_URL"
+#  }
+#
+#  set {
+#    name  = "classicFullStack.env[1].value"
+#    value = "${var.dynatrace_api}/v1/deployment/installer/agent/unix/default/latest?arch=x86"
+#  }
+#
+#  set {
+#    name  = "classicFullStack.args[0]"
+#    value = "--set-host-group=${upper(var.environment)}_CRIME_CP_AKS"
+#  }
 
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.dynatrace_namespace,
-    kubectl_manifest.dynatrace_operator_crd_install
+    time_sleep.wait_for_aks_api_dns_propagation
   ]
+}
+
+resource "kubernetes_secret" "dynatrace_token" {
+  metadata {
+    name      = "dynakube"
+    namespace = "dynatrace"
+  }
+  data = {
+    apiToken = data.vault_generic_secret.kiali_auth.data["client_secret"]
+    paasToken = var.dynatrace_paas_token
+  }
+  type = "Opaque"
+}
+
+resource "kubectl_manifest" "dynatrace_cr_install" {
+  count      = var.enable_dynatrace ? 1 : 0
+  yaml_body  = templatefile("${path.module}/manifests/dynatrace/dynatrace.com_dynakubes.yaml", {
+    apiUrl = var.dynatrace_api
+    classicFullStackImage = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/oneagent"
+    networkZone = var.dynatrace_networkzone
+    systempool_taint_key = var.systempool_taint_key
+    hostGroup = "${upper(var.environment)}_CRIME_CP_AKS"
+
+  })
+  depends_on = [ helm_release.dynatrace_operator]
 }
 
 resource "kubernetes_secret_v1" "dynatrace_clusterrole_secret" {
