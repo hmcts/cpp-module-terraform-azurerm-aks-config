@@ -127,6 +127,11 @@ spec:
       env:
       - name: ONEAGENT_INSTALLER_SCRIPT_URL
         value: ${apiUrl}/v1/deployment/installer/agent/unix/default/latest?arch=x86"
+      - name: ONEAGENT_INSTALLER_DOWNLOAD_TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: apiToken
+            name: dynakube
 
       # Optional: Adds custom arguments to the OneAgent installer
       # For a list of available options, see https://www.dynatrace.com/support/help/shortlink/linux-custom-installation
