@@ -40,7 +40,7 @@ resource "helm_release" "dynatrace_operator" {
 
   set {
     name  = "image"
-    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/dynatrace-operator:v1.0.0"
+    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/dynatrace-operator:${var.dynatrace_operator_image_tag}"
   }
 
   depends_on = [
@@ -69,7 +69,7 @@ resource "kubectl_manifest" "dynatrace_cr_install" {
     networkZone           = var.dynatrace_networkzone
     systempool_taint_key  = var.systempool_taint_key
     hostGroup             = "${upper(var.environment)}_CRIME_CP_AKS"
-    version               = "1.86.1000"
+    version               = var.dynatrace_oneagent_version
   })
   depends_on = [helm_release.dynatrace_operator, kubernetes_secret.dynatrace_token]
 }
