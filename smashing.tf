@@ -104,6 +104,26 @@ resource "helm_release" "smashing_install" {
     value = var.smashing_gateway_host_name
   }
 
+  set {
+    name  = "resources.limits.cpu"
+    value = var.smashing_spec.resources.limits.cpu
+  }
+
+  set {
+    name  = "resources.requests.cpu"
+    value = var.smashing_spec.resources.requests.cpu
+  }
+
+  set {
+    name  = "resources.requests.memory"
+    value = var.smashing_spec.resources.requests.memory
+  }
+
+  set {
+    name  = "resources.limits.memory"
+    value = var.smashing_spec.resources.limits.memory
+  }
+
   wait    = true
   timeout = 500
 

@@ -981,3 +981,36 @@ variable "kiali_operator_cpu_request" {
   description = "cpu for kiali operator pod"
   default     = "10m"
 }
+
+variable "smashing_spec" {
+  type = object({
+    resources = object({
+      requests = map(string)
+      limits   = map(string)
+    })
+  })
+  default = {
+    resources = {
+      requests = {
+        cpu    = "3000m"
+        memory = "3Gi"
+      }
+      limits = {
+        cpu    = "3000m"
+        memory = "3Gi"
+      }
+    }
+  }
+}
+
+variable "dynatrace_oneagent_version" {
+  type        = string
+  description = "dynatrace oneagent version"
+  default     = "1.86.1000"
+}
+
+variable "dynatrace_operator_image_tag" {
+  type        = string
+  description = "dynatrace operator version"
+  default     = "v1.0.0"
+}
