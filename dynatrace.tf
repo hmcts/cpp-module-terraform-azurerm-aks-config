@@ -51,6 +51,7 @@ resource "helm_release" "dynatrace_operator" {
 }
 
 resource "kubernetes_secret" "dynatrace_token" {
+  count = var.enable_dynatrace ? 1 : 0
   metadata {
     name      = "dynakube"
     namespace = "dynatrace"
