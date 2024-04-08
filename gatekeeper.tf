@@ -69,7 +69,9 @@ resource "helm_release" "gatekeeper_install" {
 resource "kubectl_manifest" "install_gatekeeper_constraint_manifests" {
   count     = var.gatekeeper_config.enable ? 1 : 0
   yaml_body = file("${path.module}/manifests/gatekeeper/constraint.yaml")
-
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     helm_release.gatekeeper_install
   ]
@@ -78,7 +80,9 @@ resource "kubectl_manifest" "install_gatekeeper_constraint_manifests" {
 resource "kubectl_manifest" "install_gatekeeper_whitelistedimages_manifests" {
   count     = var.gatekeeper_config.enable ? 1 : 0
   yaml_body = file("${path.module}/manifests/gatekeeper/whitelistedimages.yaml")
-
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     helm_release.gatekeeper_install
   ]

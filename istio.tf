@@ -57,13 +57,19 @@ data "kubectl_path_documents" "istio_crd_manifests" {
 
 # https://github.com/gavinbunney/terraform-provider-kubectl/issues/61
 resource "kubectl_manifest" "istio_crd_install" {
-  count      = length(split("\n---\n", file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml")))
-  yaml_body  = element(data.kubectl_path_documents.istio_crd_manifests.documents, count.index)
+  count     = length(split("\n---\n", file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml")))
+  yaml_body = element(data.kubectl_path_documents.istio_crd_manifests.documents, count.index)
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
 resource "kubectl_manifest" "istio_operator_crd_install" {
-  yaml_body  = file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-operator.yaml")
+  yaml_body = file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-operator.yaml")
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
@@ -473,6 +479,9 @@ data "kubectl_file_documents" "istio_ingress_gateway_web_manifests" {
 resource "kubectl_manifest" "install_istio_ingress_gateway_apps_manifests" {
   count     = length(data.kubectl_file_documents.istio_ingress_gateway_apps_manifests.documents)
   yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_apps_manifests.documents, count.index)
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     kubectl_manifest.cert-manager-install,
     kubectl_manifest.cert_issuer_install,
@@ -483,6 +492,9 @@ resource "kubectl_manifest" "install_istio_ingress_gateway_apps_manifests" {
 resource "kubectl_manifest" "install_istio_ingress_gateway_mgmt_manifests" {
   count     = length(data.kubectl_file_documents.istio_ingress_gateway_mgmt_manifests.documents)
   yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_mgmt_manifests.documents, count.index)
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     kubectl_manifest.cert-manager-install,
     kubectl_manifest.cert_issuer_install,
@@ -493,6 +505,9 @@ resource "kubectl_manifest" "install_istio_ingress_gateway_mgmt_manifests" {
 resource "kubectl_manifest" "install_istio_ingress_gateway_web_manifests" {
   count     = length(data.kubectl_file_documents.istio_ingress_gateway_web_manifests.documents)
   yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_web_manifests.documents, count.index)
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     kubectl_manifest.cert-manager-install,
     kubectl_manifest.cert_issuer_install,
@@ -505,6 +520,9 @@ resource "kubectl_manifest" "enable_mtls" {
   yaml_body = templatefile("${path.module}/manifests/istio/istio_peerauthentication.yaml", {
     istio_peer_authentication_mode = var.istio_peer_authentication_mode
   })
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     kubernetes_namespace.istio_system_namespace,
     time_sleep.wait_for_istio_crds,
@@ -515,6 +533,9 @@ resource "kubectl_manifest" "enable_mtls" {
 # Enable envoy access logs
 resource "kubectl_manifest" "istio_telemetry" {
   yaml_body = file("${path.module}/manifests/istio/telemetry.yaml")
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     kubernetes_namespace.istio_system_namespace,
     time_sleep.wait_for_istio_crds,
@@ -524,8 +545,11 @@ resource "kubectl_manifest" "istio_telemetry" {
 
 # Enable PROXY PROTOCOL with EnvoyFilter
 resource "kubectl_manifest" "istio_envoy_filter" {
-  count      = var.enable_azure_pls_proxy_protocol ? 1 : 0
-  yaml_body  = file("${path.module}/manifests/istio/istio_envoy_filter.yaml")
+  count     = var.enable_azure_pls_proxy_protocol ? 1 : 0
+  yaml_body = file("${path.module}/manifests/istio/istio_envoy_filter.yaml")
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [kubectl_manifest.istio_telemetry]
 }
 
@@ -535,6 +559,9 @@ resource "kubectl_manifest" "istio_authorizationPolicy" {
   yaml_body = templatefile("${path.module}/manifests/istio/istio_authorizationpolicy.yaml", {
     src_ip_range = var.src_ip_range
   })
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [kubectl_manifest.istio_telemetry]
 }
 

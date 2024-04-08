@@ -115,6 +115,9 @@ resource "kubectl_manifest" "install_kiali_virtualservice_manifests" {
     kiali_destination = "kiali"
   })
   override_namespace = "istio-system"
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     helm_release.kiali_operator_install,
     kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests,

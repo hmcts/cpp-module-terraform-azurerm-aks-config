@@ -47,6 +47,9 @@ spec:
     provider: azure-workload
     identityId: "${var.ado-agents_config.managed-identity}"
 YAML
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
     kubernetes_namespace.ado-agents_namespace,
@@ -125,7 +128,9 @@ spec:
   rollout:
     strategy: gradual
 YAML
-
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
     kubernetes_namespace.ado-agents_namespace,

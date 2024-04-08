@@ -43,7 +43,10 @@ data "kubectl_file_documents" "azure_info_manifests" {
 }
 
 resource "kubectl_manifest" "store_azure_info" {
-  count      = length(split("\n---\n", file("${path.module}/manifests/common/azureinfo.yaml")))
-  yaml_body  = element(data.kubectl_file_documents.azure_info_manifests.documents, count.index)
+  count     = length(split("\n---\n", file("${path.module}/manifests/common/azureinfo.yaml")))
+  yaml_body = element(data.kubectl_file_documents.azure_info_manifests.documents, count.index)
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation, kubernetes_namespace.azure_info_namespace]
 }

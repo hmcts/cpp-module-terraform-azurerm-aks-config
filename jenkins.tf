@@ -30,7 +30,9 @@ subjects:
   name: default
   namespace: jenkins
 YAML
-
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [
     kubernetes_namespace.jenkins_namespace[0],
     helm_release.aks_rbac

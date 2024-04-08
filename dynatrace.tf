@@ -71,6 +71,9 @@ resource "kubectl_manifest" "dynatrace_cr_install" {
     hostGroup             = "${upper(var.environment)}_CRIME_CP_AKS"
     version               = var.dynatrace_oneagent_version
   })
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
   depends_on = [helm_release.dynatrace_operator, kubernetes_secret.dynatrace_token]
 }
 
