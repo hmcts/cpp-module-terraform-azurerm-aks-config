@@ -33,7 +33,7 @@ resource "null_resource" "download_charts" {
         fi
         mkdir -p ./install
         ${local.helm_binary} pull oci://${var.acr_name}.azurecr.io/${chart.path} --version ${chart.version} --destination ./install
-        tar zxvf ${chart.dir}/${chart.version}.tgz -C ${chart.chart_name}
+        tar zxvf ${chart.dir}-${chart.version}.tgz -C ${chart.chart_name}
         rm -f ${chart.dir}-${chart.version}.tgz
       else
         ${local.helm_binary} chart remove ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
