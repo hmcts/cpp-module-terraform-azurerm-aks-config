@@ -8,6 +8,7 @@ locals {
     dir        = "install/${element(split("/", chart.path), 1)}"
     chart_name = "${element(split("/", chart.path), 1)}"
   }]
+  helm_binary = "$HELM_BINARY"
 }
 
 resource "null_resource" "download_charts" {
@@ -23,17 +24,18 @@ resource "null_resource" "download_charts" {
       HELM_BINARY=$${HELM_BINARY:-helm}
       $$HELM_BINARY registry login ${var.acr_name}.azurecr.io --username ${var.acr_user_name} --password ${var.acr_user_password}
       %{for chart in local.charts_info~}
+      if [ "$$HELM_BINARY" = "helm-3.14.2" ]; then
         if [ -d "${chart.dir}" ]; then
           rm -rf "${chart.dir}"
         fi
         mkdir -p ./install
-        $$HELM_BINARY pull oci://${var.acr_name}.azurecr.io/${chart.path} --version ${chart.version} --destination ./install
+        ${locals.helm_binary} pull oci://${var.acr_name}.azurecr.io/${chart.path} --version ${chart.version} --destination ./install
         tar zxvf ${chart.dir}/${chart.version}.tgz -C ${chart.chart_name}
         rm -f ${chart.dir}-${chart.version}.tgz
       else
-        $$HELM_BINARY chart remove ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
-        $$HELM_BINARY chart pull ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
-        $$HELM_BINARY chart export ${var.acr_name}.azurecr.io/${chart.path}:${chart.version} --destination ./install
+        ${locals.helm_binary} chart remove ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
+        ${locals.helm_binary} chart pull ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
+        ${locals.helm_binary} chart export ${var.acr_name}.azurecr.io/${chart.path}:${chart.version} --destination ./install
       fi
       %{endfor~}
     EOT
