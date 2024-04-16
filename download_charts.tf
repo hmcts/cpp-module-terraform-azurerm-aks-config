@@ -7,12 +7,24 @@ resource "null_resource" "download_charts" {
 
   provisioner "local-exec" {
     command = <<-EOT
+      #!bash -x
       export HELM_EXPERIMENTAL_OCI=1
-      helm registry login ${var.acr_name}.azurecr.io --username ${var.acr_user_name} --password ${var.acr_user_password}
+      HELM_BINARY=$${HELM_BINARY:-helm}
+      $$HELM_BINARY registry login ${var.acr_name}.azurecr.io --username ${var.acr_user_name} --password ${var.acr_user_password}
       %{for chart in var.charts}
-      helm chart remove ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
-      helm chart pull ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
-      helm chart export ${var.acr_name}.azurecr.io/${chart.path}:${chart.version} --destination ./install
+      if [ "$$HELM_BINARY" = "helm-3.14.2" ]; then
+        if [ -d "./install/$$(basename ${chart.path})" ]; then
+          rm -rf "./install/$$(basename ${chart.path})"
+        fi
+        mkdir -p ./install
+        $$HELM_BINARY pull oci://${var.acr_name}.azurecr.io/${chart.path} --version ${chart.version} --destination ./install
+        tar zxvf ./install/$$(basename ${chart.path})-${chart.version}.tgz -C ./install
+        rm -f ./install/$$(basename ${chart.path})-${chart.version}.tgz
+      else
+        $$HELM_BINARY chart remove ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
+        $$HELM_BINARY chart pull ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
+        $$HELM_BINARY chart export ${var.acr_name}.azurecr.io/${chart.path}:${chart.version} --destination ./install
+      fi
       %{endfor~}
     EOT
   }
