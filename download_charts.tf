@@ -23,16 +23,12 @@ resource "null_resource" "download_charts" {
       export HELM_EXPERIMENTAL_OCI=1
       HELM_BINARY=$${HELM_BINARY:-helm}
       ${local.helm_binary} registry login ${var.acr_name}.azurecr.io --username ${var.acr_user_name} --password ${var.acr_user_password}
-      pwd
-      ls -al
       mkdir -p ./install
-      ls -al ./install
       %{for chart in local.charts_info~}
       if [ ${local.helm_binary} = "helm-3.14.2" ]; then
         if [ -d "${chart.dir}" ]; then
           rm -rf "${chart.dir}"
         fi
-
         ${local.helm_binary} pull oci://${var.acr_name}.azurecr.io/${chart.path} --version ${chart.version} --destination ./install
         tar zxvf ${chart.dir}-${chart.version}.tgz -C install
         rm -f ${chart.dir}-${chart.version}.tgz
@@ -41,7 +37,6 @@ resource "null_resource" "download_charts" {
         ${local.helm_binary} chart pull ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
         ${local.helm_binary} chart export ${var.acr_name}.azurecr.io/${chart.path}:${chart.version} --destination ./install
       fi
-      ls -al ./install/${chart.chart_name}
       %{endfor~}
     EOT
   }
