@@ -996,8 +996,8 @@ variable "smashing_spec" {
         memory = "3Gi"
       }
       limits = {
-        cpu    = "4000m"
-        memory = "4Gi"
+        cpu    = "3000m"
+        memory = "3Gi"
       }
     }
   }
