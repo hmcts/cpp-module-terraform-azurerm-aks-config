@@ -1,3 +1,8 @@
+nodeSelector: {agentpool: sysagentpool}
+
+prometheus:
+  url: http://kube-prometheus-stack-prometheus.prometheus.svc
+
 rules:
   default: true
   custom:
@@ -10,5 +15,12 @@ rules:
         matches: "^^(.*)_total"
         as: "$${1}_per_second"
       metricsQuery: 'sum(rate(<<.Series>>{reporter="destination", <<.LabelMatchers>>}[1m]) or clamp_max(absent(istio_requests_total{reporter="destination", <<.LabelMatchers>>}),0)) by (<<.GroupBy>>)'
+
+tolerations:
+  - key: "CriticalAddonsOnly"
+    operator: "Exists"
+    effect: "NoSchedule"
+
 image:
   repository: "${acr_name}.azurecr.io/registry.k8s.io/prometheus-adapter/prometheus-adapter"
+
