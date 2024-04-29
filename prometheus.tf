@@ -71,7 +71,7 @@ resource "helm_release" "prometheus_adapter_install" {
   namespace  = "prometheus"
 
   values = [templatefile("${path.module}/chart-values/prometheus-adapter.tmpl", {
-    acr_name                   = var.acr_name
+    acr_name = var.acr_name
   })]
 
   wait    = true
