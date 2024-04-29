@@ -74,11 +74,6 @@ resource "helm_release" "prometheus_adapter_install" {
     acr_name                   = var.acr_name
   })]
 
-#  set {
-#    name  = "image.repository"
-#    value = "${var.acr_name}.azurecr.io/registry.k8s.io/prometheus-adapter/prometheus-adapter"
-#  }
-
   wait    = true
   timeout = 300
 
