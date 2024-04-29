@@ -70,10 +70,9 @@ resource "helm_release" "prometheus_adapter_install" {
   repository = "./install"
   namespace  = "prometheus"
 
-  set {
-    name  = "image.repository"
-    value = "${var.acr_name}.azurecr.io/registry.k8s.io/prometheus-adapter/prometheus-adapter"
-  }
+  values = [templatefile("${path.module}/chart-values/prometheus-adapter.tmpl", {
+    acr_name = var.acr_name
+  })]
 
   wait    = true
   timeout = 300
