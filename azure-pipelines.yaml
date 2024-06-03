@@ -12,6 +12,7 @@ resources:
     - repository: cppAzureDevOpsTemplates
       type: github
       name: hmcts/cpp-azure-devops-templates
+      ref: 'EI-1799'
       endpoint: 'hmcts'
 
 stages:
