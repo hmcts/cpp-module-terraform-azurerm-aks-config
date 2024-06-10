@@ -1,3 +1,7 @@
+locals {
+  addns = lookup(var.addns, var.environment_type, null)
+}
+
 resource "kubernetes_namespace" "smashing_namespace" {
   count = var.enable_smashing ? 1 : 0
   metadata {
