@@ -1014,3 +1014,9 @@ variable "dynatrace_operator_image_tag" {
   description = "dynatrace operator version"
   default     = "v1.0.0"
 }
+
+variable "istiod_hpa_cputarget" {
+  type        = string
+  description = "cpu target for istiod pod hpa"
+  default     = "70"
+}
