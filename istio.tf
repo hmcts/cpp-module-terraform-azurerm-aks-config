@@ -172,6 +172,11 @@ resource "helm_release" "istiod_install" {
     value = var.istiod_cpu_request
   }
 
+  set {
+    name  = "pilot.cpu.targetAverageUtilization"
+    value = var.istiod_hpa_cputarget
+  }
+
   values = ["${file("${path.module}/manifests/istio/istiod_overrides.yaml")}"]
 
   wait    = true
