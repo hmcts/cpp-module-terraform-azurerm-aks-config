@@ -73,7 +73,7 @@ resource "azurerm_monitor_metric_alert" "aks_infra_alert_node_limit" {
 
   criteria {
     metric_namespace = "Insights.container/nodes"
-    metric_name      = "nodesCount"
+    metric_name      = "nodes_count"
     aggregation      = "Average"
     operator         = "GreaterThan"
     threshold        = var.alerts.infra.node_limit_threshold
