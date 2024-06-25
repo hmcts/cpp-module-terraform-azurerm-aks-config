@@ -540,8 +540,8 @@ resource "azurerm_monitor_metric_alert" "aks_sys_pod_restart_loop_alert" {
 
     dimension {
       name     = "Namespace"
-      operator = "NotIn"
-      values   = ["ccm*"]
+      operator = "Include"
+      values   = var.system_namespaces
     }
   }
 
