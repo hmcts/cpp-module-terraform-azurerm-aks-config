@@ -209,7 +209,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_apps_hpa_desired_rep
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
   data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
-  description             = "Alert when actual replica of pods is less than minimum replcia of hpa"
+  description             = "Alert when actual replica of pods is less than minimum replicas of hpa"
   enabled                 = var.alerts.apps_workload.enabled
   query                   = <<-QUERY
   InsightsMetrics
@@ -239,7 +239,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_apps_hpa_desired_rep
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
   data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
-  description             = "Alert when actual replica of pods is equal to minimum replica of hpa"
+  description             = "Alert when actual replica of pods is equal to maximum replicas of hpa"
   enabled                 = var.alerts.apps_workload.enabled
   query                   = <<-QUERY
   InsightsMetrics
@@ -378,7 +378,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_pod_memory_us
   }
   data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
   description             = "Alert when Prometheus pod memory usage is above 75% usage memory"
-  enabled                 = var.alerts.apps_workload.enabled
+  enabled                 = var.alerts.sys_workload.enabled
   query                   = <<-QUERY
   let endDateTime = now();
   let startDateTime = ago(1h);
@@ -416,13 +416,13 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_pod_memory_us
     | project Computer, ContainerName, TimeGenerated, UsagePercent = UsageValue * 100.0 / LimitValue
     | summarize AggregatedValue = avg(UsagePercent) by bin(TimeGenerated, trendBinSize) , ContainerName
 QUERY
-  severity                = var.alerts.apps_workload.prometheus_pod_memory.severity
-  frequency               = var.alerts.apps_workload.prometheus_pod_memory.frequency
-  time_window             = var.alerts.apps_workload.prometheus_pod_memory.time_window
+  severity                = var.alerts.sys_workload.prometheus_pod_memory.severity
+  frequency               = var.alerts.sys_workload.prometheus_pod_memory.frequency
+  time_window             = var.alerts.sys_workload.prometheus_pod_memory.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
-    threshold = var.alerts.apps_workload.prometheus_pod_memory.threshold
+    threshold = var.alerts.sys_workload.prometheus_pod_memory.threshold
   }
 }
 
@@ -437,7 +437,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_node_disk_usa
   }
   data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
   description             = "Alert when Prometheus node disk usage is reached to 75% usage disk"
-  enabled                 = var.alerts.apps_workload.enabled
+  enabled                 = var.alerts.sys_workload.enabled
   query                   = <<-QUERY
   let setGBValue = 120;
   InsightsMetrics
@@ -451,12 +451,74 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_node_disk_usa
     | summarize FreespaceGB = min(UsedDiskGB) by _ResourceId,  _SubscriptionId
     | where FreespaceGB >= setGBValue
 QUERY
-  severity                = var.alerts.apps_workload.prometheus_disk_usage.severity
-  frequency               = var.alerts.apps_workload.prometheus_disk_usage.frequency
-  time_window             = var.alerts.apps_workload.prometheus_disk_usage.time_window
+  severity                = var.alerts.sys_workload.prometheus_disk_usage.severity
+  frequency               = var.alerts.sys_workload.prometheus_disk_usage.frequency
+  time_window             = var.alerts.sys_workload.prometheus_disk_usage.time_window
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
-    threshold = var.alerts.apps_workload.prometheus_disk_usage.threshold
+    threshold = var.alerts.sys_workload.prometheus_disk_usage.threshold
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_hpa_desired_replica_close_to_max_replica" {
+  count               = var.alerts.enable_alerts ? 1 : 0
+  name                = "aks_sys_hpa_desired_replica_close_to_max_replica"
+  location            = var.aks_cluster_location
+  resource_group_name = var.aks_resource_group_name
+
+  action {
+    action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
+  }
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when actual replica of pods is close to maximum replicas of hpa"
+  enabled                 = var.alerts.sys_workload.enabled
+  query                   = <<-QUERY
+  let _minthreshold = 80;
+  InsightsMetrics
+    | where Name has "kube_hpa_status_current_replicas"
+    | extend tags=parse_json(Tags)
+    | where tags.k8sNamespace !contains "ccm"
+    | where toint(tags.status_desired_replicas) >= toint(tags.spec_max_replicas) * (_minthreshold / 100.0)
+    | distinct tostring(tags.hpa),tostring(tags.k8sNamespace)
+QUERY
+  severity                = var.alerts.sys_workload.hpa_max_replica.severity
+  frequency               = var.alerts.sys_workload.hpa_max_replica.frequency
+  time_window             = var.alerts.sys_workload.hpa_max_replica.time_window
+  auto_mitigation_enabled = true
+  trigger {
+    operator  = "GreaterThan"
+    threshold = var.alerts.sys_workload.hpa_max_replica.threshold
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_pod_restart_loop_alert" {
+  count               = var.alerts.enable_alerts ? 1 : 0
+  name                = "aks_sys_pod_restart_loop_alert"
+  location            = var.aks_cluster_location
+  resource_group_name = var.aks_resource_group_name
+
+  action {
+    action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
+  }
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when a pod is in a restart loop in sys namespaces"
+  enabled                 = var.alerts.sys_workload.enabled
+  query                   = <<-QUERY
+  InsightsMetrics
+    | where Name has "kube_pod_restart_count"
+    | extend tags=parse_json(Tags)
+    | where tags.k8sNamespace !contains "ccm"
+    | summarize TotalRestarts=sum(toint(Value)) by tostring(tags.k8sNamespace), tostring(tags.pod_name)
+    | where TotalRestarts > 4
+    | project Namespace=tags.k8sNamespace, Pod=tags.pod_name, RestartCount=TotalRestarts
+QUERY
+  severity                = var.alerts.sys_workload.restart_loop.severity
+  frequency               = var.alerts.sys_workload.restart_loop.frequency
+  time_window             = var.alerts.sys_workload.restart_loop.time_window
+  auto_mitigation_enabled = true
+  trigger {
+    operator  = "GreaterThan"
+    threshold = var.alerts.sys_workload.restart_loop.threshold
   }
 }
