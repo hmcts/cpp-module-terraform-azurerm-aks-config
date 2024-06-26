@@ -580,6 +580,39 @@ QUERY
 #}
 
 
+#resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_pod_restart_loop_alert" {
+#  count               = var.alerts.enable_alerts ? 1 : 0
+#  name                = "aks_sys_pod_restart_loop_alert"
+#  location            = var.aks_cluster_location
+#  resource_group_name = var.aks_resource_group_name
+#
+#  action {
+#    action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
+#  }
+#  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+#  description             = "Alert when a pod is in a restart loop in sys namespaces"
+#  enabled                 = var.alerts.sys_workload.enabled
+#  query                   = <<-QUERY
+#  InsightsMetrics
+#    | where Name has "kube_pod_restart_count"
+#    | extend tags=parse_json(Tags)
+#    | where tags.k8sNamespace !contains "ccm"
+#    | summarize TotalRestarts=sum(toint(Value)) by tostring(tags.k8sNamespace), tostring(tags.pod_name)
+#    | where TotalRestarts > 4
+#    | project Namespace=tags.k8sNamespace, Pod=tags.pod_name, RestartCount=TotalRestarts
+#QUERY
+#  severity                = var.alerts.sys_workload.restart_loop.severity
+#  frequency               = var.alerts.sys_workload.restart_loop.frequency
+#  time_window             = var.alerts.sys_workload.restart_loop.time_window
+#  auto_mitigation_enabled = true
+#  trigger {
+#    operator  = "GreaterThan"
+#    threshold = var.alerts.sys_workload.restart_loop.threshold
+#  }
+#}
+
+
+
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_pod_restart_loop_alert" {
   count               = var.alerts.enable_alerts ? 1 : 0
   name                = "aks_sys_pod_restart_loop_alert"
@@ -593,13 +626,11 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_pod_restart_loop
   description             = "Alert when a pod is in a restart loop in sys namespaces"
   enabled                 = var.alerts.sys_workload.enabled
   query                   = <<-QUERY
-  InsightsMetrics
-    | where Name has "kube_pod_restart_count"
-    | extend tags=parse_json(Tags)
-    | where tags.k8sNamespace !contains "ccm"
-    | summarize TotalRestarts=sum(toint(Value)) by tostring(tags.k8sNamespace), tostring(tags.pod_name)
-    | where TotalRestarts > 4
-    | project Namespace=tags.k8sNamespace, Pod=tags.pod_name, RestartCount=TotalRestarts
+  KubePodInventory
+    | where Namespace !contains "ccm"
+    | where PodStatus == "Running" and ContainerStatus == "Restart"
+    | summarize CountOfRestarts=count() by ContainerID
+    | where CountOfRestarts >= 5
 QUERY
   severity                = var.alerts.sys_workload.restart_loop.severity
   frequency               = var.alerts.sys_workload.restart_loop.frequency
