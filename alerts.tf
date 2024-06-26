@@ -63,32 +63,34 @@ resource "azurerm_monitor_metric_alert" "aks_infra_alert_disk_usage" {
   }
 }
 
-resource "azurerm_monitor_metric_alert" "aks_infra_alert_node_limit" {
-  count               = var.alerts.enable_alerts ? 1 : 0
-  name                = "aks_node_count_not_in_ready_state"
-  resource_group_name = var.aks_resource_group_name
-  scopes              = [data.azurerm_kubernetes_cluster.cluster.id]
-  description         = "Action will be triggered when node count is notready state is greater than 0"
-  enabled             = var.alerts.infra.enabled
+#temporariliy removed
 
-  criteria {
-    metric_namespace = "insights.container/nodes"
-    metric_name      = "nodesCount"
-    aggregation      = "Average"
-    operator         = "GreaterThan"
-    threshold        = var.alerts.infra.node_limit_threshold
-
-    dimension {
-      name     = "status"
-      operator = "Include"
-      values   = ["NotReady"]
-    }
-  }
-
-  action {
-    action_group_id = data.azurerm_monitor_action_group.platformDev.0.id
-  }
-}
+#resource "azurerm_monitor_metric_alert" "aks_infra_alert_node_limit" {
+#  count               = var.alerts.enable_alerts ? 1 : 0
+#  name                = "aks_node_count_not_in_ready_state"
+#  resource_group_name = var.aks_resource_group_name
+#  scopes              = [data.azurerm_kubernetes_cluster.cluster.id]
+#  description         = "Action will be triggered when node count is notready state is greater than 0"
+#  enabled             = var.alerts.infra.enabled
+#
+#  criteria {
+#    metric_namespace = "insights.container/nodes"
+#    metric_name      = "nodesCount"
+#    aggregation      = "Average"
+#    operator         = "GreaterThan"
+#    threshold        = var.alerts.infra.node_limit_threshold
+#
+#    dimension {
+#      name     = "status"
+#      operator = "Include"
+#      values   = ["NotReady"]
+#    }
+#  }
+#
+#  action {
+#    action_group_id = data.azurerm_monitor_action_group.platformDev.0.id
+#  }
+#}
 
 resource "azurerm_monitor_metric_alert" "aks_infra_alert_cluster_health" {
   count               = var.alerts.enable_alerts ? 1 : 0
@@ -613,6 +615,36 @@ QUERY
 
 
 
+#resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_pod_restart_loop_alert" {
+#  count               = var.alerts.enable_alerts ? 1 : 0
+#  name                = "aks_sys_pod_restart_loop_alert"
+#  location            = var.aks_cluster_location
+#  resource_group_name = var.aks_resource_group_name
+#
+#  action {
+#    action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
+#  }
+#  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+#  description             = "Alert when a pod is in a restart loop in sys namespaces"
+#  enabled                 = var.alerts.sys_workload.enabled
+#  query                   = <<-QUERY
+#  KubePodInventory
+#    | where Namespace !contains "ccm"
+#    | where PodStatus == "Running" and ContainerStatus == "Restart"
+#    | summarize CountOfRestarts=count() by ContainerID
+#    | where CountOfRestarts >= 5
+#QUERY
+#  severity                = var.alerts.sys_workload.restart_loop.severity
+#  frequency               = var.alerts.sys_workload.restart_loop.frequency
+#  time_window             = var.alerts.sys_workload.restart_loop.time_window
+#  auto_mitigation_enabled = true
+#  trigger {
+#    operator  = "GreaterThan"
+#    threshold = var.alerts.sys_workload.restart_loop.threshold
+#  }
+#}
+
+
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_pod_restart_loop_alert" {
   count               = var.alerts.enable_alerts ? 1 : 0
   name                = "aks_sys_pod_restart_loop_alert"
@@ -626,11 +658,11 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_pod_restart_loop
   description             = "Alert when a pod is in a restart loop in sys namespaces"
   enabled                 = var.alerts.sys_workload.enabled
   query                   = <<-QUERY
-  KubePodInventory
-    | where Namespace !contains "ccm"
-    | where PodStatus == "Running" and ContainerStatus == "Restart"
-    | summarize CountOfRestarts=count() by ContainerID
-    | where CountOfRestarts >= 5
+  KubeEvents
+  | where Reason == "BackOff"
+  | summarize EventCount = count() by Name, Namespace, Computer
+  | where EventCount >= 5
+  | project Name, Namespace, Computer, EventCount
 QUERY
   severity                = var.alerts.sys_workload.restart_loop.severity
   frequency               = var.alerts.sys_workload.restart_loop.frequency
@@ -641,3 +673,5 @@ QUERY
     threshold = var.alerts.sys_workload.restart_loop.threshold
   }
 }
+
+#  | where TimeGenerated >= ago(2h)
