@@ -72,7 +72,7 @@ resource "azurerm_monitor_metric_alert" "aks_infra_alert_node_limit" {
   enabled             = var.alerts.infra.enabled
 
   criteria {
-    metric_namespace = "Insights.container/nodes"
+    metric_namespace = "insights.container/nodes"
     metric_name      = "nodesCount"
     aggregation      = "Average"
     operator         = "GreaterThan"
@@ -533,7 +533,7 @@ resource "azurerm_monitor_metric_alert" "aks_sys_pod_restart_loop_alert" {
 
   criteria {
     metric_namespace = "Microsoft.ContainerService/managedClusters"
-    metric_name      = "PodRestarts"
+    metric_name      = "podRestarts"
     aggregation      = "Total"
     operator         = "GreaterThan"
     threshold        = 5
