@@ -525,18 +525,45 @@ QUERY
 #  }
 #}
 
+#resource "azurerm_monitor_metric_alert" "aks_sys_pod_restart_loop_alert" {
+#  name                = "aks_sys_pod_restart_loop_alert"
+#  resource_group_name = var.aks_resource_group_name
+#  scopes              = [data.azurerm_kubernetes_cluster.cluster.id]
+#  description         = "Trigger an alert when pod restarts exceed a threshold"
+#
+#  criteria {
+#    metric_namespace = "Microsoft.ContainerService/managedClusters"
+#    metric_name      = "podRestarts"
+#    aggregation      = "Total"
+#    operator         = "GreaterThan"
+#    threshold        = 5
+#
+#    dimension {
+#      name     = "Namespace"
+#      operator = "Include"
+#      values   = var.system_namespaces
+#    }
+#  }
+#
+#  action {
+#    action_group_id = data.azurerm_monitor_action_group.platformDev.0.id
+#  }
+#
+#  window_size = "PT30M"
+#}
+
 resource "azurerm_monitor_metric_alert" "aks_sys_pod_restart_loop_alert" {
   name                = "aks_sys_pod_restart_loop_alert"
   resource_group_name = var.aks_resource_group_name
   scopes              = [data.azurerm_kubernetes_cluster.cluster.id]
-  description         = "Trigger an alert when pod restarts exceed a threshold"
+  description         = "Trigger an alert when pod restarts exceed a threshold within an hour"
 
   criteria {
     metric_namespace = "Microsoft.ContainerService/managedClusters"
-    metric_name      = "podRestarts"
-    aggregation      = "Total"
+    metric_name      = "KubePodContainerRestart"
+    aggregation      = "Count"
     operator         = "GreaterThan"
-    threshold        = 5
+    threshold        = 1
 
     dimension {
       name     = "Namespace"
