@@ -378,18 +378,20 @@ variable "alerts" {
       cluster_health_threshold = number
     })
     sys_workload = object({
-      enabled    = bool
-      daemonset  = map(number)
-      deployment = map(number)
-    })
-    apps_workload = object({
       enabled               = bool
+      daemonset             = map(number)
       deployment            = map(number)
-      hpa_min_replica       = map(number)
       hpa_max_replica       = map(number)
-      cluster_agent_pool    = map(number)
+      restart_loop          = map(number)
       prometheus_disk_usage = map(number)
       prometheus_pod_memory = map(number)
+    })
+    apps_workload = object({
+      enabled            = bool
+      deployment         = map(number)
+      hpa_min_replica    = map(number)
+      hpa_max_replica    = map(number)
+      cluster_agent_pool = map(number)
     })
   })
   default = {
@@ -414,6 +416,30 @@ variable "alerts" {
         frequency   = 5
         time_window = 10
         threshold   = 0
+      }
+      hpa_max_replica = {
+        severity    = 3
+        frequency   = 5
+        time_window = 10
+        threshold   = 0
+      }
+      restart_loop = {
+        severity    = 3
+        frequency   = 5
+        time_window = 10
+        threshold   = 0
+      }
+      prometheus_disk_usage = {
+        severity    = 3
+        frequency   = 5
+        time_window = 10
+        threshold   = 0
+      }
+      prometheus_pod_memory = {
+        severity    = 3
+        frequency   = 5
+        time_window = 10
+        threshold   = 75
       }
     }
     apps_workload = {
@@ -441,18 +467,6 @@ variable "alerts" {
         frequency   = 5
         time_window = 10
         threshold   = 0
-      }
-      prometheus_disk_usage = {
-        severity    = 3
-        frequency   = 5
-        time_window = 10
-        threshold   = 0
-      }
-      prometheus_pod_memory = {
-        severity    = 3
-        frequency   = 5
-        time_window = 10
-        threshold   = 75
       }
     }
   }
