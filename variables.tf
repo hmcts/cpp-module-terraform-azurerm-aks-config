@@ -378,20 +378,20 @@ variable "alerts" {
       cluster_health_threshold = number
     })
     sys_workload = object({
-      enabled    = bool
-      daemonset  = map(number)
-      deployment = map(number)
+      enabled               = bool
+      daemonset             = map(number)
+      deployment            = map(number)
       hpa_max_replica       = map(number)
       restart_loop          = map(number)
       prometheus_disk_usage = map(number)
       prometheus_pod_memory = map(number)
     })
     apps_workload = object({
-      enabled               = bool
-      deployment            = map(number)
-      hpa_min_replica       = map(number)
-      hpa_max_replica       = map(number)
-      cluster_agent_pool    = map(number)
+      enabled            = bool
+      deployment         = map(number)
+      hpa_min_replica    = map(number)
+      hpa_max_replica    = map(number)
+      cluster_agent_pool = map(number)
     })
   })
   default = {

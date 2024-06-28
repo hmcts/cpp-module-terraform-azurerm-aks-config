@@ -492,7 +492,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_pod_restart_loop_alert" {
-  count               = var.alerts.enable_alerts && var.alerts.sys_workload.enabled ? 1 : 0
+  count = var.alerts.enable_alerts && var.alerts.sys_workload.enabled ? 1 : 0
 
   name                = "aks_sys_pod_restart_loop_alert"
   location            = var.aks_cluster_location
@@ -520,4 +520,3 @@ QUERY
     threshold = var.alerts.sys_workload.restart_loop.threshold
   }
 }
-
