@@ -22,7 +22,7 @@ data "azurerm_kubernetes_cluster_node_pool" "sysagentpool" {
 }
 
 resource "azurerm_monitor_metric_alert" "aks_infra_alert_cpu_usage" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.infra.enabled ? 1 : 0
   name                = "aks_cpu_usage_greater_than_percent"
   resource_group_name = var.aks_resource_group_name
   scopes              = [data.azurerm_kubernetes_cluster.cluster.id]
@@ -43,7 +43,7 @@ resource "azurerm_monitor_metric_alert" "aks_infra_alert_cpu_usage" {
 }
 
 resource "azurerm_monitor_metric_alert" "aks_infra_alert_disk_usage" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.infra.enabled ? 1 : 0
   name                = "aks_disk_usage_greater_than_percent"
   resource_group_name = var.aks_resource_group_name
   scopes              = [data.azurerm_kubernetes_cluster.cluster.id]
@@ -91,7 +91,7 @@ resource "azurerm_monitor_metric_alert" "aks_infra_alert_node_limit" {
 }
 
 resource "azurerm_monitor_metric_alert" "aks_infra_alert_cluster_health" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.infra.enabled ? 1 : 0
   name                = "aks_cluster_health"
   resource_group_name = var.aks_resource_group_name
   scopes              = [data.azurerm_kubernetes_cluster.cluster.id]
@@ -112,7 +112,7 @@ resource "azurerm_monitor_metric_alert" "aks_infra_alert_cluster_health" {
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_alert_daemonset_statefulset" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.sys_workload.enabled ? 1 : 0
   name                = "aks_sys_alert_daemonset_statefulset"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
@@ -140,7 +140,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_alert_actual_vs_desired_replica" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.sys_workload.enabled ? 1 : 0
   name                = "aks_sys_actual_vs_desired_replica_of_pods"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
@@ -170,7 +170,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_apps_alert_actual_vs_desired_replica" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.apps_workload.enabled ? 1 : 0
   name                = "aks_apps_actual_vs_desired_replica_of_pods"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
@@ -200,7 +200,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_apps_hpa_desired_replica_less_than_min_replica" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.apps_workload.enabled ? 1 : 0
   name                = "aks_apps_hpa_desired_replica_less_than_min_replica"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
@@ -230,7 +230,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_apps_hpa_desired_replica_equal_to_max_replica" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.apps_workload.enabled ? 1 : 0
   name                = "aks_apps_hpa_desired_replica_equal_to_max_replica"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
@@ -260,7 +260,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_worker_agent_pool_count_status" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.apps_workload.enabled ? 1 : 0
   name                = "aks_worker_agent_pool_count_status"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
@@ -300,7 +300,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_system_agent_pool_count_status" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.apps_workload.enabled ? 1 : 0
   name                = "aks_system_agent_pool_count_status"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
@@ -340,7 +340,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_all_pod_status" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.apps_workload.enabled ? 1 : 0
   name                = "aks_all_pod_status"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
@@ -366,9 +366,8 @@ QUERY
   }
 }
 
-
 resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_pod_memory_usage" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.sys_workload.enabled ? 1 : 0
   name                = "prometheus_pod_memory_usage_status"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
@@ -427,7 +426,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_node_disk_usage_status" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.sys_workload.enabled ? 1 : 0
   name                = "prometheus_node_disk_usage_status"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
@@ -462,7 +461,7 @@ QUERY
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "aks_sys_hpa_desired_replica_close_to_max_replica" {
-  count               = var.alerts.enable_alerts ? 1 : 0
+  count               = var.alerts.enable_alerts && var.alerts.sys_workload.enabled ? 1 : 0
   name                = "aks_sys_hpa_desired_replica_close_to_max_replica"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
