@@ -548,7 +548,7 @@ QUERY
   severity                = var.alerts.sys_workload.restart_loop.severity
   frequency               = var.alerts.sys_workload.restart_loop.frequency
   time_window             = var.alerts.sys_workload.restart_loop.time_window
-  auto_mitigation_enabled = true
+  auto_mitigation_enabled = false
   trigger {
     operator  = "GreaterThan"
     threshold = var.alerts.sys_workload.restart_loop.threshold
