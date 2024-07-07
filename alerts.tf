@@ -542,8 +542,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "test_pod_fail_alert" {
   KubePodInventory
   | where Namespace == "default"
   | where Name startswith "test"
-  | where ContainerStatus == "Waiting" and Reason contains "Error"
-  | project TimeGenerated, Name, ContainerStatus, Reason
+  | where PodStatus in ("Failed", "Unknown") or ContainerStatus contains "BackOff"
+  | project TimeGenerated, Name, PodStatus, ContainerStatus
 QUERY
   severity                = var.alerts.sys_workload.restart_loop.severity
   frequency               = var.alerts.sys_workload.restart_loop.frequency
