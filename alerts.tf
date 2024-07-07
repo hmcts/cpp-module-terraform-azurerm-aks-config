@@ -539,11 +539,11 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "test_pod_fail_alert" {
   description             = "Alert when a pod startin with test in default ns fails"
   enabled                 = var.alerts.sys_workload.enabled
   query                   = <<-QUERY
-  KubePodInventory
+  KubeEvents
   | where Namespace == "default"
-  | where Name startswith "test"
-  | where PodStatus in ("Failed", "Unknown") or ContainerStatus contains "BackOff"
-  | project TimeGenerated, Name, PodStatus, ContainerStatus
+  | where Name startswith "test-pod"
+  | where Reason == "Failed"
+  | project TimeGenerated, Name, Reason, Message
 QUERY
   severity                = var.alerts.sys_workload.restart_loop.severity
   frequency               = var.alerts.sys_workload.restart_loop.frequency
