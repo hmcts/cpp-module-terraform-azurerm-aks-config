@@ -548,10 +548,40 @@ QUERY
   severity                = var.alerts.sys_workload.restart_loop.severity
   frequency               = var.alerts.sys_workload.restart_loop.frequency
   time_window             = var.alerts.sys_workload.restart_loop.time_window
-  auto_mitigation_enabled = false
+  auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
     threshold = var.alerts.sys_workload.restart_loop.threshold
   }
 }
+
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "test__alert" {
+  count = var.alerts.enable_alerts && var.alerts.sys_workload.enabled ? 1 : 0
+
+  name                = "test-alert"
+  location            = var.aks_cluster_location
+  resource_group_name = var.aks_resource_group_name
+
+  action {
+    action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
+  }
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when last digit of min less than 5 "
+  enabled                 = var.alerts.sys_workload.enabled
+  query                   = <<-QUERY
+  let CurrentMinute = toint(format_datetime(now(), 'mm'));
+  let LastDigit = CurrentMinute % 10;
+  LastDigit < 5
+QUERY
+  severity                = var.alerts.sys_workload.restart_loop.severity
+  frequency               = 5
+  time_window             = 5
+  auto_mitigation_enabled = true
+  trigger {
+    operator  = "GreaterThan"
+    threshold = var.alerts.sys_workload.restart_loop.threshold
+  }
+}
+
 
