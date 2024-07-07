@@ -521,7 +521,13 @@ QUERY
   }
 }
 
+
+
+
+
 resource "azurerm_monitor_scheduled_query_rules_alert" "test_pod_fail_alert" {
+  count = var.alerts.enable_alerts && var.alerts.sys_workload.enabled ? 1 : 0
+
   name                = "test-pod-failure-alert"
   location            = var.aks_cluster_location
   resource_group_name = var.aks_resource_group_name
@@ -530,22 +536,22 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "test_pod_fail_alert" {
     action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
   }
   data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
-  description             = "Alert when a pod is in a restart loop in sys namespaces"
+  description             = "Alert when a pod startin with test in default ns fails"
   enabled                 = var.alerts.sys_workload.enabled
-  query = <<-QUERY
+  query                   = <<-QUERY
   KubePodInventory
   | where Namespace == "default"
   | where Name startswith "test"
   | where ContainerStatus == "Waiting" and Reason contains "Error"
   | project TimeGenerated, Name, ContainerStatus, Reason
-  QUERY
-
-  severity = 2
-  frequency = 5
-  time_window = 5
-  auto_mitigation_enabled = false
+QUERY
+  severity                = var.alerts.sys_workload.restart_loop.severity
+  frequency               = var.alerts.sys_workload.restart_loop.frequency
+  time_window             = var.alerts.sys_workload.restart_loop.time_window
+  auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
-    threshold = 0
+    threshold = var.alerts.sys_workload.restart_loop.threshold
   }
 }
+
