@@ -547,7 +547,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "test_pod_fail_alert" {
 QUERY
   severity                = var.alerts.sys_workload.restart_loop.severity
   frequency               = 5
-  time_window             = 5
+  time_window             = 10
   auto_mitigation_enabled = true
   trigger {
     operator  = "GreaterThan"
