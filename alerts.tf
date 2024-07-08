@@ -545,7 +545,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "test_pod_fail_alert" {
   | where Reason == "Failed"
   | project TimeGenerated, Name, Reason, Message
 QUERY
-  severity                = var.alerts.sys_workload.restart_loop.severity
+  severity                = 3
   frequency               = 5
   time_window             = 10
   auto_mitigation_enabled = true
