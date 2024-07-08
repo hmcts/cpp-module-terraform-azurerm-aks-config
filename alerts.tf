@@ -556,6 +556,40 @@ QUERY
 }
 
 
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "test_pod_fail_alert_2" {
+  count = var.alerts.enable_alerts && var.alerts.sys_workload.enabled ? 1 : 0
+
+  name                = "test-pod-failure-alert-2"
+  location            = var.aks_cluster_location
+  resource_group_name = var.aks_resource_group_name
+
+  action {
+    action_group = [data.azurerm_monitor_action_group.platformDev.0.id]
+  }
+  data_source_id          = data.azurerm_kubernetes_cluster.cluster.id
+  description             = "Alert when a pod startin with test in default ns fails"
+  enabled                 = var.alerts.sys_workload.enabled
+  query                   = <<-QUERY
+  KubeEvents
+  | where Namespace == "default"
+  | where Name startswith "test-pod"
+  | where Reason == "Failed"
+  | project TimeGenerated, Name, Reason, Message
+QUERY
+  severity                = 3
+  frequency               = 5
+  time_window             = 10
+  auto_mitigation_enabled = true
+  trigger {
+    operator  = "GreaterThan"
+    threshold = var.alerts.sys_workload.restart_loop.threshold
+  }
+}
+
+
+
+
 #resource "azurerm_monitor_scheduled_query_rules_alert" "test__alert" {
 #  count = var.alerts.enable_alerts && var.alerts.sys_workload.enabled ? 1 : 0
 #
