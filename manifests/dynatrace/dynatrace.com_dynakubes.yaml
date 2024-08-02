@@ -126,7 +126,7 @@ spec:
       #
       env:
       - name: ONEAGENT_INSTALLER_SCRIPT_URL
-        value: ${apiUrl}/v1/deployment/installer/agent/unix/default/latest?arch=x86"
+        value: "${apiUrl}/v1/deployment/installer/agent/unix/default/latest?arch=x86"
       - name: ONEAGENT_INSTALLER_DOWNLOAD_TOKEN
         valueFrom:
           secretKeyRef:
