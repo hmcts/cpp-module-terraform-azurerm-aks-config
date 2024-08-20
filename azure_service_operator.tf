@@ -24,6 +24,11 @@ resource "helm_release" "azure_service_operator" {
   }
 
   set {
+    name  = "image.kubeRBACProxy"
+    value = "${var.acr_name}.azurecr.io/gcr.io/kubebuilder/kube-rbac-proxy:${var.kube_rbac_proxy_tag}"
+  }
+
+  set {
     name  = "azureSubscriptionID"
     value = data.azurerm_client_config.current.subscription_id
   }
