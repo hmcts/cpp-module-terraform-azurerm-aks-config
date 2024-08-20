@@ -22,7 +22,7 @@ resource "helm_release" "keda_install" {
 
   set {
     name  = "image.keda.registry"
-    value = "${var.acr_name}.azurecr.io/ghcr.io/"
+    value = "${var.acr_name}.azurecr.io/ghcr.io"
   }
 
   set {
@@ -35,7 +35,7 @@ resource "helm_release" "keda_install" {
   }
   set {
     name  = "image.metricsApiServer.registry"
-    value = "${var.acr_name}.azurecr.io/ghcr.io/"
+    value = "${var.acr_name}.azurecr.io/ghcr.io"
   }
   set {
     name  = "image.metricsApiServer.repository"
@@ -46,8 +46,8 @@ resource "helm_release" "keda_install" {
     value = var.keda_config.image_tag
   }
   set {
-    name  = "image.webhooks.repository"
-    value = "${var.acr_name}.azurecr.io/ghcr.io/"
+    name  = "image.webhooks.registry"
+    value = "${var.acr_name}.azurecr.io/ghcr.io"
   }
   set {
     name  = "image.webhooks.repository"
