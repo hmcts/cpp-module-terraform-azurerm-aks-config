@@ -124,6 +124,11 @@ resource "helm_release" "istiod_install" {
   }
 
   set {
+    name  = "global.tag"
+    value = "1.22.3"
+  }
+
+  set {
     name  = "pilot.tolerations[0].key"
     value = var.systempool_taint_key
   }
@@ -216,6 +221,11 @@ resource "helm_release" "istio_ingress_mgmt_install" {
   set {
     name  = "global.hub"
     value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/istio"
+  }
+
+  set {
+    name  = "global.tag"
+    value = "1.22.3"
   }
 
   set {
@@ -319,6 +329,11 @@ resource "helm_release" "istio_ingress_apps_install" {
   }
 
   set {
+    name  = "global.tag"
+    value = "1.22.3"
+  }
+
+  set {
     name  = "gateways.istio-ingressgateway.autoscaleEnabled"
     value = "true"
   }
@@ -404,6 +419,11 @@ resource "helm_release" "istio_ingress_web_install" {
   set {
     name  = "global.hub"
     value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/istio"
+  }
+
+  set {
+    name  = "global.tag"
+    value = "1.22.3"
   }
 
   set {

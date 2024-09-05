@@ -21,25 +21,37 @@ resource "helm_release" "keda_install" {
   namespace  = kubernetes_namespace.keda_namespace[0].metadata.0.name
 
   set {
+    name  = "image.keda.registry"
+    value = "${var.acr_name}.azurecr.io/ghcr.io"
+  }
+
+  set {
     name  = "image.keda.repository"
-    value = "${var.acr_name}.azurecr.io/ghcr.io/kedacore/keda"
+    value = "kedacore/keda"
   }
   set {
     name  = "image.keda.tag"
     value = var.keda_config.image_tag
   }
   set {
+    name  = "image.metricsApiServer.registry"
+    value = "${var.acr_name}.azurecr.io/ghcr.io"
+  }
+  set {
     name  = "image.metricsApiServer.repository"
-    value = "${var.acr_name}.azurecr.io/ghcr.io/kedacore/keda-metrics-apiserver"
+    value = "kedacore/keda-metrics-apiserver"
   }
   set {
     name  = "image.metricsApiServer.tag"
     value = var.keda_config.image_tag
   }
-
+  set {
+    name  = "image.webhooks.registry"
+    value = "${var.acr_name}.azurecr.io/ghcr.io"
+  }
   set {
     name  = "image.webhooks.repository"
-    value = "${var.acr_name}.azurecr.io/ghcr.io/kedacore/keda-admission-webhooks"
+    value = "kedacore/keda-admission-webhooks"
   }
   set {
     name  = "image.webhooks.tag"
