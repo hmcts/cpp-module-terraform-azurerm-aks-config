@@ -1020,13 +1020,13 @@ variable "smashing_spec" {
 variable "dynatrace_oneagent_version" {
   type        = string
   description = "dynatrace oneagent version"
-  default     = "1.86.1000"
+  default     = "1.93.1000"
 }
 
 variable "dynatrace_operator_image_tag" {
   type        = string
   description = "dynatrace operator version"
-  default     = "v1.0.0"
+  default     = "v1.3.0"
 }
 
 variable "istiod_hpa_cputarget" {
