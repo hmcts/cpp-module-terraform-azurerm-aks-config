@@ -73,6 +73,36 @@ resource "helm_release" "azure_service_operator" {
     value = var.aso_resources.requests.memory
   }
 
+  set {
+    name  = "tolerations[0].key"
+    value = var.systempool_taint_key
+  }
+
+  set {
+    name  = "tolerations[0].operator"
+    value = "Exists"
+  }
+
+  set {
+    name  = "tolerations[0].effect"
+    value = "NoSchedule"
+  }
+  set {
+    name  = "affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key"
+    value = "agentpool"
+  }
+
+  set {
+    name  = "affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator"
+    value = "In"
+  }
+
+  set {
+    name  = "affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].values[0]"
+    value = var.system_worker_agents_pool_name
+  }
+
+
   wait    = true
   timeout = 300
 
