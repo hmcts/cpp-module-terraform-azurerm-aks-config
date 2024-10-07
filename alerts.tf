@@ -63,17 +63,17 @@ resource "azurerm_monitor_metric_alert" "aks_infra_alert_disk_usage" {
   }
 }
 
-resource "azurerm_monitor_metric_alert" "aks_infra_alert_node_limit" {
+resource "azurerm_monitor_metric_alert" "aks_infra_alert_node_not_ready" {
   count               = var.alerts.enable_alerts && var.alerts.infra.enabled ? 1 : 0
-  name                = "aks_node_count_not_in_ready_state"
+  name                = "aks_node_not_in_ready_state"
   resource_group_name = var.aks_resource_group_name
   scopes              = [data.azurerm_kubernetes_cluster.cluster.id]
-  description         = "Action will be triggered when node count is notready state is greater than 0"
+  description         = "Action will be triggered when node is notready state is greater than 0"
   enabled             = var.alerts.infra.enabled
 
   criteria {
-    metric_namespace = "insights.container/nodes"
-    metric_name      = "nodesCount"
+    metric_namespace = "Microsoft.ContainerService/managedClusters"
+    metric_name      = "kube_node_status_condition"
     aggregation      = "Average"
     operator         = "GreaterThan"
     threshold        = var.alerts.infra.node_limit_threshold
