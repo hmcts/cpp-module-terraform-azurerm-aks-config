@@ -395,7 +395,7 @@ variable "alerts" {
     })
   })
   default = {
-    enable_alerts = true
+    enable_alerts = false
     infra = {
       enabled                  = true
       cpu_usage_threshold      = 80
