@@ -552,7 +552,7 @@ variable "prometheus" {
     prometheus_storage_size                      = "100Gi"
     prometheus_drop_envoy_stats_for_context_pods = false
     grafana_storage_class_name                   = "managed-premium"
-    grafana_storage_size                         = "10Gi"
+    grafana_storage_size                         = "20Gi"
   }
 }
 
