@@ -39,12 +39,12 @@ grafana:
 
   grafana.ini:
     users:                                                                                                                                                                                                                                      │
-      auto_assign_org = true                                                                                                                                                                                                                        │
-      auto_assign_org_role = Editor
+      auto_assign_org: true                                                                                                                                                                                                                        │
+      auto_assign_org_role: Editor
     auth.azuread:
       name: "Azure AD"
       enabled: true
-      default_role = Editor
+      default_role:  Editor
       allow_sign_up: true
       client_id: ${grafana_auth_azuread_client_id}
       client_secret: ${grafana_auth_azuread_client_secret}
