@@ -53,6 +53,7 @@ resource "helm_release" "prometheus" {
     drop_envoy_stats_for_context_pods           = var.prometheus.prometheus_drop_envoy_stats_for_context_pods
     grafana_storage_class_name                  = var.prometheus.grafana_storage_class_name
     grafana_storage_size                        = var.prometheus.grafana_storage_size
+    grafana_init_image_tag                      = "1.31.1"
   })]
   repository        = "./install"
   namespace         = "prometheus"
