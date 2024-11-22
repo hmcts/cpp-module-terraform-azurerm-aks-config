@@ -534,6 +534,8 @@ variable "prometheus" {
     prometheus_storage_class_name                = string
     prometheus_storage_size                      = string
     prometheus_drop_envoy_stats_for_context_pods = bool
+    grafana_storage_class_name                   = string
+    grafana_storage_size                         = string
   })
   default = {
     grafana_image_tag                            = "8.3.5"
@@ -549,6 +551,8 @@ variable "prometheus" {
     prometheus_storage_class_name                = "managed-premium"
     prometheus_storage_size                      = "100Gi"
     prometheus_drop_envoy_stats_for_context_pods = false
+    grafana_storage_class_name                   = "managed-premium"
+    grafana_storage_size                         = "20Gi"
   }
 }
 
