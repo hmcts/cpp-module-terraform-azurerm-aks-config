@@ -41,6 +41,7 @@ grafana:
     auth.azuread:
       name: "Azure AD"
       enabled: true
+      default_role = Editor
       allow_sign_up: true
       client_id: ${grafana_auth_azuread_client_id}
       client_secret: ${grafana_auth_azuread_client_secret}
