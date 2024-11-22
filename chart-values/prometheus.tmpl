@@ -30,6 +30,13 @@ grafana:
       - ReadWriteOnce
     size: ${grafana_storage_size}
 
+  initChownData:
+    image:
+      registry: ${grafana_image_registry}
+      repository: library/busybox
+      tag: ${grafana_init_image_tag}
+      sha: ""
+
   sidecar:
     image:
       registry: ${grafana_k8s_sidecar_image_registry}
