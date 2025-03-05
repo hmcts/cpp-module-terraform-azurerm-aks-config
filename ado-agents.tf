@@ -4,7 +4,6 @@ resource "kubernetes_namespace" "ado-agents_namespace" {
     name = var.ado-agents_config.namespace
     labels = {
       "app.kubernetes.io/managed-by" = "Terraform"
-      "istio-injection"              = "disabled"
     }
   }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
