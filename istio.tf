@@ -172,6 +172,7 @@ resource "helm_release" "istiod_install" {
     name  = "pilot.resources.requests.memory"
     value = var.istiod_memory_request
   }
+
   set {
     name  = "pilot.resources.requests.cpu"
     value = var.istiod_cpu_request
@@ -180,6 +181,11 @@ resource "helm_release" "istiod_install" {
   set {
     name  = "pilot.cpu.targetAverageUtilization"
     value = var.istiod_hpa_cputarget
+  }
+
+  set {
+    name  = "pilot.env.ENABLE_NATIVE_SIDECARS"
+    value = "true"
   }
 
   values = ["${file("${path.module}/manifests/istio/istiod_overrides.yaml")}"]
