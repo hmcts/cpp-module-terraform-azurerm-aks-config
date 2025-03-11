@@ -196,9 +196,11 @@ spec:
               requests:
                 cpu: "${each.value.requests_cpu}"
                 memory: "${each.value.requests_mem}"
+        initContainers:
           - name: postgresql-server
             image: "${var.acr_name}.azurecr.io/hmcts/postgres:15.5.0-debian-12-r25"
             imagePullPolicy: Always
+            restartPolicy: Always
             env:
               - name: AZP_URL
                 value: "${var.ado-agents_config.azpurl}"
