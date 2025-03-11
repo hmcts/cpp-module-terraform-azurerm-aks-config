@@ -27,6 +27,30 @@ resource "kubernetes_service_account" "ado_agent" {
 
 }
 
+# This is to limit routes to only ado-agent and istio-system NS.
+resource "kubectl_manifest" "default_egress_sidecar" {
+  count     = (var.ado-agents_config.enable) ? 1 : 0
+  yaml_body = <<YAML
+apiVersion: networking.istio.io/v1
+kind: Sidecar
+metadata:
+ name: default-egress
+ namespace: ${var.ado-agents_config.namespace}
+spec:
+ egress:
+ - hosts:
+   - "./*"
+   - "istio-system/*"
+YAML
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubernetes_namespace.ado-agents_namespace
+  ]
+}
+
 #
 # var.ado-agents_config.enable true AND var.ado-agents_config.scaledjob set to True so Install ScaledJob not Job
 # https://github.com/kedacore/keda-docs/blob/main/content/docs/2.14/scalers/azure-pipelines.md
