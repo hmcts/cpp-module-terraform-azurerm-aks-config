@@ -149,6 +149,25 @@ spec:
               requests:
                 cpu: "${each.value.requests_cpu}"
                 memory: "${each.value.requests_mem}"
+        ${can(regex("postgres", each.value.identifier)) ? <<YAML
+
+        initContainers:
+          - name: postgresql-server
+            image: "${var.acr_name}.azurecr.io/hmcts/postgres:15.5.0-debian-12-r25"
+            imagePullPolicy: Always
+            restartPolicy: Always
+            env:
+              - name: ALLOW_EMPTY_PASSWORD
+                value: "yes"
+            resources:
+              limits:
+                cpu: "${each.value.limits_cpu}"
+                memory: "${each.value.limits_mem}"
+              requests:
+                cpu: "${each.value.requests_cpu}"
+                memory: "${each.value.requests_mem}"
+        YAML
+: ""}
   pollingInterval: ${each.value.pollinginterval}
   successfulJobsHistoryLimit: ${each.value.successfuljobshistorylimit}
   failedJobsHistoryLimit: ${each.value.failedjobshistorylimit}
