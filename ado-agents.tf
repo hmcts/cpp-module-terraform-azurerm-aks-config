@@ -86,8 +86,9 @@ YAML
 # https://github.com/kedacore/keda-docs/blob/main/content/docs/2.14/scalers/azure-pipelines.md
 #  https://github.com/kedacore/keda-docs/blob/main/content/docs/2.14/scalers/azure-pipelines.md#example-for-scaledobject
 
-resource "kubectl_manifest" "azdevops_agent" {
-  for_each  = (var.ado-agents_config.enable) ? { for agent in var.ado-agents_config.agents : agent.agent_name => agent } : {}
+resource "kubectl_manifest" "azdevops_agents" {
+  for_each = (var.ado-agents_config.enable) ? { for agent in var.ado-agents_config.agents : agent.agent_name => agent } : {}
+
   yaml_body = <<YAML
 ---
 apiVersion: keda.sh/v1alpha1
@@ -149,6 +150,25 @@ spec:
               requests:
                 cpu: "${each.value.requests_cpu}"
                 memory: "${each.value.requests_mem}"
+        ${can(regex("postgres", each.value.identifier)) ? <<YAML
+
+        initContainers:
+          - name: postgresql-server
+            image: "${var.acr_name}.azurecr.io/hmcts/${each.value.image_name}:${each.value.image_tag}"
+            imagePullPolicy: Always
+            restartPolicy: Always
+            env:
+              - name: ALLOW_EMPTY_PASSWORD
+                value: "yes"
+            resources:
+              limits:
+                cpu: "${each.value.limits_cpu}"
+                memory: "${each.value.limits_mem}"
+              requests:
+                cpu: "${each.value.requests_cpu}"
+                memory: "${each.value.requests_mem}"
+        YAML
+: ""}
   pollingInterval: ${each.value.pollinginterval}
   successfulJobsHistoryLimit: ${each.value.successfuljobshistorylimit}
   failedJobsHistoryLimit: ${each.value.failedjobshistorylimit}
@@ -157,14 +177,17 @@ spec:
   rollout:
     strategy: gradual
 YAML
-  lifecycle {
-    ignore_changes = [field_manager]
-  }
-  depends_on = [
-    time_sleep.wait_for_aks_api_dns_propagation,
-    kubernetes_namespace.ado-agents_namespace,
-    helm_release.keda_install,
-    kubernetes_service_account.ado_agent,
-  ]
-  force_new = true
+
+lifecycle {
+  ignore_changes = [field_manager]
+}
+
+depends_on = [
+  time_sleep.wait_for_aks_api_dns_propagation,
+  kubernetes_namespace.ado-agents_namespace,
+  helm_release.keda_install,
+  kubernetes_service_account.ado_agent,
+]
+
+force_new = true
 }
