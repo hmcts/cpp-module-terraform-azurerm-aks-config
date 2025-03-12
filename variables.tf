@@ -828,22 +828,6 @@ variable "ado-agents_config" {
       failedjobshistorylimit     = number
       enable_istio_proxy         = bool
     }))
-    postgres_agents = list(object({
-      agent_name                 = string
-      image_name                 = string
-      image_tag                  = string
-      identifier                 = string
-      requests_mem               = string
-      requests_cpu               = string
-      limits_mem                 = string
-      limits_cpu                 = string
-      scaled_min_job             = number
-      scaled_max_job             = number
-      pollinginterval            = number
-      successfuljobshistorylimit = number
-      failedjobshistorylimit     = number
-      enable_istio_proxy         = bool
-    }))
   })
   default = {
     enable           = false
@@ -857,7 +841,6 @@ variable "ado-agents_config" {
     tenant-id        = "531ff96d-0ae9-462a-8d2d-bec7c0b42082"
     subscription-id  = "ef8dd153-3fba-47a4-be65-15775bcde240"
     agents           = []
-    postgres_agents  = []
   }
 }
 

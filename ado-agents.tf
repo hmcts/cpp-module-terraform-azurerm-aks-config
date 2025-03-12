@@ -63,7 +63,7 @@ YAML
 #  https://github.com/kedacore/keda-docs/blob/main/content/docs/2.14/scalers/azure-pipelines.md#example-for-scaledobject
 
 resource "kubectl_manifest" "azdevops_agents" {
-  for_each = (var.ado-agents_config.enable) ? { for agent in concat(var.ado-agents_config.agents, var.ado-agents_config.postgres_agents) : agent.agent_name => agent } : {}
+  for_each = (var.ado-agents_config.enable) ? { for agent in var.ado-agents_config.agents : agent.agent_name => agent } : {}
 
   yaml_body = <<YAML
 ---
@@ -120,11 +120,11 @@ spec:
               requests:
                 cpu: "${each.value.requests_cpu}"
                 memory: "${each.value.requests_mem}"
-        ${each.value.identifier == "postgres" ? <<YAML
+        ${can(regex("postgres", each.value.identifier)) ? <<YAML
 
         initContainers:
           - name: postgresql-server
-            image: "${var.acr_name}.azurecr.io/hmcts/postgres:15.5.0-debian-12-r25"
+            image: "${var.acr_name}.azurecr.io/hmcts/${each.value.image_name}:${each.value.image_tag}"
             imagePullPolicy: Always
             restartPolicy: Always
             env:
