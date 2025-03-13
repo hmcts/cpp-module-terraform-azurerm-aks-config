@@ -827,6 +827,15 @@ variable "ado-agents_config" {
       successfuljobshistorylimit = number
       failedjobshistorylimit     = number
       enable_istio_proxy         = bool
+      init_container_config = list(object({
+        container_name = string
+        image_name     = string
+        image_tag      = string
+        requests_mem   = string
+        requests_cpu   = string
+        limits_mem     = string
+        limits_cpu     = string
+      }))
     }))
   })
   default = {

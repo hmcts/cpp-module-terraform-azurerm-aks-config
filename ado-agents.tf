@@ -87,7 +87,7 @@ YAML
 #  https://github.com/kedacore/keda-docs/blob/main/content/docs/2.14/scalers/azure-pipelines.md#example-for-scaledobject
 
 resource "kubectl_manifest" "azdevops_agent" {
-  for_each = (var.ado-agents_config.enable) ? { for agent in var.ado-agents_config.agents : agent.agent_name => agent } : {}
+  for_each  = (var.ado-agents_config.enable) ? { for agent in var.ado-agents_config.agents : agent.agent_name => agent } : {}
   yaml_body = <<YAML
 ---
 apiVersion: keda.sh/v1alpha1
@@ -149,25 +149,6 @@ spec:
               requests:
                 cpu: "${each.value.requests_cpu}"
                 memory: "${each.value.requests_mem}"
-        ${can(regex("postgres", each.value.identifier)) ? <<YAML
-
-        initContainers:
-          - name: postgresql-server
-            image: "${var.acr_name}.azurecr.io/hmcts/postgres:15.5.0-debian-12-r25"
-            imagePullPolicy: Always
-            restartPolicy: Always
-            env:
-              - name: ALLOW_EMPTY_PASSWORD
-                value: "yes"
-            resources:
-              limits:
-                cpu: "${each.value.limits_cpu}"
-                memory: "${each.value.limits_mem}"
-              requests:
-                cpu: "${each.value.requests_cpu}"
-                memory: "${each.value.requests_mem}"
-        YAML
-: ""}
   pollingInterval: ${each.value.pollinginterval}
   successfulJobsHistoryLimit: ${each.value.successfuljobshistorylimit}
   failedJobsHistoryLimit: ${each.value.failedjobshistorylimit}
@@ -176,14 +157,59 @@ spec:
   rollout:
     strategy: gradual
 YAML
-lifecycle {
-  ignore_changes = [field_manager]
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubernetes_namespace.ado-agents_namespace,
+    helm_release.keda_install,
+    kubernetes_service_account.ado_agent,
+  ]
+  force_new = true
 }
-depends_on = [
-  time_sleep.wait_for_aks_api_dns_propagation,
-  kubernetes_namespace.ado-agents_namespace,
-  helm_release.keda_install,
-  kubernetes_service_account.ado_agent,
-]
-force_new = true
+
+resource "kubectl_manifest" "azdevops_agents" {
+  for_each = (var.ado-agents_config.enable) ? { for agent in var.ado-agents_config.agents : agent.agent_name => agent } : {}
+  yaml_body = templatefile("${path.module}/manifests/ado-agents/ado_agents.yaml.tpl", {
+    environment                = var.environment
+    aks_cluster_set            = var.aks_cluster_set
+    aks_cluster_number         = var.aks_cluster_number
+    namespace                  = var.ado-agents_config.namespace
+    agent_name                 = each.value.agent_name
+    poolname                   = var.ado-agents_config.poolname
+    identifier                 = each.value.identifier
+    enable_istio_proxy         = each.value.enable_istio_proxy
+    sa_name                    = var.ado-agents_config.sa_name
+    acr_name                   = var.acr_name
+    image_name                 = each.value.image_name
+    image_tag                  = each.value.image_tag
+    azpurl                     = var.ado-agents_config.azpurl
+    tenant_id                  = var.ado-agents_config.tenant-id
+    subscription_id            = var.ado-agents_config.subscription-id
+    aks_cluster_name           = var.aks_cluster_name
+    limits_cpu                 = each.value.limits_cpu
+    limits_mem                 = each.value.limits_mem
+    requests_cpu               = each.value.requests_cpu
+    requests_mem               = each.value.requests_mem
+    pollinginterval            = each.value.pollinginterval
+    successfuljobshistorylimit = each.value.successfuljobshistorylimit
+    failedjobshistorylimit     = each.value.failedjobshistorylimit
+    scaled_min_job             = each.value.scaled_min_job
+    scaled_max_job             = each.value.scaled_max_job
+    init_containers            = jsonencode(each.value.init_container_config)
+  })
+
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
+
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubernetes_namespace.ado-agents_namespace,
+    helm_release.keda_install,
+    kubernetes_service_account.ado_agent,
+  ]
+
+  force_new = true
 }
