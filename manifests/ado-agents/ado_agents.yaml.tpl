@@ -64,6 +64,7 @@ spec:
           - name: ${init_container.container_name}
             image: ${acr_name}.azurecr.io/hmcts/${init_container.image_name}:${init_container.image_tag}
             imagePullPolicy: Always
+            restartPolicy: Always
             env:
               - name: ALLOW_EMPTY_PASSWORD
                 value: "yes"
