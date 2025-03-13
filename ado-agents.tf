@@ -136,16 +136,12 @@ spec:
                 value: "${each.value.identifier}"
               - name: CLUSTER
                 value: ${var.aks_cluster_name}
-              ${each.value.agent_name == "azdevops-agent-centos8-j17" ? <<YAML
-
               - name: LC_ALL
                 value: en_GB.UTF-8
               - name: LANG
                 value: en_GB.UTF-8
               - name: LANGUAGE
                 value: en_GB.UTF-8
-              YAML
-: ""}
             resources:
               limits:
                 cpu: "${each.value.limits_cpu}"
