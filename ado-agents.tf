@@ -87,7 +87,7 @@ YAML
 #  https://github.com/kedacore/keda-docs/blob/main/content/docs/2.14/scalers/azure-pipelines.md#example-for-scaledobject
 
 resource "kubectl_manifest" "azdevops_agent" {
-  for_each  = (var.ado-agents_config.enable) ? { for agent in var.ado-agents_config.agents : agent.agent_name => agent } : {}
+  for_each = (var.ado-agents_config.enable) ? { for agent in var.ado-agents_config.agents : agent.agent_name => agent } : {}
   yaml_body = <<YAML
 ---
 apiVersion: keda.sh/v1alpha1
@@ -176,14 +176,14 @@ spec:
   rollout:
     strategy: gradual
 YAML
-  lifecycle {
-    ignore_changes = [field_manager]
-  }
-  depends_on = [
-    time_sleep.wait_for_aks_api_dns_propagation,
-    kubernetes_namespace.ado-agents_namespace,
-    helm_release.keda_install,
-    kubernetes_service_account.ado_agent,
-  ]
-  force_new = true
+lifecycle {
+  ignore_changes = [field_manager]
+}
+depends_on = [
+  time_sleep.wait_for_aks_api_dns_propagation,
+  kubernetes_namespace.ado-agents_namespace,
+  helm_release.keda_install,
+  kubernetes_service_account.ado_agent,
+]
+force_new = true
 }
