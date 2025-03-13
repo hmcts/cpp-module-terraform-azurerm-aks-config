@@ -87,84 +87,46 @@ YAML
 #  https://github.com/kedacore/keda-docs/blob/main/content/docs/2.14/scalers/azure-pipelines.md#example-for-scaledobject
 
 resource "kubectl_manifest" "azdevops_agent" {
-  for_each  = (var.ado-agents_config.enable) ? { for agent in var.ado-agents_config.agents : agent.agent_name => agent } : {}
-  yaml_body = <<YAML
----
-apiVersion: keda.sh/v1alpha1
-kind: ScaledJob
-metadata:
-  name: ${var.environment}-${var.aks_cluster_set}-${var.aks_cluster_number}-${each.value.agent_name}
-  namespace: ${var.ado-agents_config.namespace}
-spec:
-  template:
-    metadata:
-      labels:
-        azure.workload.identity/use: "true"
-  triggers:
-    - type: azure-pipelines
-      metadata:
-        poolName: "${var.ado-agents_config.poolname}"
-        organizationURLFromEnv: "AZP_URL"
-        demands: "identifier -equals ${each.value.identifier}"
-      authenticationRef:
-        name: pipeline-trigger-auth
-  jobTargetRef:
-    template:
-      metadata:
-        labels:
-          azure.workload.identity/use: "true"
-          sidecar.istio.io/inject: "${each.value.enable_istio_proxy}"
-        annotations:
-          proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": ${each.value.enable_istio_proxy} }'
-      spec:
-        serviceAccountName: "${var.ado-agents_config.sa_name}"
-        restartPolicy: Never
-        containers:
-          - name: azdevops-agent
-            image: "${var.acr_name}.azurecr.io/hmcts/${each.value.image_name}:${each.value.image_tag}"
-            imagePullPolicy: Always
-            env:
-              - name: AZP_URL
-                value: "${var.ado-agents_config.azpurl}"
-              - name: AZP_POOL
-                value: "${var.ado-agents_config.poolname}"
-              - name: AZURE_TENANT_ID
-                value: "${var.ado-agents_config.tenant-id}"
-              - name: AZURE_SUBSCRIPTION_ID
-                value: "${var.ado-agents_config.subscription-id}"
-              - name: identifier
-                value: "${each.value.identifier}"
-              - name: CLUSTER
-                value: ${var.aks_cluster_name}
-              - name: LC_ALL
-                value: en_GB.UTF-8
-              - name: LANG
-                value: en_GB.UTF-8
-              - name: LANGUAGE
-                value: en_GB.UTF-8
-            resources:
-              limits:
-                cpu: "${each.value.limits_cpu}"
-                memory: "${each.value.limits_mem}"
-              requests:
-                cpu: "${each.value.requests_cpu}"
-                memory: "${each.value.requests_mem}"
-  pollingInterval: ${each.value.pollinginterval}
-  successfulJobsHistoryLimit: ${each.value.successfuljobshistorylimit}
-  failedJobsHistoryLimit: ${each.value.failedjobshistorylimit}
-  minReplicaCount: ${each.value.scaled_min_job}
-  maxReplicaCount: ${each.value.scaled_max_job}
-  rollout:
-    strategy: gradual
-YAML
+  for_each = (var.ado-agents_config.enable) ? { for agent in var.ado-agents_config.agents : agent.agent_name => agent } : {}
+  yaml_body = templatefile("${path.module}/manifests/ado-agents/ado_agents.yaml.tpl", {
+    environment                = var.environment
+    aks_cluster_set            = var.aks_cluster_set
+    aks_cluster_number         = var.aks_cluster_number
+    namespace                  = var.ado-agents_config.namespace
+    agent_name                 = each.value.agent_name
+    poolname                   = var.ado-agents_config.poolname
+    identifier                 = each.value.identifier
+    enable_istio_proxy         = each.value.enable_istio_proxy
+    sa_name                    = var.ado-agents_config.sa_name
+    acr_name                   = var.acr_name
+    image_name                 = each.value.image_name
+    image_tag                  = each.value.image_tag
+    azpurl                     = var.ado-agents_config.azpurl
+    tenant_id                  = var.ado-agents_config.tenant-id
+    subscription_id            = var.ado-agents_config.subscription-id
+    aks_cluster_name           = var.aks_cluster_name
+    limits_cpu                 = each.value.limits_cpu
+    limits_mem                 = each.value.limits_mem
+    requests_cpu               = each.value.requests_cpu
+    requests_mem               = each.value.requests_mem
+    pollinginterval            = each.value.pollinginterval
+    successfuljobshistorylimit = each.value.successfuljobshistorylimit
+    failedjobshistorylimit     = each.value.failedjobshistorylimit
+    scaled_min_job             = each.value.scaled_min_job
+    scaled_max_job             = each.value.scaled_max_job
+    init_containers            = jsonencode(each.value.init_container_config)
+  })
+
   lifecycle {
     ignore_changes = [field_manager]
   }
+
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
     kubernetes_namespace.ado-agents_namespace,
     helm_release.keda_install,
     kubernetes_service_account.ado_agent,
   ]
+
   force_new = true
 }
