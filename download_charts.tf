@@ -25,18 +25,12 @@ resource "null_resource" "download_charts" {
       ${local.helm_binary} registry login ${var.acr_name}.azurecr.io --username ${var.acr_user_name} --password ${var.acr_user_password}
       mkdir -p ./install
       %{for chart in local.charts_info~}
-      if [ ${local.helm_binary} = "helm-3.14.2" ]; then
         if [ -d "${chart.dir}" ]; then
           rm -rf "${chart.dir}"
         fi
         ${local.helm_binary} pull oci://${var.acr_name}.azurecr.io/${chart.path} --version ${chart.version} --destination ./install
         tar zxvf ${chart.dir}-${chart.version}.tgz -C install
         rm -f ${chart.dir}-${chart.version}.tgz
-      else
-        ${local.helm_binary} chart remove ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
-        ${local.helm_binary} chart pull ${var.acr_name}.azurecr.io/${chart.path}:${chart.version}
-        ${local.helm_binary} chart export ${var.acr_name}.azurecr.io/${chart.path}:${chart.version} --destination ./install
-      fi
       %{endfor~}
     EOT
   }
