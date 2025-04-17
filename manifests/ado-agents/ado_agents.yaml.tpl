@@ -68,6 +68,8 @@ spec:
             env:
               - name: ALLOW_EMPTY_PASSWORD
                 value: "yes"
+              - name: max_prepared_transactions
+                value: "100"
             resources:
               limits:
                 cpu: "${init_container.limits_cpu}"
