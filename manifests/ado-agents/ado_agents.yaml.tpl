@@ -68,8 +68,8 @@ spec:
             env:
               - name: ALLOW_EMPTY_PASSWORD
                 value: "yes"
-              - name: max_prepared_transactions
-                value: "100"
+              - name: POSTGRESQL_EXTRA_FLAGS
+                value: -c max_prepared_transactions=100
             resources:
               limits:
                 cpu: "${init_container.limits_cpu}"
