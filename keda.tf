@@ -96,6 +96,11 @@ resource "helm_release" "keda_install" {
     value = var.keda_config.limits_cpu
   }
 
+  set {
+    name  = "serviceAccount.operator.name"
+    value = "keda-operator"
+  }
+
 
 
 
