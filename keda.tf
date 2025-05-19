@@ -101,6 +101,11 @@ resource "helm_release" "keda_install" {
     value = "keda-operator"
   }
 
+  set {
+    name  = "serviceAccount.name"
+    value = "keda-operator"
+  }
+
 
 
 
