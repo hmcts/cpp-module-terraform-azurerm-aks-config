@@ -836,6 +836,7 @@ variable "ado-agents_config" {
         limits_mem     = string
         limits_cpu     = string
       }))
+      run_as_user = number
     }))
   })
   default = {
@@ -850,6 +851,7 @@ variable "ado-agents_config" {
     tenant-id        = "531ff96d-0ae9-462a-8d2d-bec7c0b42082"
     subscription-id  = "ef8dd153-3fba-47a4-be65-15775bcde240"
     agents           = []
+    run_as_user      = 1000
   }
 }
 

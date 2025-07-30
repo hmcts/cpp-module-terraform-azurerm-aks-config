@@ -32,7 +32,7 @@ spec:
           - name: azdevops-agent
             securityContext:
               runAsNonRoot: true
-              runAsUser: 1000
+              runAsUser: ${run_as_user}
             image: ${acr_name}.azurecr.io/hmcts/${image_name}:${image_tag}
             imagePullPolicy: Always
             env:
