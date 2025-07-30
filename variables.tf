@@ -836,6 +836,7 @@ variable "ado-agents_config" {
         limits_mem     = string
         limits_cpu     = string
       }))
+      run_as_user = number
     }))
   })
   default = {

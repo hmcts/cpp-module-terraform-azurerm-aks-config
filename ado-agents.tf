@@ -115,6 +115,7 @@ resource "kubectl_manifest" "azdevops_agent" {
     scaled_min_job             = each.value.scaled_min_job
     scaled_max_job             = each.value.scaled_max_job
     init_containers            = jsonencode(each.value.init_container_config)
+    run_as_user                = each.value.run_as_user
   })
 
   lifecycle {
