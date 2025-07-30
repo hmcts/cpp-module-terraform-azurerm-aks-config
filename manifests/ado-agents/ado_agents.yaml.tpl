@@ -30,6 +30,9 @@ spec:
         restartPolicy: Never
         containers:
           - name: azdevops-agent
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 1000
             image: ${acr_name}.azurecr.io/hmcts/${image_name}:${image_tag}
             imagePullPolicy: Always
             env:
@@ -63,6 +66,9 @@ spec:
           %{ for init_container in jsondecode(init_containers) }
           - name: ${init_container.container_name}
             image: ${acr_name}.azurecr.io/hmcts/${init_container.image_name}:${init_container.image_tag}
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 1000
             imagePullPolicy: Always
             restartPolicy: Always
             env:
