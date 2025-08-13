@@ -25,7 +25,7 @@ resource "time_sleep" "wait_for_aks_api_dns_propagation" {
 
 data "kubectl_file_documents" "network_policy_manifests" {
   content = templatefile("${path.module}/manifests/common/networkpolicy.yaml", {
-    namespace         = ["istio-ingress-mgmt", "istio-system", "kube-system"]
+    namespace         = ["istio-ingress-mgmt", "istio-system", "kube-system", "jenkins"]
     system_namespaces = var.system_namespaces
   })
 }
