@@ -66,9 +66,13 @@ resource "helm_release" "gatekeeper_install" {
   ]
 }
 
+data "kubectl_path_documents" "gatekeeper_manager_manifests" {
+    pattern = "${path.module}/manifests/gatekeeper/constraint.yaml"
+}
+
 resource "kubectl_manifest" "install_gatekeeper_constraint_manifests" {
   count     = var.gatekeeper_config.enable ? length(split("\n---\n", file("${path.module}/manifests/gatekeeper/constraint.yaml"))) : 0
-  yaml_body = file("${path.module}/manifests/gatekeeper/constraint.yaml")
+  yaml_body = element(data.kubectl_path_documents.gatekeeper_manager_manifests.documents, count.index)
   lifecycle {
     ignore_changes = [field_manager]
   }
