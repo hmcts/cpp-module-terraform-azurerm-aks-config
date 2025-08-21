@@ -67,7 +67,7 @@ resource "helm_release" "gatekeeper_install" {
 }
 
 data "kubectl_path_documents" "gatekeeper_manager_manifests" {
-    pattern = "${path.module}/manifests/gatekeeper/constraint.yaml"
+  pattern = "${path.module}/manifests/gatekeeper/constraint.yaml"
 }
 
 resource "kubectl_manifest" "install_gatekeeper_constraint_manifests" {

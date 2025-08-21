@@ -66,4 +66,3 @@ spec:
           not sc.runAsNonRoot
           msg := sprintf("Container %q must set runAsNonRoot=true", [container.name])
         }
----
