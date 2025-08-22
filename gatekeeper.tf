@@ -91,3 +91,14 @@ resource "kubectl_manifest" "install_gatekeeper_whitelistedimages_manifests" {
     helm_release.gatekeeper_install
   ]
 }
+
+resource "kubectl_manifest" "install_gatekeeper_runasnoonroot_manifests" {
+  count     = var.gatekeeper_config.enable ? 1 : 0
+  yaml_body = file("${path.module}/manifests/gatekeeper/runasnonroot.yaml")
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
+  depends_on = [
+    helm_release.gatekeeper_install
+  ]
+}
