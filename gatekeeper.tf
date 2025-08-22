@@ -66,9 +66,13 @@ resource "helm_release" "gatekeeper_install" {
   ]
 }
 
+data "kubectl_path_documents" "gatekeeper_manager_manifests" {
+  pattern = "${path.module}/manifests/gatekeeper/constraint.yaml"
+}
+
 resource "kubectl_manifest" "install_gatekeeper_constraint_manifests" {
-  count     = var.gatekeeper_config.enable ? 1 : 0
-  yaml_body = file("${path.module}/manifests/gatekeeper/constraint.yaml")
+  count     = var.gatekeeper_config.enable ? length(split("\n---\n", file("${path.module}/manifests/gatekeeper/constraint.yaml"))) : 0
+  yaml_body = element(data.kubectl_path_documents.gatekeeper_manager_manifests.documents, count.index)
   lifecycle {
     ignore_changes = [field_manager]
   }
@@ -80,6 +84,17 @@ resource "kubectl_manifest" "install_gatekeeper_constraint_manifests" {
 resource "kubectl_manifest" "install_gatekeeper_whitelistedimages_manifests" {
   count     = var.gatekeeper_config.enable ? 1 : 0
   yaml_body = file("${path.module}/manifests/gatekeeper/whitelistedimages.yaml")
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
+  depends_on = [
+    helm_release.gatekeeper_install
+  ]
+}
+
+resource "kubectl_manifest" "install_gatekeeper_runasnoonroot_manifests" {
+  count     = var.gatekeeper_config.enable ? 1 : 0
+  yaml_body = file("${path.module}/manifests/gatekeeper/runasnonroot.yaml")
   lifecycle {
     ignore_changes = [field_manager]
   }

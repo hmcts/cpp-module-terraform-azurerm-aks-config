@@ -1,0 +1,16 @@
+---
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredRunAsNonRoot
+metadata:
+  name: enforce-runasnonroot-unless-istio
+spec:
+  enforcementAction: dryrun
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    namespaceSelector:
+      matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values: ["ccm-namespace"]

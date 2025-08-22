@@ -39,3 +39,30 @@ spec:
           not images_whitelisted(image, whitelisted_images)
           msg := sprintf("pod %q has invalid image %q. Please, contact your DevOps. Follow the whitelisted images %v", [name, image, whitelisted_images])
         }
+---
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8srequiredrunasnonroot
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sRequiredRunAsNonRoot
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8srequiredrunasnonroot
+
+        istio_proxy_image(img) = true {
+          contains(img, "istio/proxy")
+        }
+
+        violation[{"msg": msg, "details": {"container": container.name}}] {
+          container := input.review.object.spec.containers[_]
+          not istio_proxy_image(container.image)
+
+          sc := container.securityContext
+          not sc.runAsNonRoot
+          msg := sprintf("Container %q must set runAsNonRoot=true", [container.name])
+        }
