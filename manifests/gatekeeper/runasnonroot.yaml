@@ -4,7 +4,6 @@ kind: K8sRequiredRunAsNonRoot
 metadata:
   name: enforce-runasnonroot-unless-istio
 spec:
-  enforcementAction: dryrun
   match:
     kinds:
       - apiGroups: [""]
