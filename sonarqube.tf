@@ -22,7 +22,7 @@ resource "helm_release" "sonarqube_install" {
 
   set {
     name  = "image.repository"
-    value = "${var.acr_name}.azurecr.io/hmcts/sonarqube"
+    value = "${var.acr_name}.azurecr.io/docker.io/library/sonarqube"
   }
   set {
     name  = "postgresql.enabled"
