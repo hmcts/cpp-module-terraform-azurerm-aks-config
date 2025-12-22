@@ -61,6 +61,10 @@ resource "helm_release" "sonarqube_install" {
     value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/library/busybox:1.35.0"
   }
   set {
+    name  = "initSysctl.enabled"
+    value = false
+  }
+  set {
     name  = "initSysctl.image"
     value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/library/busybox:1.35.0"
   }
