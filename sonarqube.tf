@@ -22,7 +22,7 @@ resource "helm_release" "sonarqube_install" {
 
   set {
     name  = "image.repository"
-    value = "${var.acr_name}.azurecr.io/hmcts/sonarqube"
+    value = "${var.acr_name}.azurecr.io/docker.io/library/sonarqube"
   }
   set {
     name  = "postgresql.enabled"
@@ -59,6 +59,10 @@ resource "helm_release" "sonarqube_install" {
   set {
     name  = "initFs.image"
     value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/library/busybox:1.35.0"
+  }
+  set {
+    name  = "initSysctl.enabled"
+    value = false
   }
 
   values = [templatefile("${path.module}/manifests/common/sonarProps.yaml", {
