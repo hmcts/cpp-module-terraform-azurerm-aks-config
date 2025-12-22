@@ -62,7 +62,7 @@ resource "helm_release" "sonarqube_install" {
   }
   set {
     name  = "initSysctl.enabled"
-    value = false
+    value = true
   }
 
   values = [templatefile("${path.module}/manifests/common/sonarProps.yaml", {
