@@ -60,6 +60,10 @@ resource "helm_release" "sonarqube_install" {
     name  = "initFs.image"
     value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/library/busybox:1.35.0"
   }
+  set {
+    name  = "initSysctl.image"
+    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/library/busybox:1.35.0"
+  }
 
   values = [templatefile("${path.module}/manifests/common/sonarProps.yaml", {
     tenant_id    = data.azurerm_client_config.current.tenant_id
