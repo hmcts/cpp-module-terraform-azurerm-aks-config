@@ -95,7 +95,7 @@ spec:
           - name: shared-storage
             persistentVolumeClaim:
               claimName: ${pvc_claim_name}
-        %{ endif %}
+        %{ endif }
   pollingInterval: ${pollinginterval}
   successfulJobsHistoryLimit: ${successfuljobshistorylimit}
   failedJobsHistoryLimit: ${failedjobshistorylimit}
