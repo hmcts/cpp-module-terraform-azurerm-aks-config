@@ -142,7 +142,7 @@ resource "kubectl_manifest" "azdevops_agent_pvc" {
     if agent.pvc_enabled == true
   }
 
-  yaml_body = templatefile("${path.module}/manifests/ado-agents/agent_pvc.yaml.tpl", {
+  yaml_body = templatefile("${path.module}/manifests/ado-agents/agents_pvc.yaml.tpl", {
     namespace        = var.ado-agents_config.namespace
     pvc_name         = "shared-storage-${each.value.agent_name}"
     storage_size     = each.value.pvc_storage_size
