@@ -838,7 +838,6 @@ variable "ado-agents_config" {
       }))
       run_as_user = number
       pvc_enabled = optional(bool, false)
-      pvc_claim_name = optional(string)
       pvc_storage_size = optional(string)
       pvc_access_mode = optional(string)
       pvc_storage_class = optional(string)
