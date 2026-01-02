@@ -116,6 +116,8 @@ resource "kubectl_manifest" "azdevops_agent" {
     scaled_max_job             = each.value.scaled_max_job
     init_containers            = jsonencode(each.value.init_container_config)
     run_as_user                = each.value.run_as_user
+    pvc_enabled                = each.value.pvc_enabled
+    pvc_claim_name = each.value.pvc_enabled ? "shared-storage-${each.value.agent_name}" : null
   })
 
   lifecycle {
@@ -127,7 +129,36 @@ resource "kubectl_manifest" "azdevops_agent" {
     kubernetes_namespace.ado-agents_namespace,
     helm_release.keda_install,
     kubernetes_service_account.ado_agent,
+    kubectl_manifest.azdevops_agent_pvc
   ]
 
   force_new = true
 }
+
+resource "kubectl_manifest" "azdevops_agent_pvc" {
+  for_each = {
+    for agent in var.ado-agents_config.agents :
+    agent.agent_name => agent
+    if agent.pvc_enabled == true
+  }
+
+  yaml_body = templatefile("${path.module}/manifests/ado-agents/agent_pvc.yaml.tpl", {
+    namespace        = var.ado-agents_config.namespace
+    pvc_name         = "shared-storage-${each.value.agent_name}"
+    storage_size     = each.value.pvc_storage_size
+    access_mode      = each.value.pvc_access_mode
+    storage_class    = each.value.pvc_storage_class
+    environment      = var.environment
+    aks_cluster_name = var.aks_cluster_name
+  })
+
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
+
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubernetes_namespace.ado-agents_namespace
+  ]
+}
+

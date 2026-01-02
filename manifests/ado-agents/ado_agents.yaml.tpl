@@ -61,6 +61,11 @@ spec:
               requests:
                 cpu: "${requests_cpu}"
                 memory: ${requests_mem}
+            %{ if pvc_enabled == "true" }
+            volumeMounts:
+              - mountPath: /mnt/shared
+                name: shared-storage
+            %{ endif }
         %{ if length(jsondecode(init_containers)) > 0 }
         initContainers:
           %{ for init_container in jsondecode(init_containers) }
@@ -85,6 +90,12 @@ spec:
                 memory: ${init_container.requests_mem}
           %{ endfor }
         %{ endif }
+        %{ if pvc_enabled == "true" }
+        volumes:
+          - name: shared-storage
+            persistentVolumeClaim:
+              claimName: ${pvc_claim_name}
+        %{ endif %}
   pollingInterval: ${pollinginterval}
   successfulJobsHistoryLimit: ${successfuljobshistorylimit}
   failedJobsHistoryLimit: ${failedjobshistorylimit}
