@@ -90,7 +90,7 @@ resource "kubectl_manifest" "azdevops_agent_pvc" {
 
   yaml_body = templatefile("${path.module}/manifests/ado-agents/agents_pvc.yaml.tpl", {
     namespace        = var.ado-agents_config.namespace
-    pvc_name         = "shared-storage-${each.value.agent_name}"
+    pvc_name         = var.pvc_name
     storage_size     = each.value.pvc_storage_size
     access_mode      = each.value.pvc_access_mode
     storage_class    = each.value.pvc_storage_class
@@ -143,7 +143,7 @@ resource "kubectl_manifest" "azdevops_agent" {
     init_containers            = jsonencode(each.value.init_container_config)
     run_as_user                = each.value.run_as_user
     pvc_enabled                = each.value.pvc_enabled
-    pvc_claim_name = coalesce(each.value.pvc_enabled, false) ? "shared-storage-${each.value.agent_name}" : ""
+    pvc_claim_name = coalesce(each.value.pvc_enabled, false) ? var.pvc_name : ""
   })
 
   lifecycle {

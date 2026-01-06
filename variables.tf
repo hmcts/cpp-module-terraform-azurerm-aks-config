@@ -1052,3 +1052,9 @@ variable "istiod_hpa_cputarget" {
   description = "cpu target for istiod pod hpa"
   default     = "70"
 }
+
+variable "pvc_name" {
+  type        = string
+  description = "pvc name"
+  default     = "m2-shared-storage"
+}
