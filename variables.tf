@@ -1052,16 +1052,15 @@ variable "istiod_hpa_cputarget" {
 
 variable "pvc_config" {
   type = object({
-    pvc_name = string
-    pvc_storage_size                   = string
-    pvc_access_mode             = string
+    pvc_name          = string
+    pvc_storage_size  = string
+    pvc_access_mode   = string
     pvc_storage_class = string
   })
   default = {
-    pvc_name = "m2-shared-storage"
-    pvc_storage_size                   = "10Gi"
-    pvc_access_mode             = "ReadWriteMany"
+    pvc_name          = "m2-shared-storage"
+    pvc_storage_size  = "10Gi"
+    pvc_access_mode   = "ReadWriteMany"
     pvc_storage_class = "azurefile-csi-premium"
   }
 }
-

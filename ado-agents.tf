@@ -143,7 +143,7 @@ resource "kubectl_manifest" "azdevops_agent" {
     init_containers            = jsonencode(each.value.init_container_config)
     run_as_user                = each.value.run_as_user
     pvc_enabled                = each.value.pvc_enabled
-    pvc_claim_name = coalesce(each.value.pvc_enabled, false) ? var.pvc_config.pvc_name : ""
+    pvc_claim_name             = coalesce(each.value.pvc_enabled, false) ? var.pvc_config.pvc_name : ""
   })
 
   lifecycle {
@@ -160,5 +160,3 @@ resource "kubectl_manifest" "azdevops_agent" {
 
   force_new = true
 }
-
-
