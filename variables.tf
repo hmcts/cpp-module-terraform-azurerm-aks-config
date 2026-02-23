@@ -1086,3 +1086,17 @@ variable "kustomizations_cluster_config" {
   }))
   default = {}
 }
+
+variable "github_app_id" {
+  type = string
+}
+
+variable "github_app_installation_id" {
+  type = string
+}
+
+variable "github_app_private_key" {
+  type      = string
+  sensitive = true
+}
+
