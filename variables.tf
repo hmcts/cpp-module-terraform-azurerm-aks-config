@@ -1064,3 +1064,25 @@ variable "pvc_config" {
     pvc_storage_class = "azurefile-csi-premium"
   }
 }
+
+variable "enable_flux" {
+  type    = bool
+  default = false
+}
+
+variable "extension_name" {
+  type    = string
+  default = "aks-flux"
+}
+
+variable "flux_namespace" {
+  type    = string
+  default = "flux-system"
+}
+
+variable "clusters" {
+  type = map(object({
+    clusters_path = string
+  }))
+  default = {}
+}
