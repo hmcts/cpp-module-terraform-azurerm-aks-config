@@ -8,7 +8,7 @@ resource "kubernetes_secret" "flux_github_app" {
   data = {
     app-id          = var.github_app_id
     installation-id = var.github_app_installation_id
-    private-key.pem = var.github_app_private_key
+    private-key.pem = var.cpp-github-app
   }
 
   type = "Opaque"
