@@ -1080,7 +1080,7 @@ variable "flux_namespace" {
   default = "flux-system"
 }
 
-variable "clusters" {
+variable "kustomizations_cluster_config" {
   type = map(object({
     clusters_path = string
   }))

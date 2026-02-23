@@ -7,7 +7,7 @@ resource "azurerm_kubernetes_cluster_extension" "flux-extension" {
 }
 
 resource "azurerm_kubernetes_flux_configuration" "example" {
-  for_each   = var.enable_flux ? var.clusters : {}
+  for_each   = var.enable_flux ? var.kustomizations_cluster_config : {}
   name       = "${each.key}-flux-configuration"
   cluster_id = data.azurerm_kubernetes_cluster.aks_cluster.id
   namespace  = var.flux_namespace
