@@ -1,3 +1,14 @@
+resource "kubernetes_namespace" "flux_system_namespace" {
+  count = var.enable_flux ? 1 : 0
+  metadata {
+    name = "flux-system"
+    labels = {
+      "app.kubernetes.io/managed-by" = "Terraform"
+    }
+  }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+}
+
 resource "kubernetes_secret" "flux_github_app" {
   count = var.enable_flux ? 1 : 0
   metadata {
@@ -6,48 +17,27 @@ resource "kubernetes_secret" "flux_github_app" {
   }
 
   data = {
-    app-id          = var.github_app_id
-    app-installation-id = var.github_app_installation_id
-    app-private-key = var.cpp_github_app
+    githubAppID             = var.github_app_id
+    githubAppInstallationID = var.github_app_installation_id
+    githubAppPrivateKey     = var.cpp_github_app
   }
 
   type = "Opaque"
 }
 
+resource "helm_release" "flux2" {
+  count      = var.enable_flux ? 1 : 0
+  name       = lookup(var.charts.flux2, "name", "flux2")
+  chart      = lookup(var.charts.flux2, "name", "flux2")
+  version    = lookup(var.charts.flux2, "version", "")
+  repository = "./install"
+  namespace  = kubernetes_namespace.flux_system_namespace[0].metadata.0.name
 
-resource "azurerm_kubernetes_cluster_extension" "flux-extension" {
-  count = var.enable_flux ? 1 : 0
-
-  name           = var.extension_name
-  cluster_id     = data.azurerm_kubernetes_cluster.aks_cluster.id
-  extension_type = "microsoft.flux"
-}
-
-resource "azurerm_kubernetes_flux_configuration" "example" {
-  for_each   = var.enable_flux ? var.kustomizations_cluster_config : {}
-  name       = "flux-configuration"
-  cluster_id = data.azurerm_kubernetes_cluster.aks_cluster.id
-  namespace  = var.flux_namespace
-  scope      = "cluster"
-
-  git_repository {
-    url             = "https://github.com/hmcts/cpp-flux-config"
-    reference_type  = "branch"
-    reference_value = "main"
-    local_auth_reference = var.enable_flux ? kubernetes_secret.flux_github_app[0].metadata[0].name : null
-  }
-
-  kustomizations {
-    name = "${each.key}-clusters"
-    path = each.value.clusters_path
-  }
-  kustomizations {
-    name = "${each.key}-apps"
-    path = "./app"
-  }
-
+  wait    = true
+  timeout = 300
 
   depends_on = [
-    azurerm_kubernetes_cluster_extension.flux-extension
+    null_resource.download_charts,
+    kubernetes_namespace.flux_system_namespace
   ]
 }

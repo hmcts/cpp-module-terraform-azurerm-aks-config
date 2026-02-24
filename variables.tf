@@ -209,6 +209,7 @@ variable "charts" {
     sonarqube              = map(string)
     smashing               = map(string)
     azure-service-operator = map(string)
+    flux2 = map(string)
   })
   default = {
     aks-rbac = {
@@ -283,6 +284,10 @@ variable "charts" {
       path    = "charts/keda"
       version = "2.13.0"
     },
+    flux2 = {
+          path    = "charts/flux2"
+          version = "2.17.2
+        },
   }
 }
 
@@ -1070,22 +1075,6 @@ variable "enable_flux" {
   default = false
 }
 
-variable "extension_name" {
-  type    = string
-  default = "aks-flux"
-}
-
-variable "flux_namespace" {
-  type    = string
-  default = "flux-system"
-}
-
-variable "kustomizations_cluster_config" {
-  type = map(object({
-    clusters_path = string
-  }))
-  default = {}
-}
 
 variable "github_app_id" {
   type = string
@@ -1098,4 +1087,3 @@ variable "github_app_installation_id" {
 variable "cpp_github_app" {
   type = string
 }
-
