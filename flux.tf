@@ -34,7 +34,7 @@ resource "azurerm_kubernetes_flux_configuration" "example" {
     url             = "https://github.com/hmcts/cpp-flux-config"
     reference_type  = "branch"
     reference_value = "main"
-    local_auth_reference = var.enable_flux ? kubernetes_secret.flux_github_app.metadata[0].name : null
+    local_auth_reference = var.enable_flux ? kubernetes_secret.flux_github_app[0].metadata[0].name : null
   }
 
   kustomizations {
