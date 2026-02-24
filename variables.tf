@@ -1096,6 +1096,6 @@ variable "github_app_installation_id" {
 }
 
 variable "cpp_github_app" {
-  default = "cpp-github-app"
+  type = string
 }
 
