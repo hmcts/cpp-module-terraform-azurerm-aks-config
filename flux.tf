@@ -13,7 +13,7 @@ resource "kubernetes_secret" "flux_github_app" {
   count = var.enable_flux ? 1 : 0
   metadata {
     name      = "flux-github-app-secret"
-    namespace = var.flux_namespace
+    namespace = kubernetes_namespace.flux_system_namespace[0].metadata.0.name
   }
 
   data = {

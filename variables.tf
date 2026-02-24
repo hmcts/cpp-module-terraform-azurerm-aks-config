@@ -209,7 +209,7 @@ variable "charts" {
     sonarqube              = map(string)
     smashing               = map(string)
     azure-service-operator = map(string)
-    flux2 = map(string)
+    flux2                  = map(string)
   })
   default = {
     aks-rbac = {
@@ -285,9 +285,9 @@ variable "charts" {
       version = "2.13.0"
     },
     flux2 = {
-          path    = "charts/flux2"
-          version = "2.17.2
-        },
+      path    = "charts/flux2"
+      version = "2.17.2"
+    }
   }
 }
 
@@ -1074,6 +1074,7 @@ variable "enable_flux" {
   type    = bool
   default = false
 }
+
 
 
 variable "github_app_id" {
