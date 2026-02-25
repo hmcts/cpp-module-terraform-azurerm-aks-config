@@ -54,7 +54,7 @@ resource "helm_release" "flux_instance" {
 
   // Configure the Flux components and kustomize patches.
   values = [
-    file("manifests/flux-instance-value/components.yaml")
+    file("${path.module}/manifests/flux-instance-value/components.yaml")
   ]
 
   // Configure the Flux distribution, cluster type and Git sync.
