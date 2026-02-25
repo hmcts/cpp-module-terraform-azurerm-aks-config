@@ -209,7 +209,8 @@ variable "charts" {
     sonarqube              = map(string)
     smashing               = map(string)
     azure-service-operator = map(string)
-    flux2                  = map(string)
+    flux-operator          = map(string)
+    flux-instance          = map(string)
   })
   default = {
     aks-rbac = {
@@ -284,9 +285,13 @@ variable "charts" {
       path    = "charts/keda"
       version = "2.13.0"
     },
-    flux2 = {
-      path    = "charts/flux2"
-      version = "2.17.2"
+    flux-operator = {
+      path    = "charts/flux-operator"
+      version = "0.42.1"
+    },
+    flux-instance = {
+      path    = "charts/flux-instance"
+      version = "0.42.1"
     }
   }
 }
@@ -1087,4 +1092,48 @@ variable "github_app_installation_id" {
 
 variable "cpp_github_app" {
   type = string
+}
+
+variable "flux_version" {
+  description = "Flux version semver range"
+  type        = string
+  default     = "2.x"
+}
+
+variable "flux_registry" {
+  description = "Flux distribution registry"
+  type        = string
+  default     = "ghcr.io/fluxcd"
+}
+
+variable "cluster_type" {
+  description = "Cluster type, e.g. kubernetes, openshift, azure, aws, gcp"
+  type        = string
+  default     = "kubernetes"
+}
+
+variable "cluster_size" {
+  description = "Cluster size, e.g. small, medium, large"
+  type        = string
+  default     = ""
+}
+
+variable "git_url" {
+  description = "Git repository URL"
+  type        = string
+  default     = "https://github.com/hmcts/cpp-flux-config"
+  nullable    = false
+}
+
+variable "git_path" {
+  description = "Path to the cluster manifests in the Git repository"
+  type        = string
+  default     = "./clusters"
+  nullable    = false
+}
+
+variable "git_ref" {
+  description = "Git branch or tag in the format refs/heads/main or refs/tags/v1.0.0"
+  type        = string
+  default     = "refs/heads/main"
 }

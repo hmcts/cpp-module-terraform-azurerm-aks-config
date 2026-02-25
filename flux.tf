@@ -25,11 +25,11 @@ resource "kubernetes_secret" "flux_github_app" {
   type = "Opaque"
 }
 
-resource "helm_release" "flux2" {
+resource "helm_release" "flux_operator" {
   count      = var.enable_flux ? 1 : 0
-  name       = lookup(var.charts.flux2, "name", "flux2")
-  chart      = lookup(var.charts.flux2, "name", "flux2")
-  version    = lookup(var.charts.flux2, "version", "")
+  name       = lookup(var.charts.flux-operator, "name", "flux-operator")
+  chart      = lookup(var.charts.flux-operator, "name", "flux-operator")
+  version    = lookup(var.charts.flux-operator, "version", "")
   repository = "./install"
   namespace  = kubernetes_namespace.flux_system_namespace[0].metadata.0.name
 
@@ -40,4 +40,69 @@ resource "helm_release" "flux2" {
     null_resource.download_charts,
     kubernetes_namespace.flux_system_namespace
   ]
+}
+
+resource "helm_release" "flux_instance" {
+  depends_on = [helm_release.flux_operator]
+
+  name      = lookup(var.charts.flux-instance, "name", "flux-instance")
+  chart     = lookup(var.charts.flux-instance, "name", "flux-instance")
+  version   = lookup(var.charts.flux-instance, "version", "")
+  namespace = kubernetes_namespace.flux_system_namespace[0].metadata.0.name
+  wait      = true
+  timeout   = 300
+
+  // Configure the Flux components and kustomize patches.
+  values = [
+    file("manifests/flux-instance-value/components.yaml")
+  ]
+
+  // Configure the Flux distribution, cluster type and Git sync.
+
+  set {
+    name  = "instance.distribution.version"
+    value = var.flux_version
+  }
+  set {
+    name  = "instance.distribution.registry"
+    value = var.flux_registry
+  }
+  set {
+    name  = "instance.cluster.type"
+    value = var.cluster_type
+  }
+  set {
+    name  = "instance.cluster.size"
+    value = var.cluster_size
+  }
+  set {
+    name  = "instance.sync.kind"
+    value = "GitRepository"
+  }
+  set {
+    name  = "instance.sync.url"
+    value = var.git_url
+  }
+  set {
+    name  = "instance.sync.path"
+    value = var.git_path
+  }
+  set {
+    name  = "instance.sync.ref"
+    value = var.git_ref
+  }
+  set {
+    name  = "instance.sync.provider"
+    value = "github"
+  }
+  set {
+    name  = "instance.sync.pullSecret"
+    value = "flux-github-app-secret"
+  }
+  set {
+    name  = "healthcheck.enabled"
+    value = "true"
+    type  = "auto"
+  }
+
 }
