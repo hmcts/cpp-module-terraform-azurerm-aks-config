@@ -1080,8 +1080,6 @@ variable "enable_flux" {
   default = false
 }
 
-
-
 variable "github_app_id" {
   type = string
 }
