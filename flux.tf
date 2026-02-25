@@ -48,6 +48,7 @@ resource "helm_release" "flux_instance" {
   name      = lookup(var.charts.flux-instance, "name", "flux-instance")
   chart     = lookup(var.charts.flux-instance, "name", "flux-instance")
   version   = lookup(var.charts.flux-instance, "version", "")
+  repository = "./install"
   namespace = kubernetes_namespace.flux_system_namespace[0].metadata.0.name
   wait      = true
   timeout   = 300
