@@ -102,7 +102,7 @@ resource "helm_release" "flux_instance" {
   }
   set {
     name  = "healthcheck.enabled"
-    value = "true"
+    value = "false"
     type  = "auto"
   }
 
