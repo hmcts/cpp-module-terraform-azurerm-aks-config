@@ -19,7 +19,7 @@ resource "kubernetes_secret" "flux_github_app" {
   data = {
     githubAppID             = var.github_app_id
     githubAppInstallationID = var.github_app_installation_id
-    githubAppPrivateKey     = data.vault_generic_secret.githubappkey_cred.0.data["spCert"]
+    githubAppPrivateKey     = data.vault_generic_secret.githubappkey_cred.0.data["value"]
   }
 
   type = "Opaque"
