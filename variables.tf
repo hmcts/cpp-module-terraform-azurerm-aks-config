@@ -1075,9 +1075,17 @@ variable "pvc_config" {
   }
 }
 
-variable "enable_flux" {
-  type    = bool
-  default = false
+variable "flux_config" {
+  type = object({
+    enable             = bool
+    git_path           = string
+    githubKeyVaultPath = string
+  })
+  default = {
+    enable             = false
+    git_path           = ""
+    githubKeyVaultPath = ""
+  }
 }
 
 variable "github_app_id" {
@@ -1085,10 +1093,6 @@ variable "github_app_id" {
 }
 
 variable "github_app_installation_id" {
-  type = string
-}
-
-variable "cpp_github_app" {
   type = string
 }
 
@@ -1126,7 +1130,7 @@ variable "git_url" {
 variable "git_path" {
   description = "Path to the cluster manifests in the Git repository"
   type        = string
-  default     = "./clusters"
+  default     = "./clusters/dev/cs01-cl02"
   nullable    = false
 }
 

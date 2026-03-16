@@ -1,5 +1,5 @@
 resource "kubernetes_namespace" "flux_system_namespace" {
-  count = var.enable_flux ? 1 : 0
+  count = var.flux_config.enable ? 1 : 0
   metadata {
     name = "flux-system"
     labels = {
@@ -10,7 +10,7 @@ resource "kubernetes_namespace" "flux_system_namespace" {
 }
 
 resource "kubernetes_secret" "flux_github_app" {
-  count = var.enable_flux ? 1 : 0
+  count = var.flux_config.enable ? 1 : 0
   metadata {
     name      = "flux-github-app-secret"
     namespace = kubernetes_namespace.flux_system_namespace[0].metadata.0.name
@@ -19,14 +19,14 @@ resource "kubernetes_secret" "flux_github_app" {
   data = {
     githubAppID             = var.github_app_id
     githubAppInstallationID = var.github_app_installation_id
-    githubAppPrivateKey     = var.cpp_github_app
+    githubAppPrivateKey     = data.vault_generic_secret.githubappkey_cred.0.data["spCert"]
   }
 
   type = "Opaque"
 }
 
 resource "helm_release" "flux_operator" {
-  count      = var.enable_flux ? 1 : 0
+  count      = var.flux_config.enable ? 1 : 0
   name       = lookup(var.charts.flux-operator, "name", "flux-operator")
   chart      = lookup(var.charts.flux-operator, "name", "flux-operator")
   version    = lookup(var.charts.flux-operator, "version", "")
@@ -102,7 +102,7 @@ resource "helm_release" "flux_instance" {
   }
   set {
     name  = "healthcheck.enabled"
-    value = "false"
+    value = "true"
     type  = "auto"
   }
 
