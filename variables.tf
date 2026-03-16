@@ -1105,7 +1105,7 @@ variable "flux_version" {
 variable "flux_registry" {
   description = "Flux distribution registry"
   type        = string
-  default     = "crmdvrepo01.azurecr.io/ghcr.io/fluxcd"
+  default     = "ghcr.io/fluxcd"
 }
 
 variable "cluster_type" {
