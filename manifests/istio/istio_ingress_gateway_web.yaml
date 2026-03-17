@@ -29,5 +29,3 @@ spec:
     tls:
       credentialName: ${istio_gateway_web_cert_secret_name}
       mode: SIMPLE
-      privateKey: sds
-      serverCertificate: sds
