@@ -5,8 +5,8 @@ locals {
   charts_info = [for chart in var.charts : {
     path       = chart.path
     version    = chart.version
-    dir        = "install/${element(split("/", chart.path), 1)}"
-    chart_name = "${element(split("/", chart.path), 1)}"
+    dir        = "install/${element(split("/", chart.path), length(split("/", chart.path)) - 1)}"
+    chart_name = element(split("/", chart.path), length(split("/", chart.path)) - 1)
   }]
   helm_binary = "$HELM_BINARY"
 }
