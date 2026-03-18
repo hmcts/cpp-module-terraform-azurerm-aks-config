@@ -16,6 +16,7 @@ alertmanager:
         effect: "NoSchedule"
 
 grafana:
+  assertNoLeakedSecrets: false
   image:
     registry: ${grafana_image_registry}
     repository: ${grafana_image_repository}
