@@ -625,6 +625,12 @@ variable "pgadmin_tag" {
   default     = "6.14"
 }
 
+variable "docker_tag_certmanager" {
+  type        = string
+  description = "cert-manager Docker image Tag"
+  default     = "v1.20.0"
+}
+
 variable "pgadmin_admin_user" {
   type        = string
   description = "enable pgadmin interface within cluster"
