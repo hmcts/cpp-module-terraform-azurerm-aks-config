@@ -40,7 +40,7 @@ resource "helm_release" "prometheus" {
     prometheus_config_reloader_image_registry   = "${var.acr_name}.azurecr.io/quay.io"
     prometheus_config_reloader_image_repository = "prometheus-operator/prometheus-config-reloader"
     prometheus_config_reloader_image_tag        = var.prometheus.prometheus_config_reloader_image_tag
-    kube_webhook_certgen_image_registry         = "${var.acr_name}.azurecr.io/k8s.gcr.io"
+    kube_webhook_certgen_image_registry         = "${var.acr_name}.azurecr.io/ghcr.io"
     kube_webhook_certgen_image_repository       = "jkroepke/kube-webhook-certgen"
     kube_webhook_certgen_image_tag              = var.prometheus.kube_webhook_certgen_image_tag
     prometheus_image_registry                   = "${var.acr_name}.azurecr.io/quay.io"
