@@ -269,7 +269,7 @@ variable "charts" {
     },
     sonarqube = {
       path    = "charts/sonarqube"
-      version = "9.9.2"
+      version = "2026.1.0"
     },
     smashing = {
       path    = "charts/smashing"
@@ -764,18 +764,20 @@ variable "tags" {
 
 variable "sonarqube_config" {
   type = object({
-    enable         = bool
-    jdbcUrl        = string
-    sonarVaultPath = string
-    sonarqubeUrl   = string
-    hosts          = string
+    enable                 = bool
+    jdbcUrl                = string
+    sonarVaultPath         = string
+    sonarqubeUrl           = string
+    hosts                  = string
+    community_build_number = string
   })
   default = {
-    enable         = false
-    jdbcUrl        = ""
-    sonarVaultPath = ""
-    sonarqubeUrl   = ""
-    hosts          = ""
+    enable                 = false
+    jdbcUrl                = ""
+    sonarVaultPath         = ""
+    sonarqubeUrl           = ""
+    hosts                  = ""
+    community_build_number = "26.3.0.120487"
   }
 }
 
