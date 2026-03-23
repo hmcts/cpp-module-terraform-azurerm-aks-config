@@ -605,13 +605,13 @@ variable "enable_pgadmin" {
 variable "azure_service_operator_tag" {
   type        = string
   description = "Azure Service Operator Docker image Tag"
-  default     = "v2.3.0"
+  default     = "v2.18.0"
 }
 
 variable "kube_rbac_proxy_tag" {
   type        = string
   description = "Azure Service Operator KubeRbacProxy Docker image Tag"
-  default     = "v0.13.1"
+  default     = "v0.21.0"
 }
 
 variable "azure_service_operator_crdpattern" {
