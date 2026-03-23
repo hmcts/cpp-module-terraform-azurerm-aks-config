@@ -25,11 +25,19 @@ resource "helm_release" "sonarqube_install" {
     value = "${var.acr_name}.azurecr.io/docker.io/library/sonarqube"
   }
   set {
+    name  = "community.enabled"
+    value = true
+  }
+  set {
+    name  = "community.buildNumber"
+    value = var.sonarqube_config.community_build_number
+  }
+  set {
     name  = "postgresql.enabled"
     value = false
   }
   set {
-    name  = "jdbcOverwrite.enable"
+    name  = "jdbcOverwrite.enabled"
     value = true
   }
   set {
