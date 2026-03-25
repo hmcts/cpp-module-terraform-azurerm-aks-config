@@ -54,6 +54,26 @@ resource "helm_release" "azure_service_operator" {
   }
 
   set {
+    name  = "livenessProbe.initialDelaySeconds"
+    value = "15"
+  }
+
+  set {
+    name  = "livenessProbe.timeoutSeconds"
+    value = "5"
+  }
+
+  set {
+    name  = "readinessProbe.initialDelaySeconds"
+    value = "15"
+  }
+
+  set {
+    name  = "readinessProbe.timeoutSeconds"
+    value = "5"
+  }
+
+  set {
     name  = "resources.limits.cpu"
     value = var.aso_resources.limits.cpu
   }
