@@ -20,3 +20,29 @@ instance:
             value:
               - key: "CriticalAddonsOnly"
                 operator: "Exists"
+
+      - target:
+          kind: ServiceAccount
+          name: source-controller
+        patch: |
+          - op: add
+            path: /metadata/annotations
+            value:
+              azure.workload.identity/client-id: "${client_id}"
+          - op: add
+            path: /metadata/labels
+            value:
+              azure.workload.identity/use: "true"
+
+      - target:
+          kind: Deployment
+          name: source-controller
+        patch: |
+          - op: add
+            path: /metadata/labels
+            value:
+              azure.workload.identity/use: "true"
+          - op: add
+            path: /spec/template/metadata/labels
+            value:
+              azure.workload.identity/use: "true"

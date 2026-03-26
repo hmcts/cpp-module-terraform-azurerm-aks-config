@@ -1139,3 +1139,9 @@ variable "git_ref" {
   type        = string
   default     = "refs/heads/main"
 }
+
+variable "aks_worker_client_id" {
+  description = "AKS worker userassigned identity client id"
+  type        = string
+  default     = ""
+}
