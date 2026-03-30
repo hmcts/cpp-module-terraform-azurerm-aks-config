@@ -108,6 +108,30 @@ resource "helm_release" "flux_instance" {
     value = "true"
     type  = "auto"
   }
+  set {
+    name  = "web.config.baseURL"
+    value = "https://flux.mgmt01.dev.nl.cjscp.org.uk"
+  }
+  set {
+    name  = "web.config.authentication.type"
+    value = "OAuth2"
+  }
+  set {
+    name  = "web.config.authentication.oauth2.provider"
+    value = "OIDC"
+  }
+  set {
+    name  = "web.config.authentication.oauth2.clientID"
+    value = "var.flux_oauth2_clientid"
+  }
+  set {
+    name  = "web.config.authentication.oauth2.clientSecret"
+    value = "var.flux_oauth2_clientsecret"
+  }
+  set {
+    name  = "web.config.authentication.oauth2.issuerURL"
+    value = "https://login.microsoftonline.com/${var.flux_oauth2_tenantid}/v2.0"
+  }
 
 }
 

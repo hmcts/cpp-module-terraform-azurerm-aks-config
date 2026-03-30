@@ -1150,3 +1150,16 @@ variable "flux_hostnames" {
   type        = list(string)
   description = "Hostnames for access to flux"
 }
+
+variable "flux_oauth2_tenantid" {
+  type        = string
+  description = "pgadminoauth2_tenantId from app reg"
+}
+variable "flux_oauth2_clientid" {
+  type        = string
+  description = "pgadmin_oauth2_clientid"
+}
+variable "flux_oauth2_clientsecret" {
+  type        = string
+  description = "pgadmin_oauth2_clientSecret"
+}
