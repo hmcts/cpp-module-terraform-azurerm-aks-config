@@ -43,6 +43,26 @@ resource "helm_release" "dynatrace_operator" {
     value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/dynatrace-operator:${var.dynatrace_operator_image_tag}"
   }
 
+  set {
+    name  = "csidriver.enabled"
+    value = true
+  }
+
+  set {
+    name  = "csidriver.tolerations[0].key"
+    value = var.systempool_taint_key
+  }
+
+  set {
+    name  = "csidriver.tolerations[0].operator"
+    value = "Exists"
+  }
+
+  set {
+    name  = "csidriver.tolerations[0].effect"
+    value = "NoSchedule"
+  }
+
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.dynatrace_namespace,
@@ -65,12 +85,10 @@ resource "kubernetes_secret" "dynatrace_token" {
 resource "kubectl_manifest" "dynatrace_cr_install" {
   count = var.enable_dynatrace ? 1 : 0
   yaml_body = templatefile("${path.module}/manifests/dynatrace/dynatrace.com_dynakubes.yaml", {
-    apiUrl                = var.dynatrace_api
-    classicFullStackImage = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/oneagent"
-    networkZone           = var.dynatrace_networkzone
-    systempool_taint_key  = var.systempool_taint_key
-    hostGroup             = "${upper(var.environment)}_CRIME_CP_AKS"
-    version               = var.dynatrace_oneagent_version
+    apiUrl               = var.dynatrace_api
+    networkZone          = var.dynatrace_networkzone
+    systempool_taint_key = var.systempool_taint_key
+    hostGroup            = "${upper(var.environment)}_CRIME_CP_AKS"
   })
   lifecycle {
     ignore_changes = [field_manager]
