@@ -1,0 +1,46 @@
+instance:
+  components:
+    - source-controller
+    - kustomize-controller
+    - helm-controller
+    - notification-controller
+    - image-reflector-controller
+    - image-automation-controller
+  kustomize:
+    patches:
+      - target:
+          kind: Deployment
+        patch: |
+          - op: replace
+            path: /spec/template/spec/nodeSelector
+            value:
+              kubernetes.io/os: linux
+          - op: add
+            path: /spec/template/spec/tolerations
+            value:
+              - key: "CriticalAddonsOnly"
+                operator: "Exists"
+
+      - target:
+          kind: ServiceAccount
+          name: source-controller
+        patch: |
+          %{ if client_id != null }
+          - op: add
+            path: /metadata/annotations/azure.workload.identity~1client-id
+            value: "${client_id}"
+          %{ endif }
+          - op: add
+            path: /metadata/labels/azure.workload.identity~1use
+            value: "true"
+
+      - target:
+          kind: Deployment
+          name: source-controller
+        patch: |
+          - op: add
+            path: /metadata/labels/azure.workload.identity~1use
+            value: "true"
+          - op: add
+            path: /spec/template/metadata/labels/azure.workload.identity~1use
+            value: "true"
