@@ -1163,3 +1163,8 @@ variable "flux_oauth2_clientsecret" {
   type        = string
   description = "pgadmin_oauth2_clientSecret"
 }
+
+variable "flux_baseURL" {
+  type        = string
+  description = "flux_baseURL"
+}

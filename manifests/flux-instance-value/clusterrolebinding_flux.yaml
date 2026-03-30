@@ -1,0 +1,17 @@
+%{ for roleName, role in flux_clusterrolebinding ~}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ${roleName}-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ${roleName}
+subjects:
+%{ for subject in role.subjects ~}
+- kind: ${subject.kind}
+  name: ${subject.name}
+  apiGroup: rbac.authorization.k8s.io
+%{ endfor ~}
+%{ endfor ~}
