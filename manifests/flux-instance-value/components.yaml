@@ -25,10 +25,12 @@ instance:
           kind: ServiceAccount
           name: source-controller
         patch: |
-          - op: add
-            path: /metadata/annotations
-            value:
-              azure.workload.identity/client-id: "${client_id}"
+          %{ if client_id != null }
+            - op: add
+              path: /metadata/annotations
+              value:
+                azure.workload.identity/client-id: "${client_id}"
+          %{ endif }
           - op: add
             path: /metadata/labels
             value:
