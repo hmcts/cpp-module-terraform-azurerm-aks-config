@@ -95,6 +95,10 @@ resource "helm_release" "kiali_operator_install" {
     name  = "cr.spec.auth.openid.additional_request_params.resource"
     value = lookup(var.monitor_config, "shared_resource_id")
   }
+  set {
+    name  = "cr.spec.external_services.prometheus.url"
+    value = var.kiali_prometheus_url
+  }
 
   wait    = true
   timeout = 300
