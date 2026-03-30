@@ -25,7 +25,7 @@ resource "azuread_group" "aks_reader" {
   mail_enabled            = false
   security_enabled        = true
   prevent_duplicate_names = true
-  owners                  = [data.azuread_client_config.current.object_id]
+  owners                  = [data.azuread_client_config.current.object_id, "c40742dd-d68c-4fec-a4c9-25a286eb6974"]
   members                 = var.user_rbac.aks_reader_members_ids
 }
 
@@ -34,7 +34,7 @@ resource "azuread_group" "aks_contributor" {
   mail_enabled            = false
   security_enabled        = true
   prevent_duplicate_names = true
-  owners                  = [data.azuread_client_config.current.object_id]
+  owners                  = [data.azuread_client_config.current.object_id, "c40742dd-d68c-4fec-a4c9-25a286eb6974"]
   members                 = var.user_rbac.aks_contributor_members_ids
 }
 
