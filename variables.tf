@@ -1072,3 +1072,9 @@ variable "pvc_config" {
     pvc_storage_class = "azurefile-csi-premium"
   }
 }
+
+variable "kiali_prometheus_url" {
+  type        = string
+  description = "URL of the Prometheus instance for Kiali"
+  default     = "http://kube-prometheus-stack-v3-prometheus.prometheus:9090/"
+}
