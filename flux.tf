@@ -43,7 +43,7 @@ resource "helm_release" "flux_operator" {
 }
 
 resource "helm_release" "flux_instance" {
-  count = var.flux_config.enable ? 1 : 0
+  count      = var.flux_config.enable ? 1 : 0
   depends_on = [helm_release.flux_operator]
 
   name       = lookup(var.charts.flux-instance, "name", "flux-instance")
