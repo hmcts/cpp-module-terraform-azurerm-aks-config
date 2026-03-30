@@ -110,3 +110,17 @@ resource "helm_release" "flux_instance" {
   }
 
 }
+
+resource "kubectl_manifest" "install_flux_virtualservice_manifests" {
+  yaml_body = templatefile("${path.module}/manifests/flux-instance-value/virtualservice_flux.yaml", {
+    namespace        = "flux-system"
+    gateway          = "istio-ingress-mgmt/istio-ingressgateway-mgmt"
+    flux_hostnames   = var.flux_hostnames
+    flux_destination = "${helm_release.flux_operator[0].name}"
+  })
+  depends_on = [
+    helm_release.flux_operator,
+    helm_release.flux_instance,
+    kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests
+  ]
+}

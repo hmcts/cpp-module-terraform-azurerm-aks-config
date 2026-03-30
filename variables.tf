@@ -1145,3 +1145,8 @@ variable "aks_worker_client_id" {
   type        = string
   default     = ""
 }
+
+variable "flux_hostnames" {
+  type        = list(string)
+  description = "Hostnames for access to flux"
+}

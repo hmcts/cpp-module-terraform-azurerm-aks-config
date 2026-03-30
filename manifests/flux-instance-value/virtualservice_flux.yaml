@@ -1,0 +1,22 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  labels:
+    app: flux
+  name: flux
+  namespace: ${namespace}
+spec:
+  gateways:
+    - ${gateway}
+  hosts:
+  %{~ for host in flux_hostnames ~}
+  - "${host}"
+  %{~ endfor ~}
+  http:
+    - name: flux
+      route:
+        - destination:
+            host: ${flux_destination}
+            port:
+              number: 80
