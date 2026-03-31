@@ -61,7 +61,7 @@ resource "helm_release" "velero_install" {
   }
   set {
     name  = "image.tag"
-    value = "v1.18.0"
+    value = var.velero_image_tag
   }
   set {
     name  = "initContainers[0].image"
