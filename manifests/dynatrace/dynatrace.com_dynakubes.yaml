@@ -58,14 +58,6 @@ spec:
     # Uses CSI driver to inject OneAgent into pods via webhook
     #
     cloudNativeFullStack:
-      # Exclude infrastructure namespaces from OneAgent injection
-      namespaceSelector:
-        matchExpressions:
-        - key: kubernetes.io/metadata.name
-          operator: NotIn
-          values:
-          - istio-system
-
       # Optional: Sets the priority class assigned to the OneAgent Pods. No class is set by default.
       # For more information on priority classes, see https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
       #
