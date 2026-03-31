@@ -63,6 +63,21 @@ resource "helm_release" "dynatrace_operator" {
     value = "NoSchedule"
   }
 
+  set {
+    name  = "csidriver.tolerations[1].key"
+    value = "PrometheusOnly"
+  }
+
+  set {
+    name  = "csidriver.tolerations[1].operator"
+    value = "Exists"
+  }
+
+  set {
+    name  = "csidriver.tolerations[1].effect"
+    value = "NoSchedule"
+  }
+
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.dynatrace_namespace,
@@ -96,15 +111,6 @@ resource "kubectl_manifest" "dynatrace_cr_install" {
   depends_on = [helm_release.dynatrace_operator, kubernetes_secret.dynatrace_token]
 }
 
-resource "kubernetes_secret_v1" "dynatrace_clusterrole_secret" {
-  count = var.enable_dynatrace ? 1 : 0
-  metadata {
-    name      = "dynatrace-kubernetes-monitoring"
-    namespace = "dynatrace"
-    annotations = {
-      "kubernetes.io/service-account.name" = "dynatrace-kubernetes-monitoring"
-    }
-  }
-  type       = "kubernetes.io/service-account-token"
-  depends_on = [helm_release.dynatrace_operator]
-}
+# Removed: kubernetes_secret_v1.dynatrace_clusterrole_secret
+# This service account token secret is no longer needed with Dynatrace Operator v1.8.1
+# The Dynatrace operator handles authentication internally with cloudNativeFullStack mode
