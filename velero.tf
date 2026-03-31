@@ -8,6 +8,7 @@ resource "azurerm_storage_account" "storage_account_velero" {
   account_replication_type   = var.velero_config.account_replication_type
   tags                       = var.tags
   https_traffic_only_enabled = true
+  public_network_access_enabled = false
 }
 
 resource "azurerm_storage_container" "blob" {
@@ -60,7 +61,7 @@ resource "helm_release" "velero_install" {
   }
   set {
     name  = "image.tag"
-    value = "v1.14.1"
+    value = var.velero_image_tag
   }
   set {
     name  = "initContainers[0].image"

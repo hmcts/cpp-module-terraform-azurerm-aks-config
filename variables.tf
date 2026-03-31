@@ -1078,3 +1078,9 @@ variable "kiali_prometheus_url" {
   description = "URL of the Prometheus instance for Kiali"
   default     = "http://kube-prometheus-stack-v3-prometheus.prometheus:9090/"
 }
+
+variable "velero_image_tag" {
+  type        = string
+  description = "Velero image tag"
+  default     = "v1.18.0"
+}
