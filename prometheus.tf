@@ -62,7 +62,8 @@ resource "helm_release" "prometheus" {
   timeout           = 600
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.prometheus_namespace
+    kubernetes_namespace.prometheus_namespace,
+    kubernetes_storage_class_v1.managed_premium_with_tags
   ]
 }
 
