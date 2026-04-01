@@ -60,9 +60,11 @@ resource "helm_release" "gatekeeper_install" {
   wait    = true
   timeout = 300
 
+  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.gatekeeper_namespace
+    kubernetes_namespace.gatekeeper_namespace,
+    kubectl_manifest.dynatrace_cr_install
   ]
 }
 

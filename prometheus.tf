@@ -60,10 +60,12 @@ resource "helm_release" "prometheus" {
   dependency_update = true
   wait              = true
   timeout           = 600
+  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.prometheus_namespace,
-    kubernetes_storage_class_v1.managed_premium_with_tags
+    kubernetes_storage_class_v1.managed_premium_with_tags,
+    kubectl_manifest.dynatrace_cr_install
   ]
 }
 
@@ -81,7 +83,12 @@ resource "helm_release" "prometheus_adapter_install" {
   wait    = true
   timeout = 300
 
-  depends_on = [null_resource.download_charts, helm_release.prometheus]
+  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  depends_on = [
+    null_resource.download_charts,
+    helm_release.prometheus,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "kubectl_manifest" "install_grafana_virtualservice_manifests" {

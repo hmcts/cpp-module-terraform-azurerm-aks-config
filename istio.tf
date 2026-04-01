@@ -64,9 +64,11 @@ resource "helm_release" "istio_base_install" {
     value = "istio-system"
   }
 
+  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.istio_system_namespace
+    kubernetes_namespace.istio_system_namespace,
+    kubectl_manifest.dynatrace_cr_install
   ]
 }
 
@@ -157,10 +159,12 @@ resource "helm_release" "istiod_install" {
   wait    = true
   timeout = 300
 
+  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_namespace,
-    helm_release.istio_base_install
+    helm_release.istio_base_install,
+    kubectl_manifest.dynatrace_cr_install
   ]
 }
 
@@ -261,11 +265,13 @@ resource "helm_release" "istio_ingress_mgmt_install" {
   wait    = true
   timeout = 300
 
+  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_mgmt_namespace,
     helm_release.istio_base_install,
-    helm_release.istiod_install
+    helm_release.istiod_install,
+    kubectl_manifest.dynatrace_cr_install
   ]
 }
 
@@ -355,11 +361,13 @@ resource "helm_release" "istio_ingress_apps_install" {
   wait    = true
   timeout = 300
 
+  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_namespace,
     helm_release.istio_base_install,
-    helm_release.istiod_install
+    helm_release.istiod_install,
+    kubectl_manifest.dynatrace_cr_install
   ]
 }
 
@@ -439,11 +447,13 @@ resource "helm_release" "istio_ingress_web_install" {
   wait    = true
   timeout = 300
 
+  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_web_namespace,
     helm_release.istio_base_install,
-    helm_release.istiod_install
+    helm_release.istiod_install,
+    kubectl_manifest.dynatrace_cr_install
   ]
 }
 
