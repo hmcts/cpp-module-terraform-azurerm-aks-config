@@ -82,10 +82,12 @@ resource "helm_release" "sonarqube_install" {
   wait    = true
   timeout = 300
 
+  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
     null_resource.download_charts,
     kubernetes_namespace.sonarqube_namespace,
-    kubectl_manifest.install_gatekeeper_whitelistedimages_manifests
+    kubectl_manifest.install_gatekeeper_whitelistedimages_manifests,
+    kubectl_manifest.dynatrace_cr_install
   ]
 }
