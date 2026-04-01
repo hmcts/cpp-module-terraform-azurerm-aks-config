@@ -112,6 +112,97 @@ resource "kubectl_manifest" "dynatrace_cr_install" {
   depends_on = [helm_release.dynatrace_operator, kubernetes_secret.dynatrace_token]
 }
 
-# Removed: kubernetes_secret_v1.dynatrace_clusterrole_secret
-# This service account token secret is no longer needed with Dynatrace Operator v1.8.1
-# The Dynatrace operator handles authentication internally with cloudNativeFullStack mode
+# Comprehensive ClusterRole for manual cluster registration with all Dynatrace permissions
+# Includes all permissions needed for Kubernetes monitoring and Prometheus exporters
+resource "kubernetes_cluster_role" "dynatrace_monitoring_additional" {
+  count = var.enable_dynatrace ? 1 : 0
+  metadata {
+    name = "dynatrace-kubernetes-monitoring-additional"
+    labels = {
+      "app.kubernetes.io/managed-by" = "Terraform"
+    }
+  }
+  # Core Kubernetes resources
+  rule {
+    api_groups = [""]
+    resources  = ["nodes", "pods", "namespaces", "services", "endpoints", "events"]
+    verbs      = ["get", "list", "watch"]
+  }
+  # Prometheus exporters require configmaps, secrets, and pods/proxy access
+  rule {
+    api_groups = [""]
+    resources  = ["configmaps", "secrets"]
+    verbs      = ["get", "list", "watch"]
+  }
+  # Pod proxy access for Prometheus metrics scraping
+  rule {
+    api_groups = [""]
+    resources  = ["pods/proxy", "nodes/proxy", "nodes/metrics"]
+    verbs      = ["get", "list", "watch"]
+  }
+  # Dynatrace CRDs - required for cluster validation
+  rule {
+    api_groups = ["dynatrace.com"]
+    resources  = ["dynakubes", "edgeconnects"]
+    verbs      = ["get", "list", "watch"]
+  }
+  # Apps and workload resources
+  rule {
+    api_groups = ["apps"]
+    resources  = ["deployments", "replicasets", "daemonsets", "statefulsets"]
+    verbs      = ["get", "list", "watch"]
+  }
+  # Batch resources
+  rule {
+    api_groups = ["batch"]
+    resources  = ["jobs", "cronjobs"]
+    verbs      = ["get", "list", "watch"]
+  }
+}
+
+# Bind additional permissions to dynatrace-activegate ServiceAccount
+resource "kubernetes_cluster_role_binding" "dynatrace_monitoring_additional" {
+  count = var.enable_dynatrace ? 1 : 0
+  metadata {
+    name = "dynatrace-kubernetes-monitoring-additional"
+    labels = {
+      "app.kubernetes.io/managed-by" = "Terraform"
+    }
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role.dynatrace_monitoring_additional[0].metadata[0].name
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "dynatrace-activegate"
+    namespace = "dynatrace"
+  }
+  depends_on = [
+    kubernetes_cluster_role.dynatrace_monitoring_additional,
+    helm_release.dynatrace_operator
+  ]
+}
+
+# Token secret for manual cluster registration (K8s 1.24+)
+# Reuses the dynatrace-activegate ServiceAccount created by Helm chart
+# This SA is already bound to dynatrace-kubernetes-monitoring ClusterRole
+resource "kubernetes_secret_v1" "dynatrace_kubernetes_monitoring_token" {
+  count = var.enable_dynatrace ? 1 : 0
+  metadata {
+    name      = "dynatrace-kubernetes-monitoring"
+    namespace = "dynatrace"
+    annotations = {
+      "kubernetes.io/service-account.name" = "dynatrace-activegate"
+    }
+    labels = {
+      "app.kubernetes.io/managed-by" = "Terraform"
+    }
+  }
+  type       = "kubernetes.io/service-account-token"
+  depends_on = [
+    helm_release.dynatrace_operator,
+    kubernetes_cluster_role_binding.dynatrace_monitoring_additional
+  ]
+}
