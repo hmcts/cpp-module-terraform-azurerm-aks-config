@@ -11,6 +11,9 @@ resource "kubernetes_namespace" "smashing_namespace" {
       "istio-injection"              = "enabled"
     }
   }
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
     kubectl_manifest.dynatrace_cr_install

@@ -12,6 +12,9 @@ resource "kubernetes_namespace" "istio_system_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
     kubectl_manifest.dynatrace_cr_install
@@ -26,6 +29,9 @@ resource "kubernetes_namespace" "istio_ingress_namespace" {
       "filebeat_enable"              = "enabled"
       "istio-injection"              = "enabled"
     }
+  }
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
   }
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
@@ -42,6 +48,9 @@ resource "kubernetes_namespace" "istio_ingress_mgmt_namespace" {
       "istio-injection"              = "enabled"
     }
   }
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
     kubectl_manifest.dynatrace_cr_install
@@ -56,6 +65,9 @@ resource "kubernetes_namespace" "istio_ingress_web_namespace" {
       "filebeat_enable"              = "enabled"
       "istio-injection"              = "enabled"
     }
+  }
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
   }
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
