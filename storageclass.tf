@@ -1,18 +1,14 @@
 locals {
   # Minimal tags for resources with 15-tag limit (Azure disks via CSI driver)
-  # Includes required policy tags + useful operational tags
-  # var.tags comes first so required tags can override any conflicts
-  minimal_tags = merge(
-    var.tags,
-    {
-      environment  = var.environment
-      application  = "core"
-      businessArea = "Crime"
-      builtFrom    = "hmcts/cpp-module-terraform-azurerm-aks-config"
-      type         = "AKS"
-      project      = "AKS Shared Infra"
-    }
-  )
+  # Static tags only - no dynamic values to prevent StorageClass replacement
+  minimal_tags = {
+    environment  = var.environment
+    application  = "core"
+    businessArea = "Crime"
+    builtFrom    = "hmcts/cpp-module-terraform-azurerm-aks-config"
+    type         = "AKS"
+    project      = "AKS Shared Infra"
+  }
 }
 
 resource "kubectl_manifest" "custom_storageclass_file_alfresco" {
