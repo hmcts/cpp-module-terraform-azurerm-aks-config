@@ -94,7 +94,8 @@ resource "kubernetes_secret" "dynatrace_token" {
   data = {
     apiToken = var.dynatrace_api_token
   }
-  type = "Opaque"
+  type       = "Opaque"
+  depends_on = [kubernetes_namespace.dynatrace_namespace]
 }
 
 resource "kubectl_manifest" "dynatrace_cr_install" {
