@@ -6,7 +6,10 @@ resource "kubernetes_namespace" "cert_manager_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 data "kubectl_path_documents" "cert_manager_manifests" {
@@ -26,10 +29,9 @@ resource "kubectl_manifest" "cert-manager-install" {
   lifecycle {
     ignore_changes = [field_manager]
   }
-  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
-    kubernetes_namespace.cert_manager_namespace,
-    kubectl_manifest.dynatrace_cr_install
+    kubernetes_namespace.cert_manager_namespace
   ]
 }
 

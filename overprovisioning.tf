@@ -8,7 +8,10 @@ resource "kubernetes_namespace" "overprovisioning_namespace" {
       "istio-injection"              = "disabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "helm_release" "overprovisioning_install" {

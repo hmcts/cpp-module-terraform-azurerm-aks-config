@@ -21,7 +21,10 @@ resource "kubernetes_namespace" "pgadmin_namespace" {
       "istio-injection"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "helm_release" "pgadmin" {
@@ -116,12 +119,11 @@ resource "helm_release" "pgadmin" {
   wait    = true
   timeout = 300
 
-  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.pgadmin_namespace,
     kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests,
-    kubectl_manifest.install_gatekeeper_whitelistedimages_manifests,
-    kubectl_manifest.dynatrace_cr_install
+    kubectl_manifest.install_gatekeeper_whitelistedimages_manifests
   ]
 }

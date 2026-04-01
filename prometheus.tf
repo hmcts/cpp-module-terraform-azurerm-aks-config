@@ -6,7 +6,10 @@ resource "kubernetes_namespace" "prometheus_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 data "vault_generic_secret" "grafana_spn_creds" {
@@ -60,12 +63,11 @@ resource "helm_release" "prometheus" {
   dependency_update = true
   wait              = true
   timeout           = 600
-  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.prometheus_namespace,
-    kubernetes_storage_class_v1.managed_premium_with_tags,
-    kubectl_manifest.dynatrace_cr_install
+    kubernetes_storage_class_v1.managed_premium_with_tags
   ]
 }
 
@@ -83,11 +85,10 @@ resource "helm_release" "prometheus_adapter_install" {
   wait    = true
   timeout = 300
 
-  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
-    helm_release.prometheus,
-    kubectl_manifest.dynatrace_cr_install
+    helm_release.prometheus
   ]
 }
 
