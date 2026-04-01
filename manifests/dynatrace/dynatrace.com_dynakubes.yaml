@@ -71,20 +71,16 @@ spec:
           key: ${systempool_taint_key}
           operator: Exists
 
-  # Configuration for ActiveGate instances.
+  # Configuration for ActiveGate instances
+  # Required for cluster visibility in Dynatrace UI
   #
-  #activeGate:
-    # Specifies which capabilities will be enabled on ActiveGate instances
-    # The following capabilities can be set:
-    # - routing
-    # - kubernetes-monitoring
-    # - metrics-ingest
-    # - dynatrace-api
+  activeGate:
+    # Kubernetes monitoring capability enables cluster registration and topology
     #
-#    capabilities:
-#      - routing
-#      - kubernetes-monitoring
-#      - dynatrace-api
+    capabilities:
+      - routing
+      - kubernetes-monitoring
+      - dynatrace-api
 
     # Optional: Sets the image used to deploy ActiveGate instances
     # Defaults to the latest ActiveGate image on the tenant's registry
@@ -110,17 +106,17 @@ spec:
     #
     # nodeSelector: {}
 
-    # Optional: Specifies resource settings for ActiveGate instances
+    # Specifies resource settings for ActiveGate instances
     # Consumption of the ActiveGate heavily depends on the workload to monitor
-    # The values should be adjusted according to the workload
+    # These values are recommended for kubernetes-monitoring capability
     #
-#    resources:
-#      requests:
-#        cpu: 500m
-#        memory: 512Mi
-#      limits:
-#        cpu: 1000m
-#        memory: 1.5Gi
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1.5Gi
+      limits:
+        cpu: 1000m
+        memory: 1.5Gi
 
     # Optional: Adds custom labels to ActiveGate pods
     # Can be used to structure workloads
