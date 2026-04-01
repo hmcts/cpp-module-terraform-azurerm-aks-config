@@ -11,7 +11,10 @@ resource "kubernetes_namespace" "smashing_namespace" {
       "istio-injection"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "helm_release" "smashing_install" {
