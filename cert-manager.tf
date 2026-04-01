@@ -26,7 +26,11 @@ resource "kubectl_manifest" "cert-manager-install" {
   lifecycle {
     ignore_changes = [field_manager]
   }
-  depends_on = [kubernetes_namespace.cert_manager_namespace]
+  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  depends_on = [
+    kubernetes_namespace.cert_manager_namespace,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "time_sleep" "wait_for_certmanager_install" {
