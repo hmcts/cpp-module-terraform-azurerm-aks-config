@@ -12,7 +12,10 @@ resource "kubernetes_namespace" "istio_system_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "kubernetes_namespace" "istio_ingress_namespace" {
@@ -24,7 +27,10 @@ resource "kubernetes_namespace" "istio_ingress_namespace" {
       "istio-injection"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "kubernetes_namespace" "istio_ingress_mgmt_namespace" {
@@ -36,7 +42,10 @@ resource "kubernetes_namespace" "istio_ingress_mgmt_namespace" {
       "istio-injection"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "kubernetes_namespace" "istio_ingress_web_namespace" {
@@ -48,7 +57,10 @@ resource "kubernetes_namespace" "istio_ingress_web_namespace" {
       "istio-injection"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 
@@ -64,11 +76,10 @@ resource "helm_release" "istio_base_install" {
     value = "istio-system"
   }
 
-  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.istio_system_namespace,
-    kubectl_manifest.dynatrace_cr_install
+    kubernetes_namespace.istio_system_namespace
   ]
 }
 
@@ -159,12 +170,11 @@ resource "helm_release" "istiod_install" {
   wait    = true
   timeout = 300
 
-  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_namespace,
-    helm_release.istio_base_install,
-    kubectl_manifest.dynatrace_cr_install
+    helm_release.istio_base_install
   ]
 }
 
@@ -265,13 +275,12 @@ resource "helm_release" "istio_ingress_mgmt_install" {
   wait    = true
   timeout = 300
 
-  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_mgmt_namespace,
     helm_release.istio_base_install,
-    helm_release.istiod_install,
-    kubectl_manifest.dynatrace_cr_install
+    helm_release.istiod_install
   ]
 }
 
@@ -361,13 +370,12 @@ resource "helm_release" "istio_ingress_apps_install" {
   wait    = true
   timeout = 300
 
-  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_namespace,
     helm_release.istio_base_install,
-    helm_release.istiod_install,
-    kubectl_manifest.dynatrace_cr_install
+    helm_release.istiod_install
   ]
 }
 
@@ -447,13 +455,12 @@ resource "helm_release" "istio_ingress_web_install" {
   wait    = true
   timeout = 300
 
-  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_web_namespace,
     helm_release.istio_base_install,
-    helm_release.istiod_install,
-    kubectl_manifest.dynatrace_cr_install
+    helm_release.istiod_install
   ]
 }
 

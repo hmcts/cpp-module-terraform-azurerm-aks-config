@@ -6,7 +6,11 @@ resource "kubernetes_namespace" "kiali_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  # Ensure Dynatrace operator can automatically label namespace for injection
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 data "vault_generic_secret" "kiali_auth" {
@@ -103,13 +107,12 @@ resource "helm_release" "kiali_operator_install" {
   wait    = true
   timeout = 300
 
-  # Ensure Dynatrace webhook is ready before pod creation to enable automatic OneAgent injection
+  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
     null_resource.download_charts,
     kubernetes_secret.kiali_pass,
-    kubectl_manifest.install_gatekeeper_whitelistedimages_manifests,
-    kubectl_manifest.dynatrace_cr_install
+    kubectl_manifest.install_gatekeeper_whitelistedimages_manifests
   ]
 }
 
