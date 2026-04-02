@@ -6,7 +6,13 @@ resource "kubernetes_namespace" "prometheus_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 data "vault_generic_secret" "grafana_spn_creds" {
@@ -62,7 +68,8 @@ resource "helm_release" "prometheus" {
   timeout           = 600
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.prometheus_namespace
+    kubernetes_namespace.prometheus_namespace,
+    kubernetes_storage_class_v1.managed_premium_with_tags
   ]
 }
 
@@ -80,7 +87,10 @@ resource "helm_release" "prometheus_adapter_install" {
   wait    = true
   timeout = 300
 
-  depends_on = [null_resource.download_charts, helm_release.prometheus]
+  depends_on = [
+    null_resource.download_charts,
+    helm_release.prometheus
+  ]
 }
 
 resource "kubectl_manifest" "install_grafana_virtualservice_manifests" {

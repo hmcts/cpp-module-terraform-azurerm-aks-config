@@ -8,7 +8,13 @@ resource "kubernetes_namespace" "gatekeeper_namespace" {
       "istio-injection"              = "disabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "helm_release" "gatekeeper_install" {
@@ -59,6 +65,7 @@ resource "helm_release" "gatekeeper_install" {
 
   wait    = true
   timeout = 300
+
 
   depends_on = [
     null_resource.download_charts,

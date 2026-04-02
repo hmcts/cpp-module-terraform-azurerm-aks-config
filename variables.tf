@@ -1040,16 +1040,16 @@ variable "smashing_spec" {
   }
 }
 
-variable "dynatrace_oneagent_version" {
-  type        = string
-  description = "dynatrace oneagent version"
-  default     = "1.93.1000"
-}
-
 variable "dynatrace_operator_image_tag" {
   type        = string
   description = "dynatrace operator version"
-  default     = "v1.3.0"
+  default     = "v1.8.1"
+}
+
+variable "dynatrace_oneagent_image_tag" {
+  type        = string
+  description = "dynatrace oneagent version for cloudNativeFullStack mode (Docker Hub format)"
+  default     = "1.333.58.20260326-100050"
 }
 
 variable "istiod_hpa_cputarget" {

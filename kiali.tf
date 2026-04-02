@@ -6,7 +6,14 @@ resource "kubernetes_namespace" "kiali_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  # Ensure Dynatrace operator can automatically label namespace for injection
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 data "vault_generic_secret" "kiali_auth" {
