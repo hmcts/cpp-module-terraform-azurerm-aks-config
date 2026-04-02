@@ -66,7 +66,6 @@ resource "helm_release" "prometheus" {
   dependency_update = true
   wait              = true
   timeout           = 600
-  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.prometheus_namespace,
@@ -88,7 +87,6 @@ resource "helm_release" "prometheus_adapter_install" {
   wait    = true
   timeout = 300
 
-  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     helm_release.prometheus

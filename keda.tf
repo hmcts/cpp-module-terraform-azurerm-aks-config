@@ -115,7 +115,6 @@ resource "helm_release" "keda_install" {
   wait    = true
   timeout = 300
 
-  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     time_sleep.wait_for_aks_api_dns_propagation,
     null_resource.download_charts,
