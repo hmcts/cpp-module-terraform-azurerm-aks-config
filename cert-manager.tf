@@ -31,8 +31,7 @@ resource "kubectl_manifest" "cert-manager-install" {
   yaml_body = element(data.kubectl_path_documents.cert_manager_manifests.documents, count.index)
   lifecycle {
     ignore_changes = [field_manager]
-  }
-  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
+  } 
   depends_on = [
     kubernetes_namespace.cert_manager_namespace
   ]

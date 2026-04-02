@@ -88,7 +88,6 @@ resource "helm_release" "istio_base_install" {
     value = "istio-system"
   }
 
-  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_system_namespace
@@ -182,7 +181,6 @@ resource "helm_release" "istiod_install" {
   wait    = true
   timeout = 300
 
-  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_namespace,
@@ -287,7 +285,6 @@ resource "helm_release" "istio_ingress_mgmt_install" {
   wait    = true
   timeout = 300
 
-  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_mgmt_namespace,
@@ -382,7 +379,6 @@ resource "helm_release" "istio_ingress_apps_install" {
   wait    = true
   timeout = 300
 
-  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_namespace,
@@ -467,7 +463,6 @@ resource "helm_release" "istio_ingress_web_install" {
   wait    = true
   timeout = 300
 
-  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.istio_ingress_web_namespace,
