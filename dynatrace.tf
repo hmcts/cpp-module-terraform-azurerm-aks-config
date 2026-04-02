@@ -105,6 +105,7 @@ resource "kubectl_manifest" "dynatrace_cr_install" {
     networkZone          = var.dynatrace_networkzone
     systempool_taint_key = var.systempool_taint_key
     hostGroup            = "${upper(var.environment)}_CRIME_CP_AKS"
+    oneagent_image       = "${var.acr_name}.azurecr.io/registry.hub.docker.com/dynatrace/dynatrace-oneagent:${var.dynatrace_oneagent_image_tag}"
   })
   lifecycle {
     ignore_changes = [field_manager]

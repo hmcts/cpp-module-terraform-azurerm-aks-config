@@ -58,6 +58,11 @@ spec:
     # Uses CSI driver to inject OneAgent into pods via webhook
     #
     cloudNativeFullStack:
+      # Optional: Use a custom OneAgent Docker image from ACR (Gatekeeper requirement)
+      # Defaults to the latest OneAgent image from the tenant's registry
+      #
+      image: ${oneagent_image}
+
       # Optional: Sets the priority class assigned to the OneAgent Pods. No class is set by default.
       # For more information on priority classes, see https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
       #
@@ -69,6 +74,9 @@ spec:
       tolerations:
         - effect: NoSchedule
           key: ${systempool_taint_key}
+          operator: Exists
+        - effect: NoSchedule
+          key: PrometheusOnly
           operator: Exists
 
   # Configuration for ActiveGate instances.

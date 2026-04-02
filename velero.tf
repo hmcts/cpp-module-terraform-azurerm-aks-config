@@ -118,7 +118,6 @@ resource "helm_release" "velero_install" {
   wait    = true
   timeout = 300
 
-  # Namespace dependency ensures Dynatrace webhook is ready (transitive dependency)
   depends_on = [
     null_resource.download_charts,
     kubernetes_namespace.velero_namespace

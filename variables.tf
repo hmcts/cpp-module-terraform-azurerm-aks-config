@@ -1046,6 +1046,12 @@ variable "dynatrace_operator_image_tag" {
   default     = "v1.8.1"
 }
 
+variable "dynatrace_oneagent_image_tag" {
+  type        = string
+  description = "dynatrace oneagent version for cloudNativeFullStack mode (Docker Hub format)"
+  default     = "1.333.58.20260326-100050"
+}
+
 variable "istiod_hpa_cputarget" {
   type        = string
   description = "cpu target for istiod pod hpa"
