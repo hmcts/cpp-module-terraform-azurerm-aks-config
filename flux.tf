@@ -2,9 +2,6 @@ resource "kubernetes_namespace" "flux_system_namespace" {
   count = var.flux_config.enable ? 1 : 0
   metadata {
     name = "flux-system"
-    labels = {
-      "app.kubernetes.io/managed-by" = "Terraform"
-    }
   }
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
@@ -35,10 +32,72 @@ resource "helm_release" "flux_operator" {
 
   wait    = true
   timeout = 300
+  set {
+    name  = "web.config.baseURL"
+    value = var.flux_baseURL
+  }
+  set {
+    name  = "web.config.authentication.type"
+    value = "OAuth2"
+  }
+  set {
+    name  = "web.config.authentication.oauth2.provider"
+    value = "OIDC"
+  }
+  set {
+    name  = "web.config.authentication.oauth2.clientID"
+    value = var.flux_oauth2_clientid
+  }
+  set {
+    name  = "web.config.authentication.oauth2.clientSecret"
+    value = var.flux_oauth2_clientsecret
+  }
+  set {
+    name  = "web.config.authentication.oauth2.impersonation.groups"
+    value = "claims.groups"
+  }
+  set {
+    name  = "web.config.authentication.oauth2.impersonation.username"
+    value = "claims.preferred_username"
+  }
+  set {
+    name  = "web.config.authentication.oauth2.issuerURL"
+    value = "https://login.microsoftonline.com/${var.flux_oauth2_tenantid}/v2.0"
+  }
+  set {
+    name  = "web.config.authentication.oauth2.scopes[0]"
+    value = "openid"
+  }
+
+  set {
+    name  = "web.config.authentication.oauth2.scopes[1]"
+    value = "profile"
+  }
+
+  set {
+    name  = "web.config.authentication.oauth2.scopes[2]"
+    value = "email"
+  }
+  set {
+    name  = "fluxClusterRoleBinding.flux-web-user.subjects[0].kind"
+    value = "Group"
+  }
+  set {
+    name  = "fluxClusterRoleBinding.flux-web-user.subjects[0].name"
+    value = azuread_group.aks_contributor.object_id
+  }
+  set {
+    name  = "fluxClusterRoleBinding.flux-web-user.subjects[1].kind"
+    value = "Group"
+  }
+  set {
+    name  = "fluxClusterRoleBinding.flux-web-user.subjects[1].name"
+    value = azuread_group.aks_reader.object_id
+  }
 
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.flux_system_namespace
+    kubernetes_namespace.flux_system_namespace,
   ]
 }
 
@@ -109,4 +168,18 @@ resource "helm_release" "flux_instance" {
     type  = "auto"
   }
 
+}
+
+resource "kubectl_manifest" "install_flux_virtualservice_manifests" {
+  yaml_body = templatefile("${path.module}/manifests/flux-instance-value/virtualservice_flux.yaml", {
+    namespace        = "flux-system"
+    gateway          = "istio-ingress-mgmt/istio-ingressgateway-mgmt"
+    flux_hostnames   = var.flux_hostnames
+    flux_destination = "${helm_release.flux_operator[0].name}"
+  })
+  depends_on = [
+    helm_release.flux_operator,
+    helm_release.flux_instance,
+    kubectl_manifest.install_istio_ingress_gateway_mgmt_manifests
+  ]
 }
