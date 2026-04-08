@@ -78,6 +78,38 @@ resource "helm_release" "sonarqube_install" {
     name  = "initSysctl.enabled"
     value = true
   }
+  set {
+    name  = "securityContext.fsGroup"
+    value = 1000
+  }
+  set {
+    name  = "gateway.serviceDestinationPort"
+    value = 9000
+  }
+  set {
+    name  = "gateway.timeout"
+    value = "120s"
+  }
+  set {
+    name  = "persistence.enabled"
+    value = true
+  }
+  set {
+    name  = "nodeSelector.agentpool"
+    value = "sysagentpool"
+  }
+  set {
+    name  = "tolerations[0].key"
+    value = "CriticalAddonsOnly"
+  }
+  set {
+    name  = "tolerations[0].operator"
+    value = "Exists"
+  }
+  set {
+    name  = "tolerations[0].effect"
+    value = "NoSchedule"
+  }
 
   values = [templatefile("${path.module}/manifests/common/sonarProps.yaml", {
     tenant_id    = data.azurerm_client_config.current.tenant_id
