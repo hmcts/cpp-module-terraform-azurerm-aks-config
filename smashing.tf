@@ -106,7 +106,7 @@ resource "helm_release" "smashing_install" {
 
   set {
     name  = "env[6].value"
-    value = "http://kube-prometheus-stack-prometheus.prometheus\\.svc\\.cluster\\.local:9090"
+    value = "http://kube-prometheus-stack-v3-prometheus.prometheus\\.svc\\.cluster\\.local:9090"
   }
 
   set {
