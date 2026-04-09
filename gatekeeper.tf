@@ -25,6 +25,11 @@ resource "helm_release" "gatekeeper_install" {
   repository = "./install"
   namespace  = "gatekeeper-system"
 
+  # Custom values to maintain system node pool placement and resource limits
+  values = [
+    file("${path.module}/manifests/gatekeeper/custom-values.yaml")
+  ]
+
   set {
     name  = "replicas"
     value = var.gatekeeper_config.replicas
