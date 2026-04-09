@@ -1,0 +1,80 @@
+# ============================================================================
+# Node Placement: All components run on system agent pool
+# ============================================================================
+
+# Post-upgrade hook job
+postUpgrade:
+  tolerations:
+    - key: "CriticalAddonsOnly"
+      operator: "Exists"
+      effect: "NoSchedule"
+  nodeSelector: {agentpool: sysagentpool}
+
+# Post-install hooks
+postInstall:
+  tolerations:
+    - key: "CriticalAddonsOnly"
+      operator: "Exists"
+      effect: "NoSchedule"
+  nodeSelector: {agentpool: sysagentpool}
+  
+  probeWebhook:
+    tolerations:
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+        effect: "NoSchedule"
+    nodeSelector: {agentpool: sysagentpool}
+
+# Pre-uninstall hook job
+preUninstall:
+  tolerations:
+    - key: "CriticalAddonsOnly"
+      operator: "Exists"
+      effect: "NoSchedule"
+  nodeSelector: {agentpool: sysagentpool}
+
+# ============================================================================
+# Main Components: Controller Manager
+# ============================================================================
+controllerManager:
+  tolerations:
+    - key: "CriticalAddonsOnly"
+      operator: "Exists"
+      effect: "NoSchedule"
+  nodeSelector: {agentpool: sysagentpool}
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# ============================================================================
+# Audit Component
+# ============================================================================
+audit:
+  tolerations:
+    - key: "CriticalAddonsOnly"
+      operator: "Exists"
+      effect: "NoSchedule"
+  nodeSelector: {agentpool: sysagentpool}
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# ============================================================================
+# CRD Installation Jobs
+# ============================================================================
+crds:
+  tolerations:
+    - key: "CriticalAddonsOnly"
+      operator: "Exists"
+      effect: "NoSchedule"
+  nodeSelector: {agentpool: sysagentpool}
