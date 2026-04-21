@@ -34,6 +34,16 @@ resource "helm_release" "eck_operator" {
     value = var.eck_operator_config.image_tag
   }
 
+  set {
+    name  = "resources.limits.memory"
+    value = "4Gi"
+  }
+
+  set {
+    name  = "resources.requests.memory"
+    value = "512Mi"
+  }
+
   wait    = true
   timeout = 300
 
