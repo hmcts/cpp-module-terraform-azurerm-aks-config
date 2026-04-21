@@ -304,11 +304,10 @@ variable "charts" {
 variable "eck_operator_config" {
   type = object({
     enable    = bool
-    image_tag = string
+    image_tag = optional(string, "3.3.2")
   })
   default = {
-    enable    = false
-    image_tag = "3.3.2"
+    enable = false
   }
 }
 
