@@ -89,7 +89,7 @@ resource "helm_release" "flux_instance" {
   }
   set {
     name  = "instance.sync.path"
-    value = var.git_path
+    value = var.flux_config.git_path
   }
   set {
     name  = "instance.sync.ref"
