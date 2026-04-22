@@ -55,7 +55,7 @@ resource "kubectl_manifest" "cert_issuer_install" {
   count     = length(split("\n---\n", file("${path.module}/manifests/cert-manager/cert-issuer.yaml")))
   yaml_body = element(data.kubectl_file_documents.cert_issuer_manifests.documents, count.index)
   lifecycle {
-    ignore_changes = [field_manager]
+    ignore_changes = all
   }
   depends_on = [kubectl_manifest.cert-manager-install, time_sleep.wait_for_certmanager_install]
 }
