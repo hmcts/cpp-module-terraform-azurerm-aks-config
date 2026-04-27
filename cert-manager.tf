@@ -6,7 +6,13 @@ resource "kubernetes_namespace" "cert_manager_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 data "kubectl_path_documents" "cert_manager_manifests" {
@@ -15,7 +21,7 @@ data "kubectl_path_documents" "cert_manager_manifests" {
     docker_image_certmanager_cainjector = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-cainjector"
     docker_image_certmanager_controller = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-controller"
     docker_image_certmanager_webhook    = "${var.acr_name}.azurecr.io/quay.io/jetstack/cert-manager-webhook"
-    docker_tag_certmanager              = "v1.13.3"
+    docker_tag_certmanager              = var.docker_tag_certmanager
   }
 }
 
@@ -25,8 +31,10 @@ resource "kubectl_manifest" "cert-manager-install" {
   yaml_body = element(data.kubectl_path_documents.cert_manager_manifests.documents, count.index)
   lifecycle {
     ignore_changes = [field_manager]
-  }
-  depends_on = [kubernetes_namespace.cert_manager_namespace]
+  } 
+  depends_on = [
+    kubernetes_namespace.cert_manager_namespace
+  ]
 }
 
 resource "time_sleep" "wait_for_certmanager_install" {

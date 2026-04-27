@@ -385,7 +385,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "prometheus_pod_memory_us
   let capacityCounterName = 'memoryLimitBytes';
   let usageCounterName = 'memoryRssBytes';
   let clusterName = '${data.azurerm_kubernetes_cluster.cluster.name}';
-  let controllerName = 'prometheus-kube-prometheus-stack-prometheus';
+  let controllerName = 'prometheus-kube-prometheus-stack-v3-prometheus';
   KubePodInventory
     | where TimeGenerated < endDateTime
     | where TimeGenerated >= startDateTime

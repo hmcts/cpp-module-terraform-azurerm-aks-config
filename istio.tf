@@ -12,7 +12,13 @@ resource "kubernetes_namespace" "istio_system_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "kubernetes_namespace" "istio_ingress_namespace" {
@@ -24,7 +30,13 @@ resource "kubernetes_namespace" "istio_ingress_namespace" {
       "istio-injection"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "kubernetes_namespace" "istio_ingress_mgmt_namespace" {
@@ -36,7 +48,13 @@ resource "kubernetes_namespace" "istio_ingress_mgmt_namespace" {
       "istio-injection"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "kubernetes_namespace" "istio_ingress_web_namespace" {
@@ -48,42 +66,15 @@ resource "kubernetes_namespace" "istio_ingress_web_namespace" {
       "istio-injection"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
-}
-
-data "kubectl_path_documents" "istio_crd_manifests" {
-  pattern = "${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml"
-}
-
-# https://github.com/gavinbunney/terraform-provider-kubectl/issues/61
-resource "kubectl_manifest" "istio_crd_install" {
-  count     = length(split("\n---\n", file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-all.gen.yaml")))
-  yaml_body = element(data.kubectl_path_documents.istio_crd_manifests.documents, count.index)
   lifecycle {
-    ignore_changes = [field_manager]
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
-}
-
-resource "kubectl_manifest" "istio_operator_crd_install" {
-  yaml_body = file("${path.module}/manifests/istio/crds/${lookup(var.charts.istio-base, "version", "")}/crd-operator.yaml")
-  lifecycle {
-    ignore_changes = [field_manager]
-  }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
-}
-
-resource "time_sleep" "wait_for_istio_crds" {
   depends_on = [
-    kubectl_manifest.istio_crd_install,
-    kubectl_manifest.istio_operator_crd_install
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
   ]
-  triggers = {
-    istio_crds_id = join(",", kubectl_manifest.istio_crd_install.*.uid)
-  }
-
-  create_duration = "30s"
 }
+
 
 resource "helm_release" "istio_base_install" {
   name       = lookup(var.charts.istio-base, "name", "istio-base")
@@ -97,12 +88,9 @@ resource "helm_release" "istio_base_install" {
     value = "istio-system"
   }
 
-  skip_crds = true
-
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.istio_system_namespace,
-    time_sleep.wait_for_istio_crds
+    kubernetes_namespace.istio_system_namespace
   ]
 }
 
@@ -125,7 +113,7 @@ resource "helm_release" "istiod_install" {
 
   set {
     name  = "global.tag"
-    value = "1.22.3"
+    value = "1.29.1"
   }
 
   set {
@@ -231,7 +219,7 @@ resource "helm_release" "istio_ingress_mgmt_install" {
 
   set {
     name  = "global.tag"
-    value = "1.22.3"
+    value = "1.29.1"
   }
 
   set {
@@ -336,7 +324,7 @@ resource "helm_release" "istio_ingress_apps_install" {
 
   set {
     name  = "global.tag"
-    value = "1.22.3"
+    value = "1.29.1"
   }
 
   set {
@@ -429,7 +417,7 @@ resource "helm_release" "istio_ingress_web_install" {
 
   set {
     name  = "global.tag"
-    value = "1.22.3"
+    value = "1.29.1"
   }
 
   set {
@@ -556,7 +544,6 @@ resource "kubectl_manifest" "enable_mtls" {
   }
   depends_on = [
     kubernetes_namespace.istio_system_namespace,
-    time_sleep.wait_for_istio_crds,
     helm_release.istio_base_install
   ]
 }
@@ -569,7 +556,6 @@ resource "kubectl_manifest" "istio_telemetry" {
   }
   depends_on = [
     kubernetes_namespace.istio_system_namespace,
-    time_sleep.wait_for_istio_crds,
     helm_release.istio_base_install
   ]
 }

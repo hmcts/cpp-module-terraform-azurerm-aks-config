@@ -11,7 +11,13 @@ resource "kubernetes_namespace" "smashing_namespace" {
       "istio-injection"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "helm_release" "smashing_install" {
@@ -100,7 +106,7 @@ resource "helm_release" "smashing_install" {
 
   set {
     name  = "env[6].value"
-    value = "http://kube-prometheus-stack-prometheus.prometheus\\.svc\\.cluster\\.local:9090"
+    value = "http://kube-prometheus-stack-v3-prometheus.prometheus\\.svc\\.cluster\\.local:9090"
   }
 
   set {

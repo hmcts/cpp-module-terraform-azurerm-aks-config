@@ -6,7 +6,13 @@ resource "kubernetes_namespace" "prometheus_namespace" {
       "filebeat_enable"              = "enabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 data "vault_generic_secret" "grafana_spn_creds" {
@@ -40,8 +46,8 @@ resource "helm_release" "prometheus" {
     prometheus_config_reloader_image_registry   = "${var.acr_name}.azurecr.io/quay.io"
     prometheus_config_reloader_image_repository = "prometheus-operator/prometheus-config-reloader"
     prometheus_config_reloader_image_tag        = var.prometheus.prometheus_config_reloader_image_tag
-    kube_webhook_certgen_image_registry         = "${var.acr_name}.azurecr.io/k8s.gcr.io"
-    kube_webhook_certgen_image_repository       = "ingress-nginx/kube-webhook-certgen"
+    kube_webhook_certgen_image_registry         = "${var.acr_name}.azurecr.io/ghcr.io"
+    kube_webhook_certgen_image_repository       = "jkroepke/kube-webhook-certgen"
     kube_webhook_certgen_image_tag              = var.prometheus.kube_webhook_certgen_image_tag
     prometheus_image_registry                   = "${var.acr_name}.azurecr.io/quay.io"
     prometheus_image_repository                 = "prometheus/prometheus"
@@ -53,7 +59,7 @@ resource "helm_release" "prometheus" {
     drop_envoy_stats_for_context_pods           = var.prometheus.prometheus_drop_envoy_stats_for_context_pods
     grafana_storage_class_name                  = var.prometheus.grafana_storage_class_name
     grafana_storage_size                        = var.prometheus.grafana_storage_size
-    grafana_init_image_tag                      = "1.31.1"
+    grafana_init_image_tag                      = "1.37.0"
   })]
   repository        = "./install"
   namespace         = "prometheus"
@@ -62,7 +68,8 @@ resource "helm_release" "prometheus" {
   timeout           = 600
   depends_on = [
     null_resource.download_charts,
-    kubernetes_namespace.prometheus_namespace
+    kubernetes_namespace.prometheus_namespace,
+    kubernetes_storage_class_v1.managed_premium_with_tags
   ]
 }
 
@@ -80,7 +87,10 @@ resource "helm_release" "prometheus_adapter_install" {
   wait    = true
   timeout = 300
 
-  depends_on = [null_resource.download_charts, helm_release.prometheus]
+  depends_on = [
+    null_resource.download_charts,
+    helm_release.prometheus
+  ]
 }
 
 resource "kubectl_manifest" "install_grafana_virtualservice_manifests" {
