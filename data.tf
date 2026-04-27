@@ -85,3 +85,8 @@ data "vault_generic_secret" "sonaqube_cred" {
 data "vault_generic_secret" "ca_cert" {
   path = var.ca_bundle_path
 }
+
+data "vault_generic_secret" "githubappkey_cred" {
+  count = var.flux_config.enable ? 1 : 0
+  path  = var.flux_config.githubKeyVaultPath
+}

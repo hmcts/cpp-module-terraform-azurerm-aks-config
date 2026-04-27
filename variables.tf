@@ -209,6 +209,9 @@ variable "charts" {
     sonarqube              = map(string)
     smashing               = map(string)
     azure-service-operator = map(string)
+    flux-operator          = map(string)
+    flux-instance          = map(string)
+    eck-operator           = map(string)
   })
   default = {
     aks-rbac = {
@@ -283,6 +286,28 @@ variable "charts" {
       path    = "charts/keda"
       version = "2.13.0"
     },
+    flux-operator = {
+      path    = "charts/flux-operator"
+      version = "0.42.1"
+    },
+    flux-instance = {
+      path    = "charts/flux-instance"
+      version = "0.42.1"
+    }
+    eck-operator = {
+      path    = "charts/eck-operator"
+      version = "3.3.2"
+    },
+  }
+}
+
+variable "eck_operator_config" {
+  type = object({
+    enable    = bool
+    image_tag = optional(string, "3.3.2")
+  })
+  default = {
+    enable = false
   }
 }
 
@@ -1071,6 +1096,100 @@ variable "pvc_config" {
     pvc_access_mode   = "ReadWriteMany"
     pvc_storage_class = "azurefile-csi-premium"
   }
+}
+
+variable "flux_config" {
+  type = object({
+    enable             = bool
+    git_path           = string
+    githubKeyVaultPath = string
+  })
+  default = {
+    enable             = false
+    git_path           = ""
+    githubKeyVaultPath = ""
+  }
+}
+
+variable "github_app_id" {
+  type = string
+}
+
+variable "github_app_installation_id" {
+  type = string
+}
+
+variable "flux_version" {
+  description = "Flux version semver range"
+  type        = string
+  default     = "2.x"
+}
+
+variable "flux_registry" {
+  description = "Flux distribution registry"
+  type        = string
+  default     = "ghcr.io/fluxcd"
+}
+
+variable "cluster_type" {
+  description = "Cluster type, e.g. kubernetes, openshift, azure, aws, gcp"
+  type        = string
+  default     = "kubernetes"
+}
+
+variable "cluster_size" {
+  description = "Cluster size, e.g. small, medium, large"
+  type        = string
+  default     = ""
+}
+
+variable "git_url" {
+  description = "Git repository URL"
+  type        = string
+  default     = "https://github.com/hmcts/cpp-flux-config"
+  nullable    = false
+}
+
+variable "git_path" {
+  description = "Path to the cluster manifests in the Git repository"
+  type        = string
+  default     = "./clusters/dev/cs01-cl02"
+  nullable    = false
+}
+
+variable "git_ref" {
+  description = "Git branch or tag in the format refs/heads/main or refs/tags/v1.0.0"
+  type        = string
+  default     = "refs/heads/main"
+}
+
+variable "aks_worker_client_id" {
+  description = "AKS worker userassigned identity client id"
+  type        = string
+  default     = ""
+}
+
+variable "flux_hostnames" {
+  type        = list(string)
+  description = "Hostnames for access to flux"
+}
+
+variable "flux_oauth2_tenantid" {
+  type        = string
+  description = "pgadminoauth2_tenantId from app reg"
+}
+variable "flux_oauth2_clientid" {
+  type        = string
+  description = "pgadmin_oauth2_clientid"
+}
+variable "flux_oauth2_clientsecret" {
+  type        = string
+  description = "pgadmin_oauth2_clientSecret"
+}
+
+variable "flux_baseURL" {
+  type        = string
+  description = "flux_baseURL"
 }
 
 variable "kiali_prometheus_url" {
