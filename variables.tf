@@ -211,6 +211,7 @@ variable "charts" {
     azure-service-operator = map(string)
     flux-operator          = map(string)
     flux-instance          = map(string)
+    eck-operator           = map(string)
   })
   default = {
     aks-rbac = {
@@ -293,6 +294,20 @@ variable "charts" {
       path    = "charts/flux-instance"
       version = "0.42.1"
     }
+    eck-operator = {
+      path    = "charts/eck-operator"
+      version = "3.3.2"
+    },
+  }
+}
+
+variable "eck_operator_config" {
+  type = object({
+    enable    = bool
+    image_tag = optional(string, "3.3.2")
+  })
+  default = {
+    enable = false
   }
 }
 
