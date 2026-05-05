@@ -120,7 +120,7 @@ resource "helm_release" "flux_instance" {
   }
   set {
     name  = "instance.distribution.artifact"
-    value = "oci://${var.acr_name}.azurecr.io/ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:latest"
+    value = "${var.acr_name}.azurecr.io/ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:latest"
   }
   set {
     name  = "instance.cluster.type"
