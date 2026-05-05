@@ -37,6 +37,10 @@ resource "helm_release" "flux_operator" {
     value = var.flux_baseURL
   }
   set {
+    name  = "image.repository"
+    value = "${var.acr_name}/ghcr.io/controlplaneio-fluxcd/flux-operator"
+  }
+  set {
     name  = "web.config.authentication.type"
     value = "OAuth2"
   }
@@ -150,6 +154,10 @@ resource "helm_release" "flux_instance" {
     name  = "healthcheck.enabled"
     value = "true"
     type  = "auto"
+  }
+  set {
+    name  = "healthcheck.image.repository"
+    value = "${var.acr_name}/ghcr.io/controlplaneio-fluxcd/flux-operator-cli"
   }
 
 }
