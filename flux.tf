@@ -155,6 +155,10 @@ resource "helm_release" "flux_instance" {
     value = "true"
     type  = "auto"
   }
+  set {
+    name  = "healthcheck.image.repository"
+    value = "${var.acr_name}/ghcr.io/controlplaneio-fluxcd/flux-operator-cli"
+  }
 
 }
 
