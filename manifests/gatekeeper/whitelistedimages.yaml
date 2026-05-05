@@ -14,3 +14,4 @@ spec:
       - mcr.microsoft.com/
       - crmpdrepo01.azurecr.io/
       - ghcr.io/fluxcd
+      - ghcr.io/controlplaneio-fluxcd
