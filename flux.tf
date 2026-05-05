@@ -119,6 +119,10 @@ resource "helm_release" "flux_instance" {
     value = var.flux_registry
   }
   set {
+    name  = "instance.distribution.artifact"
+    value = "${var.acr_name}.azurecr.io/ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:latest"
+  }
+  set {
     name  = "instance.cluster.type"
     value = var.cluster_type
   }
