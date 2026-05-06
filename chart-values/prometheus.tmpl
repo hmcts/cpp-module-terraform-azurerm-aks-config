@@ -278,12 +278,22 @@ prometheus:
 
 
 kubelet:
-  enabled: false
+  enabled: true
   serviceMonitor:
+    cAdvisor: true
     cAdvisorMetricRelabelings:
+      - action: keep
+        regex: '^container_(cpu|memory|spec_(cpu|memory))_'
+        sourceLabels: [__name__]
       - action: drop
         regex: container_blkio_device_usage_total
         sourceLabels: [__name__]
+      - sourceLabels: [namespace]
+        action: drop
+        regex: '^(kube-system|kube-public|kube-node-lease|default|prometheus|istio-system)$'
+      - sourceLabels: [namespace]
+        action: keep
+        regex: '^ns-vld-.*'
     metricRelabelings:
       - action: drop
         regex: (rest_client_request_duration_seconds_bucket|storage_operation_duration_seconds_bucket|rest_client_rate_limiter_duration_seconds_bucket)
