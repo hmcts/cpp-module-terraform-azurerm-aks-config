@@ -1114,7 +1114,7 @@ variable "github_app_installation_id" {
 variable "flux_version" {
   description = "Flux version semver range"
   type        = string
-  default     = "2.8.6"
+  default     = "v2.8.6"
 }
 
 variable "flux_registry" {
