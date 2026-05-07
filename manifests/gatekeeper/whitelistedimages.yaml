@@ -13,4 +13,3 @@ spec:
       - crmdvrepo01.azurecr.io/
       - mcr.microsoft.com/
       - crmpdrepo01.azurecr.io/
-      - ghcr.io/fluxcd
