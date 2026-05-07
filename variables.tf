@@ -1114,13 +1114,7 @@ variable "github_app_installation_id" {
 variable "flux_version" {
   description = "Flux version semver range"
   type        = string
-  default     = "2.x"
-}
-
-variable "flux_registry" {
-  description = "Flux distribution registry"
-  type        = string
-  default     = "ghcr.io/fluxcd"
+  default     = "v2.8.6"
 }
 
 variable "cluster_type" {
