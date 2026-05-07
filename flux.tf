@@ -109,7 +109,8 @@ resource "helm_release" "flux_instance" {
   ]
 
   // Configure the Flux distribution, cluster type and Git sync.
-
+  // NOTE: Make sure in cpp-helm-chart for flux-instance this value "instance.distribution.artifact" is commented out.
+  // we need to comment that mainly when you want to install a specific version of flux
   set {
     name  = "instance.distribution.version"
     value = var.flux_version
