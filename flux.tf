@@ -116,7 +116,7 @@ resource "helm_release" "flux_instance" {
   }
   set {
     name  = "instance.distribution.registry"
-    value = var.flux_registry
+    value = "${var.acr_name}.azurecr.io/ghcr.io/fluxcd"
   }
   set {
     name  = "instance.cluster.type"

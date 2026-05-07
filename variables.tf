@@ -1117,12 +1117,6 @@ variable "flux_version" {
   default     = "v2.8.6"
 }
 
-variable "flux_registry" {
-  description = "Flux distribution registry"
-  type        = string
-  default     = "crmdvrepo01.azurecr.io/ghcr.io/fluxcd"
-}
-
 variable "cluster_type" {
   description = "Cluster type, e.g. kubernetes, openshift, azure, aws, gcp"
   type        = string
