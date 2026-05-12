@@ -392,6 +392,16 @@ variable "omsagent" {
   }
 }
 
+variable "container_azm_ms_agentconfig" {
+  description = "When true, apply the shared ConfigMap from config/container-azm-ms-agentconfig.yaml (same for all clusters/environments). When false, use templated manifests/omsagent/container-azm-ms-agentconfig.yaml with var.omsagent."
+  type = object({
+    enabled = bool
+  })
+  default = {
+    enabled = false
+  }
+}
+
 variable "alerts" {
   type = object({
     enable_alerts = bool
@@ -596,6 +606,12 @@ variable "enable_elk" {
 variable "delete_validation_ns" {
   type        = bool
   description = "enable cronjob to delete validation ns"
+  default     = false
+}
+
+variable "sync_container_log_exclude_namespaces_cronjob" {
+  type        = bool
+  description = "When true, deploy ConfigMap sync-container-log-exclude-ns-script (bash run.sh) plus CronJob sync-container-log-exclude-ns in kube-system. Same image/memory as delete-validation-ns (jenkins-agent-java11); uses bash, kubectl, awk only."
   default     = false
 }
 

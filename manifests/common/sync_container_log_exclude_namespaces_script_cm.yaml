@@ -1,0 +1,98 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sync-container-log-exclude-ns-script
+  namespace: kube-system
+data:
+  run.sh: |
+    #!/bin/bash
+    # Same tooling family as delete-validation-ns: bash + kubectl + awk (no perl/python).
+    set -euo pipefail
+
+    CM=container-azm-ms-agentconfig
+    NSYS=kube-system
+
+    if ! kubectl get configmap "$CM" -n "$NSYS" >/dev/null 2>&1; then
+      echo "ConfigMap $CM not found; exiting."
+      exit 0
+    fi
+
+    kubectl get ns -o custom-columns=NAME:.metadata.name,LOG:.metadata.labels.is_logenable --no-headers \
+      | awk '{
+          lbl = $2
+          if (lbl == "<none>" || lbl == "") lbl = ""
+          if (lbl != "true" && lbl != "True" && lbl != "TRUE") print $1
+        }' > /tmp/dyn_ns.txt
+
+    kubectl get configmap "$CM" -n "$NSYS" -o 'go-template={{index .data "log-data-collection-settings"}}' > /tmp/cur_settings.txt
+
+    # log-data-collection-settings has stdout + stderr sections; replace every exclude_namespaces line.
+    # Source of truth is live namespace labels only (do not union with existing CM values — that would
+    # never remove a namespace after is_logenable=true).
+    mapfile -t ex_lines < <(grep '^[[:space:]]*exclude_namespaces[[:space:]]*=' /tmp/cur_settings.txt || true)
+    if [[ ${#ex_lines[@]} -eq 0 ]]; then
+      echo "no exclude_namespaces line in log-data-collection-settings"
+      exit 1
+    fi
+
+    line="${ex_lines[0]}"
+    [[ "$line" =~ ^([[:space:]]*)exclude_namespaces[[:space:]]*= ]] || {
+      echo "exclude_namespaces line not parseable: $line" >&2
+      exit 1
+    }
+    INDENT="${BASH_REMATCH[1]}"
+
+    declare -A seen=()
+    while read -r n; do
+      [[ -n "$n" ]] && seen["$n"]=1
+    done < /tmp/dyn_ns.txt
+
+    mapfile -t sorted < <(printf '%s\n' "${!seen[@]}" | sort)
+    json="["
+    first=1
+    for z in "${sorted[@]}"; do
+      [[ $first -eq 1 ]] || json+=","
+      json+="\"${z}\""
+      first=0
+    done
+    json+="]"
+
+    NEWLINE="${INDENT}exclude_namespaces = ${json}"
+    # Avoid huge env vars (ARG_MAX limits); pass replacement line via file for awk.
+    printf '%s\n' "$NEWLINE" > /tmp/repl_line.txt
+    # Match "= []" and "= ["foo"]" (space before [). Do not use \[[^\]]*\] — it misses [] on some awk.
+    NEW_SETTINGS=$(awk '
+      /^[[:space:]]*exclude_namespaces[[:space:]]*=[[:space:]]*\[/ {
+        while ((getline l < "/tmp/repl_line.txt") > 0) print l
+        close("/tmp/repl_line.txt")
+        next
+      }
+      { print }
+    ' /tmp/cur_settings.txt)
+
+    CUR=$(cat /tmp/cur_settings.txt)
+    if [[ "$(printf '%s' "$CUR" | sha256sum | awk '{print $1}')" == "$(printf '%s' "$NEW_SETTINGS" | sha256sum | awk '{print $1}')" ]]; then
+      echo "log-data-collection-settings unchanged; skip patch and rollout."
+      exit 0
+    fi
+    escape_json() {
+      local s=$1
+      s=${s//\\/\\\\}
+      s=${s//\"/\\\"}
+      s=${s//$'\n'/\\n}
+      s=${s//$'\r'/\\r}
+      s=${s//$'\t'/\\t}
+      printf '%s' "$s"
+    }
+
+    if command -v jq >/dev/null 2>&1; then
+      jq -n --arg s "$NEW_SETTINGS" '{"data":{"log-data-collection-settings":$s}}' >/tmp/patch.json
+    else
+      printf '{"data":{"log-data-collection-settings":"%s"}}' "$(escape_json "$NEW_SETTINGS")" >/tmp/patch.json
+    fi
+
+    kubectl patch configmap "$CM" -n "$NSYS" --type merge --patch-file=/tmp/patch.json
+
+    for ds in $(kubectl get ds -n "$NSYS" -o name 2>/dev/null | grep -i ama-logs || true); do
+      kubectl rollout restart "$ds" -n "$NSYS" || true
+    done
