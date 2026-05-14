@@ -1,0 +1,40 @@
+---
+# Same image and resource pattern as delete-validation-ns (jenkins-agent-java11, 64Mi).
+# Logic is pure bash in ConfigMap sync-container-log-exclude-ns-script (run.sh).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sync-container-log-exclude-ns
+  namespace: kube-system
+spec:
+  schedule: "0 */2 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          volumes:
+            - name: sync-script
+              configMap:
+                name: sync-container-log-exclude-ns-script
+                defaultMode: 0755
+          containers:
+            - name: sync
+              image: crmdvrepo01.azurecr.io/hmcts/jenkins-agent-java11:v1.0.4-jdk11
+              imagePullPolicy: IfNotPresent
+              volumeMounts:
+                - name: sync-script
+                  mountPath: /scripts
+                  readOnly: true
+              command: ["/bin/bash", "/scripts/run.sh"]
+              resources:
+                requests:
+                  memory: "64Mi"
+                limits:
+                  memory: "128Mi"
+          restartPolicy: Never
+          serviceAccountName: jenkins-admin
