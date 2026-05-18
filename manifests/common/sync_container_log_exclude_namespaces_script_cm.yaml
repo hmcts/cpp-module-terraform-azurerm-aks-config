@@ -4,7 +4,7 @@ metadata:
   name: sync-container-log-exclude-ns-script
   namespace: kube-system
 data:
-  run.sh: |
+  sync-container-log-exclude-ns.sh: |
     #!/bin/bash
     # Same tooling family as delete-validation-ns: bash + kubectl + awk (no perl/python).
     set -euo pipefail

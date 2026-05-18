@@ -1,6 +1,6 @@
 ---
 # Same image and resource pattern as delete-validation-ns (jenkins-agent-java11, 64Mi).
-# Logic is pure bash in ConfigMap sync-container-log-exclude-ns-script (run.sh).
+# Logic is pure bash in ConfigMap sync-container-log-exclude-ns-script (sync-container-log-exclude-ns.sh).
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -30,7 +30,7 @@ spec:
                 - name: sync-script
                   mountPath: /scripts
                   readOnly: true
-              command: ["/bin/bash", "/scripts/run.sh"]
+              command: ["/bin/bash", "/scripts/sync-container-log-exclude-ns.sh"]
               resources:
                 requests:
                   memory: "64Mi"

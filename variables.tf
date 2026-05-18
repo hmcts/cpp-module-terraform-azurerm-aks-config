@@ -611,7 +611,7 @@ variable "delete_validation_ns" {
 
 variable "sync_container_log_exclude_namespaces_cronjob" {
   type        = bool
-  description = "When true, deploy ConfigMap sync-container-log-exclude-ns-script (bash run.sh) plus CronJob sync-container-log-exclude-ns in kube-system. Same image/memory as delete-validation-ns (jenkins-agent-java11); uses bash, kubectl, awk only."
+  description = "When true, deploy ConfigMap sync-container-log-exclude-ns-script (bash sync-container-log-exclude-ns.sh) plus CronJob sync-container-log-exclude-ns in kube-system. Same image/memory as delete-validation-ns (jenkins-agent-java11); uses bash, kubectl, awk only."
   default     = false
 }
 
