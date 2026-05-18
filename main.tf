@@ -10,6 +10,28 @@ resource "kubectl_manifest" "delete_validation_ns" {
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
 
+resource "kubectl_manifest" "sync_container_log_exclude_namespaces_script_cm" {
+  count     = var.sync_container_log_exclude_namespaces_cronjob ? 1 : 0
+  yaml_body = file("${path.module}/manifests/common/sync_container_log_exclude_namespaces_script_cm.yaml")
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
+  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+}
+
+resource "kubectl_manifest" "sync_container_log_exclude_namespaces_cronjob" {
+  count     = var.sync_container_log_exclude_namespaces_cronjob ? 1 : 0
+  yaml_body = file("${path.module}/manifests/common/sync_container_log_exclude_namespaces.yaml")
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.omsagent_configmap_manifest,
+    kubectl_manifest.sync_container_log_exclude_namespaces_script_cm,
+  ]
+}
+
 resource "null_resource" "wait_for_k8s_api_to_be_available" {
   provisioner "local-exec" {
     command = "echo k8s-api-dns-count: ${length(var.wait_for_k8s_api_to_be_available)} acr-pe-ip: ${var.wait_for_acr_pe_to_be_available}"
