@@ -1201,3 +1201,9 @@ variable "flux_baseURL" {
   type        = string
   description = "flux_baseURL"
 }
+
+variable "kiali_prometheus_url" {
+  type        = string
+  description = "URL of the Prometheus instance for Kiali"
+  default     = "http://kube-prometheus-stack-v3-prometheus.prometheus:9090/"
+}
