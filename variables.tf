@@ -402,6 +402,20 @@ variable "container_azm_ms_agentconfig" {
   }
 }
 
+variable "konnectivity_agent_autoscaler" {
+  description = "Overrides the node-count-to-replica ladder used by the AKS-managed kube-system/konnectivity-agent-autoscaler ConfigMap. Only applied when enabled = true; leave disabled to keep the AKS default."
+  type = object({
+    enabled           = bool
+    cores_to_replicas = optional(list(list(number)), [])
+    nodes_to_replicas = optional(list(list(number)), [])
+  })
+  default = {
+    enabled           = false
+    cores_to_replicas = []
+    nodes_to_replicas = []
+  }
+}
+
 variable "alerts" {
   type = object({
     enable_alerts = bool
