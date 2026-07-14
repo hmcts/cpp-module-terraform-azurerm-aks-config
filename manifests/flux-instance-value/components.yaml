@@ -21,18 +21,20 @@ instance:
               - key: "CriticalAddonsOnly"
                 operator: "Exists"
 
+      %{~ if lookup(workload_identity_client_ids, "source", null) != null ~}
       - target:
           kind: ServiceAccount
           name: source-controller
         patch: |
-          %{ if source_controller_client_id != null }
+          
           - op: add
             path: /metadata/annotations/azure.workload.identity~1client-id
-            value: "${source_controller_client_id}"
-          %{ endif }
+            value: "${lookup(workload_identity_client_ids, "source", "")}"
+          
           - op: add
             path: /metadata/labels/azure.workload.identity~1use
             value: "true"
+      %{~ endif ~}
 
       - target:
           kind: Deployment
@@ -45,15 +47,15 @@ instance:
             path: /spec/template/metadata/labels/azure.workload.identity~1use
             value: "true"
 
+      %{~ if lookup(workload_identity_client_ids, "image_reflector", null) != null ~}
       - target:
           kind: ServiceAccount
           name: image-reflector-controller
         patch: |
-          %{ if image_reflector_client_id != null }
           - op: add
             path: /metadata/annotations/azure.workload.identity~1client-id
-            value: "${image_reflector_client_id}"
-          %{ endif }
+            value: "${lookup(workload_identity_client_ids, "image_reflector", "")}"
           - op: add
             path: /metadata/labels/azure.workload.identity~1use
             value: "true"
+      %{~ endif ~}
