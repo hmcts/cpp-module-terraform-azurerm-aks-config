@@ -1165,10 +1165,10 @@ variable "git_ref" {
   default     = "refs/heads/main"
 }
 
-variable "aks_worker_client_id" {
-  description = "AKS worker userassigned identity client id"
-  type        = string
-  default     = ""
+variable "workload_identity_client_ids" {
+  description = "Map of workload identity client IDs keyed by controller name"
+  type        = map(string)
+  default     = {}
 }
 
 variable "flux_hostnames" {

@@ -104,7 +104,7 @@ resource "helm_release" "flux_instance" {
   // Configure the Flux components and kustomize patches.
   values = [
     templatefile("${path.module}/manifests/flux-instance-value/components.yaml", {
-      client_id = var.aks_worker_client_id
+      workload_identity_client_ids = var.workload_identity_client_ids
     })
   ]
 
