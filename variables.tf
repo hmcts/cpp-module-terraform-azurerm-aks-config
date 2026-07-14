@@ -1187,7 +1187,13 @@ variable "git_ref" {
   default     = "refs/heads/main"
 }
 
-variable "aks_worker_client_id" {
+variable "source_controller_client_id" {
+  description = "AKS worker userassigned identity client id"
+  type        = string
+  default     = ""
+}
+
+variable "image_reflector_client_id" {
   description = "AKS worker userassigned identity client id"
   type        = string
   default     = ""

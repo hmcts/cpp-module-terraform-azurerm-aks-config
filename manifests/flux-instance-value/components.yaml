@@ -25,10 +25,10 @@ instance:
           kind: ServiceAccount
           name: source-controller
         patch: |
-          %{ if client_id != null }
+          %{ if source_controller_client_id != null }
           - op: add
             path: /metadata/annotations/azure.workload.identity~1client-id
-            value: "${client_id}"
+            value: "${source_controller_client_id}"
           %{ endif }
           - op: add
             path: /metadata/labels/azure.workload.identity~1use
@@ -43,4 +43,17 @@ instance:
             value: "true"
           - op: add
             path: /spec/template/metadata/labels/azure.workload.identity~1use
+            value: "true"
+
+      - target:
+          kind: ServiceAccount
+          name: image-reflector-controller
+        patch: |
+          %{ if image_reflector_client_id != null }
+          - op: add
+            path: /metadata/annotations/azure.workload.identity~1client-id
+            value: "${image_reflector_client_id}"
+          %{ endif }
+          - op: add
+            path: /metadata/labels/azure.workload.identity~1use
             value: "true"
