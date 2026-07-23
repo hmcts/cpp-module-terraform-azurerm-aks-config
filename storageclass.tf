@@ -48,6 +48,7 @@ parameters:
   skuname: Premium_LRS
   maxShares: "2"
   cachingMode: None
+  tags: "${join(",", [for k, v in local.minimal_tags : "${k}=${v}"])}"
 reclaimPolicy: Delete
 YAML
   lifecycle {
