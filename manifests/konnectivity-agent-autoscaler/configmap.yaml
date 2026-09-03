@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: konnectivity-agent-autoscaler
+  namespace: kube-system
+  labels:
+    addonmanager.kubernetes.io/mode: EnsureExists
+    app: konnectivity-agent-autoscaler
+    kubernetes.io/cluster-service: "true"
+data:
+  ladder: |-
+    ${ladder}

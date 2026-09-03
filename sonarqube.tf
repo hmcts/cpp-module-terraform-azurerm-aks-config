@@ -7,7 +7,13 @@ resource "kubernetes_namespace" "sonarqube_namespace" {
       "istio-injection"              = "disabled"
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 
@@ -25,11 +31,19 @@ resource "helm_release" "sonarqube_install" {
     value = "${var.acr_name}.azurecr.io/docker.io/library/sonarqube"
   }
   set {
+    name  = "community.enabled"
+    value = true
+  }
+  set {
+    name  = "community.buildNumber"
+    value = var.sonarqube_config.community_build_number
+  }
+  set {
     name  = "postgresql.enabled"
     value = false
   }
   set {
-    name  = "jdbcOverwrite.enable"
+    name  = "jdbcOverwrite.enabled"
     value = true
   }
   set {
@@ -63,6 +77,38 @@ resource "helm_release" "sonarqube_install" {
   set {
     name  = "initSysctl.enabled"
     value = true
+  }
+  set {
+    name  = "securityContext.fsGroup"
+    value = 1000
+  }
+  set {
+    name  = "gateway.serviceDestinationPort"
+    value = 9000
+  }
+  set {
+    name  = "gateway.timeout"
+    value = "120s"
+  }
+  set {
+    name  = "persistence.enabled"
+    value = true
+  }
+  set {
+    name  = "nodeSelector.agentpool"
+    value = "sysagentpool"
+  }
+  set {
+    name  = "tolerations[0].key"
+    value = "CriticalAddonsOnly"
+  }
+  set {
+    name  = "tolerations[0].operator"
+    value = "Exists"
+  }
+  set {
+    name  = "tolerations[0].effect"
+    value = "NoSchedule"
   }
 
   values = [templatefile("${path.module}/manifests/common/sonarProps.yaml", {

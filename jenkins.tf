@@ -7,7 +7,13 @@ resource "kubernetes_namespace" "jenkins_namespace" {
       # "istio-injection"              = "disabled" Disabling for now due to EI-1792
     }
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 resource "kubectl_manifest" "jenkins_deploy_rolebinding" {

@@ -272,7 +272,7 @@ variable "charts" {
     },
     sonarqube = {
       path    = "charts/sonarqube"
-      version = "9.9.2"
+      version = "2026.1.0"
     },
     smashing = {
       path    = "charts/smashing"
@@ -399,6 +399,20 @@ variable "container_azm_ms_agentconfig" {
   })
   default = {
     enabled = false
+  }
+}
+
+variable "konnectivity_agent_autoscaler" {
+  description = "Overrides the node-count-to-replica ladder used by the AKS-managed kube-system/konnectivity-agent-autoscaler ConfigMap. Only applied when enabled = true; leave disabled to keep the AKS default."
+  type = object({
+    enabled           = bool
+    cores_to_replicas = optional(list(list(number)), [])
+    nodes_to_replicas = optional(list(list(number)), [])
+  })
+  default = {
+    enabled           = false
+    cores_to_replicas = []
+    nodes_to_replicas = []
   }
 }
 
@@ -646,13 +660,13 @@ variable "enable_pgadmin" {
 variable "azure_service_operator_tag" {
   type        = string
   description = "Azure Service Operator Docker image Tag"
-  default     = "v2.3.0"
+  default     = "v2.18.0"
 }
 
 variable "kube_rbac_proxy_tag" {
   type        = string
   description = "Azure Service Operator KubeRbacProxy Docker image Tag"
-  default     = "v0.13.1"
+  default     = "v0.21.0"
 }
 
 variable "azure_service_operator_crdpattern" {
@@ -664,6 +678,12 @@ variable "pgadmin_tag" {
   type        = string
   description = "PGadmin Docker image Tag"
   default     = "6.14"
+}
+
+variable "docker_tag_certmanager" {
+  type        = string
+  description = "cert-manager Docker image Tag"
+  default     = "v1.20.0"
 }
 
 variable "pgadmin_admin_user" {
@@ -799,18 +819,20 @@ variable "tags" {
 
 variable "sonarqube_config" {
   type = object({
-    enable         = bool
-    jdbcUrl        = string
-    sonarVaultPath = string
-    sonarqubeUrl   = string
-    hosts          = string
+    enable                 = bool
+    jdbcUrl                = string
+    sonarVaultPath         = string
+    sonarqubeUrl           = string
+    hosts                  = string
+    community_build_number = string
   })
   default = {
-    enable         = false
-    jdbcUrl        = ""
-    sonarVaultPath = ""
-    sonarqubeUrl   = ""
-    hosts          = ""
+    enable                 = false
+    jdbcUrl                = ""
+    sonarVaultPath         = ""
+    sonarqubeUrl           = ""
+    hosts                  = ""
+    community_build_number = "26.3.0.120487"
   }
 }
 
@@ -1073,16 +1095,16 @@ variable "smashing_spec" {
   }
 }
 
-variable "dynatrace_oneagent_version" {
-  type        = string
-  description = "dynatrace oneagent version"
-  default     = "1.93.1000"
-}
-
 variable "dynatrace_operator_image_tag" {
   type        = string
   description = "dynatrace operator version"
-  default     = "v1.3.0"
+  default     = "v1.8.1"
+}
+
+variable "dynatrace_oneagent_image_tag" {
+  type        = string
+  description = "dynatrace oneagent version for cloudNativeFullStack mode (Docker Hub format)"
+  default     = "1.333.58.20260326-100050"
 }
 
 variable "istiod_hpa_cputarget" {
@@ -1192,4 +1214,16 @@ variable "flux_oauth2_clientsecret" {
 variable "flux_baseURL" {
   type        = string
   description = "flux_baseURL"
+}
+
+variable "kiali_prometheus_url" {
+  type        = string
+  description = "URL of the Prometheus instance for Kiali"
+  default     = "http://kube-prometheus-stack-v3-prometheus.prometheus:9090/"
+}
+
+variable "velero_image_tag" {
+  type        = string
+  description = "Velero image tag"
+  default     = "v1.18.0"
 }

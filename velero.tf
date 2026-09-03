@@ -1,21 +1,6 @@
-resource "azurerm_storage_account" "storage_account_velero" {
-  count                      = var.velero_config.enable ? 1 : 0
-  name                       = replace(lower("SA-${var.aks_cluster_name}"), "-", "")
-  resource_group_name        = var.aks_resource_group_name
-  location                   = var.aks_cluster_location
-  account_tier               = var.velero_config.account_tier
-  is_hns_enabled             = true
-  account_replication_type   = var.velero_config.account_replication_type
-  tags                       = var.tags
-  https_traffic_only_enabled = true
-}
-
-resource "azurerm_storage_container" "blob" {
-  count                 = var.velero_config.enable ? 1 : 0
-  name                  = replace(lower("${var.aks_cluster_name}"), "-", "")
-  storage_account_name  = azurerm_storage_account.storage_account_velero.0.name
-  container_access_type = "private"
-}
+# Velero storage account and container creation removed
+# These require proper private endpoint and DNS configuration
+# Manage these resources separately if needed
 
 resource "kubernetes_namespace" "velero_namespace" {
   count = var.velero_config.enable ? 1 : 0
@@ -27,6 +12,13 @@ resource "kubernetes_namespace" "velero_namespace" {
       "istio-injection"              = "disabled"
     }
   }
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
 }
 
 data "vault_generic_secret" "azure_app_secret" {
@@ -60,7 +52,7 @@ resource "helm_release" "velero_install" {
   }
   set {
     name  = "image.tag"
-    value = "v1.14.1"
+    value = var.velero_image_tag
   }
   set {
     name  = "initContainers[0].image"
@@ -96,7 +88,7 @@ resource "helm_release" "velero_install" {
   }
   set {
     name  = "configuration.backupStorageLocation[0].config.storageAccount"
-    value = azurerm_storage_account.storage_account_velero.0.name
+    value = replace(lower("SA-${var.aks_cluster_name}"), "-", "")
   }
   set {
     name  = "configuration.backupStorageLocation[0].config.resourceGroup"
