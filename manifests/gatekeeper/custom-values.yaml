@@ -17,7 +17,7 @@ postInstall:
       operator: "Exists"
       effect: "NoSchedule"
   nodeSelector: {agentpool: sysagentpool}
-  
+
   probeWebhook:
     tolerations:
       - key: "CriticalAddonsOnly"
@@ -60,7 +60,7 @@ audit:
       operator: "Exists"
       effect: "NoSchedule"
   nodeSelector: {agentpool: sysagentpool}
-  
+
   resources:
     limits:
       cpu: 1000m

@@ -77,4 +77,3 @@ resource "kubernetes_storage_class_v1" "managed_premium_with_tags" {
 
   depends_on = [time_sleep.wait_for_aks_api_dns_propagation]
 }
-

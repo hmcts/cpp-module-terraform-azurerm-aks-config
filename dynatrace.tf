@@ -201,7 +201,7 @@ resource "kubernetes_secret_v1" "dynatrace_kubernetes_monitoring_token" {
       "app.kubernetes.io/managed-by" = "Terraform"
     }
   }
-  type       = "kubernetes.io/service-account-token"
+  type = "kubernetes.io/service-account-token"
   depends_on = [
     helm_release.dynatrace_operator,
     kubernetes_cluster_role_binding.dynatrace_monitoring_additional
