@@ -14,7 +14,7 @@ data:
     [log_collection_settings]
        [log_collection_settings.stdout]
           # In the absense of this configmap, default value for enabled is true
-          enabled = ${log_collection_settings_stdout_enabled}
+          enabled = false
           # exclude_namespaces setting holds good only if enabled is set to true
           # kube-system log collection is disabled by default in the absence of 'log_collection_settings.stdout' setting. If you want to enable kube-system, remove it from the following setting.
           # If you want to continue to disable kube-system log collection keep this namespace in the following setting and add any other namespace you want to disable log collection to the array.
@@ -23,7 +23,7 @@ data:
 
        [log_collection_settings.stderr]
           # Default value for enabled is true
-          enabled = ${log_collection_settings_stderr_enabled}
+          enabled = false
           # exclude_namespaces setting holds good only if enabled is set to true
           # kube-system log collection is disabled by default in the absence of 'log_collection_settings.stderr' setting. If you want to enable kube-system, remove it from the following setting.
           # If you want to continue to disable kube-system log collection keep this namespace in the following setting and add any other namespace you want to disable log collection to the array.
@@ -116,11 +116,11 @@ data:
     [alertable_metrics_configuration_settings.container_resource_utilization_thresholds]
         # The threshold(Type Float) will be rounded off to 2 decimal points
         # Threshold for container cpu, metric will be sent only when cpu utilization exceeds or becomes equal to the following percentage
-        container_cpu_threshold_percentage = 95.0
+        container_cpu_threshold_percentage = 0
         # Threshold for container memoryRss, metric will be sent only when memory rss exceeds or becomes equal to the following percentage
-        container_memory_rss_threshold_percentage = 95.0
+        container_memory_rss_threshold_percentage = 0
         # Threshold for container memoryWorkingSet, metric will be sent only when memory working set exceeds or becomes equal to the following percentage
-        container_memory_working_set_threshold_percentage = 95.0
+        container_memory_working_set_threshold_percentage = 0
 
     # Alertable metrics configuration settings for persistent volume utilization
     [alertable_metrics_configuration_settings.pv_utilization_thresholds]
