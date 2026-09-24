@@ -25,6 +25,7 @@ spec:
           sidecar.istio.io/inject: "${enable_istio_proxy}"
         annotations:
           proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": ${enable_istio_proxy} }'
+          cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
       spec:
         serviceAccountName: ${sa_name}
         restartPolicy: Never
