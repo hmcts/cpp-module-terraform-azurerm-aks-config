@@ -75,17 +75,22 @@ variable "environment_type" {
 
 variable "istio_ingress_apps_domains" {
   type        = list(string)
-  description = "Ingress domain name FQDN for apps"
+  description = "DNS names and wildcard patterns accepted by the apps Istio Gateway and included in its TLS certificate SANs"
+}
+
+variable "istio_ingress_oauth_domains" {
+  type        = list(string)
+  description = "DNS names and wildcard patterns accepted by the OAuth Istio Gateway and included in its TLS certificate SANs"
 }
 
 variable "istio_ingress_mgmt_domains" {
   type        = list(string)
-  description = "Ingress domain name FQDN for mgmt"
+  description = "DNS names and wildcard patterns accepted by the management Istio Gateway and included in its TLS certificate SANs"
 }
 
 variable "istio_ingress_web_domains" {
   type        = list(string)
-  description = "Ingress domain name FQDN for web"
+  description = "DNS names and wildcard patterns accepted by the web Istio Gateway and included in its TLS certificate SANs"
 }
 
 variable "kiali_hostnames" {
@@ -153,6 +158,12 @@ variable "istio_gateway_mgmt_cert_secret_name" {
 variable "istio_gateway_apps_cert_secret_name" {
   type    = string
   default = "istio-ingressgateway-apps-cert"
+}
+
+variable "istio_gateway_oauth_cert_secret_name" {
+  type        = string
+  description = "Kubernetes TLS Secret name for the OAuth Istio gateway certificate"
+  default     = "istio-ingressgateway-oauth-cert"
 }
 
 variable "istio_gateway_web_cert_secret_name" {
