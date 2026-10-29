@@ -38,7 +38,7 @@ output "ingress_lb_private_ip_address_web" {
   value       = data.kubernetes_service.web_gateway_svc.status.0.load_balancer.0.ingress.0.ip
 }
 
-output "ingress_lb_private_ip_address_oauth_apps" {
+output "ingress_lb_private_ip_address_oauth" {
   description = "Private frontend IP address of the OAuth Istio ingress Service"
   value       = data.kubernetes_service.oauth_gateway_svc.status.0.load_balancer.0.ingress.0.ip
 }
