@@ -450,7 +450,7 @@ resource "helm_release" "istio_ingress_oauth_install" {
 
   set {
     name  = "gateways.istio-ingressgateway.autoscaleMax"
-    value = var.istio_components_hpa_spec.istio_ingress_apps_max_replicas
+    value = lookup(var.istio_components_hpa_spec, "istio_ingress_oauth_max_replicas", 10)
   }
 
   set {
