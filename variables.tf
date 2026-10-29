@@ -174,14 +174,16 @@ variable "istio_gateway_web_cert_secret_name" {
 variable "istio_components_hpa_spec" {
   type = map(number)
   default = {
-    istiod_min_replicas             = 1
-    istiod_max_replicas             = 5
-    istio_ingress_mgmt_min_replicas = 1
-    istio_ingress_mgmt_max_replicas = 5
-    istio_ingress_apps_min_replicas = 1
-    istio_ingress_apps_max_replicas = 5
-    istio_ingress_web_min_replicas  = 1
-    istio_ingress_web_max_replicas  = 5
+    istiod_min_replicas              = 1
+    istiod_max_replicas              = 5
+    istio_ingress_mgmt_min_replicas  = 1
+    istio_ingress_mgmt_max_replicas  = 5
+    istio_ingress_apps_min_replicas  = 1
+    istio_ingress_apps_max_replicas  = 5
+    istio_ingress_oauth_min_replicas = 2
+    istio_ingress_oauth_max_replicas = 10
+    istio_ingress_web_min_replicas   = 1
+    istio_ingress_web_max_replicas   = 5
   }
 }
 
