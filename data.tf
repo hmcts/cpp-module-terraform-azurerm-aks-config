@@ -22,6 +22,14 @@ resource "time_sleep" "wait_for_loadbalancer_web" {
   create_duration = "120s"
 }
 
+resource "time_sleep" "wait_for_loadbalancer_oauth" {
+  depends_on = [
+    helm_release.istio_ingress_oauth_install,
+    kubectl_manifest.install_istio_ingress_gateway_oauth_manifests
+  ]
+  create_duration = "120s"
+}
+
 data "kubernetes_service" "mgmt_gateway_svc" {
   metadata {
     name      = "istio-ingressgateway-mgmt"
@@ -52,6 +60,17 @@ data "kubernetes_service" "web_gateway_svc" {
   depends_on = [
     time_sleep.wait_for_loadbalancer_web,
     kubernetes_namespace.istio_ingress_web_namespace
+  ]
+}
+
+data "kubernetes_service" "oauth_gateway_svc" {
+  metadata {
+    name      = "istio-ingressgateway-oauth"
+    namespace = "istio-ingress-oauth"
+  }
+  depends_on = [
+    time_sleep.wait_for_loadbalancer_oauth,
+    kubernetes_namespace.istio_ingress_oauth_namespace
   ]
 }
 

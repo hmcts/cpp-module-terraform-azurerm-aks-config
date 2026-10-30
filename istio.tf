@@ -75,6 +75,24 @@ resource "kubernetes_namespace" "istio_ingress_web_namespace" {
   ]
 }
 
+resource "kubernetes_namespace" "istio_ingress_oauth_namespace" {
+  metadata {
+    name = "istio-ingress-oauth"
+    labels = {
+      "app.kubernetes.io/managed-by" = "Terraform"
+      "filebeat_enable"              = "enabled"
+      "istio-injection"              = "enabled"
+    }
+  }
+  lifecycle {
+    ignore_changes = [metadata[0].labels["dynakube.internal.dynatrace.com/instance"]]
+  }
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubectl_manifest.dynatrace_cr_install
+  ]
+}
+
 
 resource "helm_release" "istio_base_install" {
   name       = lookup(var.charts.istio-base, "name", "istio-base")
@@ -387,6 +405,84 @@ resource "helm_release" "istio_ingress_apps_install" {
   ]
 }
 
+resource "helm_release" "istio_ingress_oauth_install" {
+  name       = "istio-ingress-oauth"
+  chart      = lookup(var.charts.istio-ingress, "name", "istio-ingress")
+  version    = lookup(var.charts.istio-ingress, "version", "")
+  repository = "./install"
+  namespace  = "istio-ingress-oauth"
+
+  set {
+    name  = "gateways.istio-ingressgateway.name"
+    value = "istio-ingressgateway-oauth"
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.labels.app"
+    value = "istio-ingressgateway-oauth"
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.labels.istio"
+    value = "ingressgateway-oauth"
+  }
+
+  set {
+    name  = "global.hub"
+    value = "${var.acr_name}.azurecr.io/registry.hub.docker.com/istio"
+  }
+
+  set {
+    name  = "global.tag"
+    value = lookup(var.charts.istio-ingress, "version", "")
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.autoscaleEnabled"
+    value = "true"
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.autoscaleMin"
+    value = var.istio_components_hpa_spec.istio_ingress_oauth_min_replicas
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.autoscaleMax"
+    value = var.istio_components_hpa_spec.istio_ingress_oauth_max_replicas
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-internal"
+    value = "true"
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-resource-group"
+    value = var.istio_ingress_load_balancer_resource_group
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.resources.requests.memory"
+    value = var.isito_ingress_spec.resources.requests.memory
+  }
+
+  set {
+    name  = "gateways.istio-ingressgateway.resources.limits.memory"
+    value = var.isito_ingress_spec.resources.limits.memory
+  }
+
+  wait    = true
+  timeout = 300
+
+  depends_on = [
+    null_resource.download_charts,
+    kubernetes_namespace.istio_ingress_oauth_namespace,
+    helm_release.istio_base_install,
+    helm_release.istiod_install
+  ]
+}
+
 # Ingress for web
 resource "helm_release" "istio_ingress_web_install" {
   name       = lookup(var.charts.istio-ingress, "name", "istio-ingress-web")
@@ -479,6 +575,13 @@ data "kubectl_file_documents" "istio_ingress_gateway_apps_manifests" {
   })
 }
 
+data "kubectl_file_documents" "istio_ingress_gateway_oauth_manifests" {
+  content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_oauth.yaml", {
+    istio_gateway_oauth_cert_secret_name = var.istio_gateway_oauth_cert_secret_name
+    istio_ingress_oauth_domains          = var.istio_ingress_oauth_domains
+  })
+}
+
 data "kubectl_file_documents" "istio_ingress_gateway_mgmt_manifests" {
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_mgmt.yaml", {
     istio_gateway_mgmt_cert_secret_name = var.istio_gateway_mgmt_cert_secret_name
@@ -505,6 +608,19 @@ resource "kubectl_manifest" "install_istio_ingress_gateway_apps_manifests" {
     kubectl_manifest.cert-manager-install,
     kubectl_manifest.cert_issuer_install,
     helm_release.istio_ingress_apps_install
+  ]
+}
+
+resource "kubectl_manifest" "install_istio_ingress_gateway_oauth_manifests" {
+  count     = length(data.kubectl_file_documents.istio_ingress_gateway_oauth_manifests.documents)
+  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_oauth_manifests.documents, count.index)
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
+  depends_on = [
+    kubectl_manifest.cert-manager-install,
+    kubectl_manifest.cert_issuer_install,
+    helm_release.istio_ingress_oauth_install
   ]
 }
 
@@ -602,3 +718,4 @@ resource "null_resource" "ingress_web" {
     resource_2 = kubectl_manifest.install_istio_ingress_gateway_web_manifests[0].id
   }
 }
+

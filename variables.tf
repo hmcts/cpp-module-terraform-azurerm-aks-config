@@ -75,17 +75,22 @@ variable "environment_type" {
 
 variable "istio_ingress_apps_domains" {
   type        = list(string)
-  description = "Ingress domain name FQDN for apps"
+  description = "DNS names and wildcard patterns accepted by the apps Istio Gateway and included in its TLS certificate SANs"
+}
+
+variable "istio_ingress_oauth_domains" {
+  type        = list(string)
+  description = "DNS names and wildcard patterns accepted by the OAuth Istio Gateway and included in its TLS certificate SANs"
 }
 
 variable "istio_ingress_mgmt_domains" {
   type        = list(string)
-  description = "Ingress domain name FQDN for mgmt"
+  description = "DNS names and wildcard patterns accepted by the management Istio Gateway and included in its TLS certificate SANs"
 }
 
 variable "istio_ingress_web_domains" {
   type        = list(string)
-  description = "Ingress domain name FQDN for web"
+  description = "DNS names and wildcard patterns accepted by the web Istio Gateway and included in its TLS certificate SANs"
 }
 
 variable "kiali_hostnames" {
@@ -155,6 +160,12 @@ variable "istio_gateway_apps_cert_secret_name" {
   default = "istio-ingressgateway-apps-cert"
 }
 
+variable "istio_gateway_oauth_cert_secret_name" {
+  type        = string
+  description = "Kubernetes TLS Secret name for the OAuth Istio gateway certificate"
+  default     = "istio-ingressgateway-oauth-cert"
+}
+
 variable "istio_gateway_web_cert_secret_name" {
   type    = string
   default = "istio-ingressgateway-web-cert"
@@ -163,14 +174,16 @@ variable "istio_gateway_web_cert_secret_name" {
 variable "istio_components_hpa_spec" {
   type = map(number)
   default = {
-    istiod_min_replicas             = 1
-    istiod_max_replicas             = 5
-    istio_ingress_mgmt_min_replicas = 1
-    istio_ingress_mgmt_max_replicas = 5
-    istio_ingress_apps_min_replicas = 1
-    istio_ingress_apps_max_replicas = 5
-    istio_ingress_web_min_replicas  = 1
-    istio_ingress_web_max_replicas  = 5
+    istiod_min_replicas              = 1
+    istiod_max_replicas              = 5
+    istio_ingress_mgmt_min_replicas  = 1
+    istio_ingress_mgmt_max_replicas  = 5
+    istio_ingress_apps_min_replicas  = 1
+    istio_ingress_apps_max_replicas  = 5
+    istio_ingress_oauth_min_replicas = 2
+    istio_ingress_oauth_max_replicas = 10
+    istio_ingress_web_min_replicas   = 1
+    istio_ingress_web_max_replicas   = 5
   }
 }
 

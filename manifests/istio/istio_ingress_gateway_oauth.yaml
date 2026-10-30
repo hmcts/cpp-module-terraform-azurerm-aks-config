@@ -1,0 +1,31 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: istio-ingressgateway-oauth
+  namespace: istio-ingress-oauth
+spec:
+  selector:
+    istio: ingressgateway-oauth
+  servers:
+  - hosts:
+    %{~ for host in istio_ingress_oauth_domains ~}
+    - "${host}"
+    %{~ endfor ~}
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+    tls:
+      httpsRedirect: true
+  - hosts:
+    %{~ for host in istio_ingress_oauth_domains ~}
+    - "${host}"
+    %{~ endfor ~}
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: ${istio_gateway_oauth_cert_secret_name}
+      mode: SIMPLE
