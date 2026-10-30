@@ -61,12 +61,6 @@ output "private_link_service_ingress_web_id" {
   depends_on  = [null_resource.ingress_web]
 }
 
-output "private_link_service_ingress_oauth_id" {
-  description = "Resource ID of the OAuth ingress Private Link Service"
-  value       = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${var.istio_ingress_load_balancer_resource_group}/providers/Microsoft.Network/privateLinkServices/${local.privatelink_service_oauth_ingress_name}"
-  depends_on  = [null_resource.ingress_oauth]
-}
-
 output "kubernetes_cluster_oidc_issuer_url" {
   description = "OIDC issuer URL of the AKS cluster"
   value       = data.azurerm_kubernetes_cluster.cluster.oidc_issuer_url

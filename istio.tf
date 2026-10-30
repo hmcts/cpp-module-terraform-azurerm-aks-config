@@ -1,8 +1,7 @@
 locals {
-  privatelink_service_mgmt_ingress_name  = "PLS-${var.aks_cluster_name}-INGRESS-MGMT"
-  privatelink_service_apps_ingress_name  = "PLS-${var.aks_cluster_name}-INGRESS-APPS"
-  privatelink_service_web_ingress_name   = "PLS-${var.aks_cluster_name}-INGRESS-WEB"
-  privatelink_service_oauth_ingress_name = "PLS-${var.aks_cluster_name}-INGRESS-OAUTH"
+  privatelink_service_mgmt_ingress_name = "PLS-${var.aks_cluster_name}-INGRESS-MGMT"
+  privatelink_service_apps_ingress_name = "PLS-${var.aks_cluster_name}-INGRESS-APPS"
+  privatelink_service_web_ingress_name  = "PLS-${var.aks_cluster_name}-INGRESS-WEB"
 }
 
 resource "kubernetes_namespace" "istio_system_namespace" {
@@ -459,16 +458,6 @@ resource "helm_release" "istio_ingress_oauth_install" {
   }
 
   set {
-    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-create"
-    value = "true"
-  }
-
-  set {
-    name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-pls-name"
-    value = local.privatelink_service_oauth_ingress_name
-  }
-
-  set {
     name  = "gateways.istio-ingressgateway.serviceAnnotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-resource-group"
     value = var.istio_ingress_load_balancer_resource_group
   }
@@ -730,9 +719,3 @@ resource "null_resource" "ingress_web" {
   }
 }
 
-resource "null_resource" "ingress_oauth" {
-  triggers = {
-    resource_1 = helm_release.istio_ingress_oauth_install.id
-    resource_2 = kubectl_manifest.install_istio_ingress_gateway_oauth_manifests[0].id
-  }
-}
