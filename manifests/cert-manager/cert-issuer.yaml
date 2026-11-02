@@ -82,8 +82,9 @@ metadata:
   name: istio-ingressgateway-oauth-cert
   namespace: "istio-ingress-oauth"
 spec:
-  duration: 2160h
-  renewBefore: 360h
+  commonName: "${element(istio_ingress_oauth_domains, 0)}"
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
   dnsNames:
     %{~ for dnsname in istio_ingress_oauth_domains ~}
     - "${dnsname}"
