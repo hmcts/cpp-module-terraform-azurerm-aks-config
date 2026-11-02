@@ -579,6 +579,7 @@ data "kubectl_file_documents" "istio_ingress_gateway_oauth_manifests" {
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_oauth.yaml", {
     istio_gateway_oauth_cert_secret_name = var.istio_gateway_oauth_cert_secret_name
     istio_ingress_oauth_domains          = var.istio_ingress_oauth_domains
+    istio_ingress_oauth_health_hostname  = var.istio_ingress_oauth_health_hostname
   })
 }
 

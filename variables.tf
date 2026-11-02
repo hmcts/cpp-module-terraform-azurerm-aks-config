@@ -83,6 +83,12 @@ variable "istio_ingress_oauth_domains" {
   description = "DNS names and wildcard patterns accepted by the OAuth Istio Gateway and included in its TLS certificate SANs"
 }
 
+variable "istio_ingress_oauth_health_hostname" {
+  type        = string
+  description = "Host on the OAuth Istio Gateway that serves /healthz/ready over HTTPS. Set to null to disable the health route."
+  default     = null
+}
+
 variable "istio_ingress_mgmt_domains" {
   type        = list(string)
   description = "DNS names and wildcard patterns accepted by the management Istio Gateway and included in its TLS certificate SANs"
