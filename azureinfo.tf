@@ -1,7 +1,7 @@
 resource "kubernetes_namespace" "azure_info_namespace" {
   count = var.enable_azureinfo ? 1 : 0
   metadata {
-    name = "azure-info"
+    name = local.azure_info_namespace
     labels = {
       "app.kubernetes.io/managed-by" = "Terraform"
     }
@@ -36,14 +36,22 @@ locals {
   }
 }
 
+locals {
+  azure_info_namespace         = "azure-info"
+  azure_info_mi_resource_group = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/RG-MI-${var.aks_cluster_name}"
+}
+
+# Do not reference managed resources here. A planned change on any of them (for
+# example per-run tag updates on azurerm_resource_group.aks) defers this read to
+# apply time and makes store_azure_info show a diff in every plan.
 data "kubectl_file_documents" "azure_info_manifests" {
   content = templatefile("${path.module}/manifests/common/azureinfo.yaml", {
     oidc_issuer_url   = data.azurerm_kubernetes_cluster.aks_cluster.oidc_issuer_url
     subscription_id   = data.azurerm_client_config.current.subscription_id
     tenant_id         = data.azurerm_client_config.current.tenant_id
     role_definitions  = join("\n  ", [for role_name, role_id in local.role_definitions : "${role_name}: ${role_id}"])
-    namespace         = kubernetes_namespace.azure_info_namespace[0].metadata.0.name
-    mi_resource_group = azurerm_resource_group.aks.id
+    namespace         = local.azure_info_namespace
+    mi_resource_group = local.azure_info_mi_resource_group
     cluster_name      = var.aks_cluster_name
   })
 }
@@ -54,5 +62,9 @@ resource "kubectl_manifest" "store_azure_info" {
   lifecycle {
     ignore_changes = [field_manager]
   }
-  depends_on = [time_sleep.wait_for_aks_api_dns_propagation, kubernetes_namespace.azure_info_namespace]
+  depends_on = [
+    time_sleep.wait_for_aks_api_dns_propagation,
+    kubernetes_namespace.azure_info_namespace,
+    azurerm_resource_group.aks,
+  ]
 }
