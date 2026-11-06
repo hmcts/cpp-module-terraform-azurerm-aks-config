@@ -87,6 +87,33 @@ variable "istio_ingress_oauth_health_hostname" {
   type        = string
   description = "Host on the OAuth Istio Gateway that serves /healthz/ready over HTTPS. Set to null to disable the health route."
   default     = null
+
+  validation {
+    condition     = var.istio_ingress_oauth_health_hostname == null ? true : can(regex("^[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?$", var.istio_ingress_oauth_health_hostname))
+    error_message = "OAuth health hostname must be null or an exact hostname without whitespace, wildcards, a port or a path."
+  }
+}
+
+variable "istio_ingress_oauth_jwt_issuer" {
+  type        = string
+  description = "Exact Entra issuer from the API token's matching OpenID Connect metadata. Replace REPLACE_ME placeholders before planning."
+  nullable    = false
+
+  validation {
+    condition     = trimspace(var.istio_ingress_oauth_jwt_issuer) != ""
+    error_message = "OAuth JWT issuer must be non-empty."
+  }
+}
+
+variable "istio_ingress_oauth_jwt_jwks_uri" {
+  type        = string
+  description = "HTTPS public signing-key endpoint from the same OpenID Connect metadata as the issuer."
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^https://[^/?#[:space:]]+[^[:space:]]*$", var.istio_ingress_oauth_jwt_jwks_uri))
+    error_message = "OAuth JWT JWKS URI must be a non-empty HTTPS URL."
+  }
 }
 
 variable "istio_ingress_mgmt_domains" {

@@ -591,6 +591,46 @@ data "kubectl_file_documents" "istio_ingress_gateway_mgmt_manifests" {
   })
 }
 
+data "kubectl_file_documents" "istio_ingress_gateway_oauth_requestauthentication_manifests" {
+  content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_oauth_requestauthentication.yaml", {
+    istio_ingress_oauth_jwt_issuer   = var.istio_ingress_oauth_jwt_issuer
+    istio_ingress_oauth_jwt_jwks_uri = var.istio_ingress_oauth_jwt_jwks_uri
+  })
+}
+
+data "kubectl_file_documents" "istio_ingress_gateway_oauth_authorizationpolicy_manifests" {
+  content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_oauth_authorizationpolicy.yaml", {
+    istio_ingress_oauth_health_hostname = var.istio_ingress_oauth_health_hostname
+  })
+}
+
+resource "kubectl_manifest" "install_istio_ingress_gateway_oauth_requestauthentication_manifests" {
+  count     = length(data.kubectl_file_documents.istio_ingress_gateway_oauth_requestauthentication_manifests.documents)
+  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_oauth_requestauthentication_manifests.documents, count.index)
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
+  depends_on = [
+    kubernetes_namespace.istio_ingress_oauth_namespace,
+    helm_release.istio_ingress_oauth_install,
+    helm_release.istio_base_install
+  ]
+}
+
+resource "kubectl_manifest" "install_istio_ingress_gateway_oauth_authorizationpolicy_manifests" {
+  count     = length(data.kubectl_file_documents.istio_ingress_gateway_oauth_authorizationpolicy_manifests.documents)
+  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_oauth_authorizationpolicy_manifests.documents, count.index)
+  lifecycle {
+    ignore_changes = [field_manager]
+  }
+  depends_on = [
+    kubernetes_namespace.istio_ingress_oauth_namespace,
+    helm_release.istio_ingress_oauth_install,
+    helm_release.istio_base_install,
+    kubectl_manifest.install_istio_ingress_gateway_oauth_requestauthentication_manifests
+  ]
+}
+
 data "kubectl_file_documents" "istio_ingress_gateway_web_manifests" {
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_web.yaml", {
     istio_gateway_web_cert_secret_name = var.istio_gateway_web_cert_secret_name
@@ -719,4 +759,3 @@ resource "null_resource" "ingress_web" {
     resource_2 = kubectl_manifest.install_istio_ingress_gateway_web_manifests[0].id
   }
 }
-
