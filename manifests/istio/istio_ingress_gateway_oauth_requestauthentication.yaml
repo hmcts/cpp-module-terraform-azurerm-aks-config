@@ -1,0 +1,17 @@
+---
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: istio-ingressgateway-oauth-jwt
+  namespace: istio-ingress-oauth
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway-oauth
+  jwtRules:
+  - issuer: ${jsonencode(istio_ingress_oauth_jwt_issuer)}
+    jwksUri: ${jsonencode(istio_ingress_oauth_jwt_jwks_uri)}
+    fromHeaders:
+    - name: Authorization
+      prefix: "Bearer "
+    forwardOriginalToken: true

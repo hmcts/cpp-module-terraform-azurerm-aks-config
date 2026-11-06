@@ -46,16 +46,18 @@ resource "time_sleep" "wait_for_certmanager_install" {
 
 data "kubectl_file_documents" "cert_issuer_manifests" {
   content = templatefile("${path.module}/manifests/cert-manager/cert-issuer.yaml", {
-    vault_token                         = base64encode(var.vault_token)
-    vault_path                          = var.vault_path
-    vault_url                           = var.vault_url
-    ca_bundle                           = data.vault_generic_secret.ca_cert.data.issuing_ca
-    istio_gateway_mgmt_cert_secret_name = var.istio_gateway_mgmt_cert_secret_name
-    istio_gateway_apps_cert_secret_name = var.istio_gateway_apps_cert_secret_name
-    istio_gateway_web_cert_secret_name  = var.istio_gateway_web_cert_secret_name
-    istio_ingress_apps_domains          = var.istio_ingress_apps_domains
-    istio_ingress_mgmt_domains          = var.istio_ingress_mgmt_domains
-    istio_ingress_web_domains           = var.istio_ingress_web_domains
+    vault_token                          = base64encode(var.vault_token)
+    vault_path                           = var.vault_path
+    vault_url                            = var.vault_url
+    ca_bundle                            = data.vault_generic_secret.ca_cert.data.issuing_ca
+    istio_gateway_mgmt_cert_secret_name  = var.istio_gateway_mgmt_cert_secret_name
+    istio_gateway_apps_cert_secret_name  = var.istio_gateway_apps_cert_secret_name
+    istio_gateway_web_cert_secret_name   = var.istio_gateway_web_cert_secret_name
+    istio_gateway_oauth_cert_secret_name = var.istio_gateway_oauth_cert_secret_name
+    istio_ingress_apps_domains           = var.istio_ingress_apps_domains
+    istio_ingress_mgmt_domains           = var.istio_ingress_mgmt_domains
+    istio_ingress_web_domains            = var.istio_ingress_web_domains
+    istio_ingress_oauth_domains          = var.istio_ingress_oauth_domains
   })
 }
 
@@ -65,5 +67,12 @@ resource "kubectl_manifest" "cert_issuer_install" {
   lifecycle {
     ignore_changes = [field_manager]
   }
-  depends_on = [kubectl_manifest.cert-manager-install, time_sleep.wait_for_certmanager_install]
+  depends_on = [
+    kubernetes_namespace.istio_ingress_oauth_namespace,
+    kubernetes_namespace.istio_ingress_namespace,
+    kubernetes_namespace.istio_ingress_mgmt_namespace,
+    kubernetes_namespace.istio_ingress_web_namespace,
+    kubectl_manifest.cert-manager-install,
+    time_sleep.wait_for_certmanager_install
+  ]
 }
