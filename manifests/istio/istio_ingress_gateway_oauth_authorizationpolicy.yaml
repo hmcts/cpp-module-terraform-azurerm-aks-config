@@ -1,0 +1,23 @@
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: istio-ingressgateway-oauth-jwt
+  namespace: istio-ingress-oauth
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway-oauth
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        requestPrincipals: ["*"]
+%{ if istio_ingress_oauth_health_hostname != null ~}
+  - to:
+    - operation:
+        hosts:
+        - ${jsonencode(istio_ingress_oauth_health_hostname)}
+        methods: ["GET"]
+        paths: ["/healthz/ready"]
+%{ endif ~}
