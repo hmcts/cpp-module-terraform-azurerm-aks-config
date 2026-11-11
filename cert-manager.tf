@@ -46,6 +46,7 @@ resource "time_sleep" "wait_for_certmanager_install" {
 
 data "kubectl_file_documents" "cert_issuer_manifests" {
   content = templatefile("${path.module}/manifests/cert-manager/cert-issuer.yaml", {
+    enable_istio_oauth                   = var.enable_istio_oauth
     vault_token                          = base64encode(var.vault_token)
     vault_path                           = var.vault_path
     vault_url                            = var.vault_url

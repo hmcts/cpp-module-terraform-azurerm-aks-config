@@ -1,8 +1,10 @@
 ## Unreleased
 
+- Make the entire OAuth ingress opt-in with `enable_istio_oauth = false` by default, optional JWT inputs and HPA fallbacks for existing environment maps.
+- Allow existing OAuth resources to be recreated when adopting the feature flag; no state migration is provided.
 - Add OAuth gateway JWT validation and authenticated-principal enforcement.
 - Permit only the configured health hostname's exact `GET /healthz/ready` without a token.
-- Require issuer and HTTPS JWKS URI; reject review placeholders before deployment.
+- Require issuer and HTTPS JWKS URI when OAuth is enabled.
 - Omit gateway audience restrictions for initial testing; services retain audience, token-type and permission checks.
 - Stop `store_azure_info` showing a diff in every plan: build the `azure-info` template from plan-time values instead of managed resource attributes.
 

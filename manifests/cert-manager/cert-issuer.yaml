@@ -75,6 +75,7 @@ spec:
     kind: ClusterIssuer
     name: vault-issuer
   secretName: ${istio_gateway_web_cert_secret_name}
+%{ if enable_istio_oauth ~}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -93,3 +94,4 @@ spec:
     kind: ClusterIssuer
     name: vault-issuer
   secretName: ${istio_gateway_oauth_cert_secret_name}
+%{ endif ~}

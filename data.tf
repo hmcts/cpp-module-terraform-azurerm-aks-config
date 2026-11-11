@@ -23,6 +23,8 @@ resource "time_sleep" "wait_for_loadbalancer_web" {
 }
 
 resource "time_sleep" "wait_for_loadbalancer_oauth" {
+  count = var.enable_istio_oauth ? 1 : 0
+
   depends_on = [
     helm_release.istio_ingress_oauth_install,
     kubectl_manifest.install_istio_ingress_gateway_oauth_manifests
@@ -64,6 +66,8 @@ data "kubernetes_service" "web_gateway_svc" {
 }
 
 data "kubernetes_service" "oauth_gateway_svc" {
+  count = var.enable_istio_oauth ? 1 : 0
+
   metadata {
     name      = "istio-ingressgateway-oauth"
     namespace = "istio-ingress-oauth"

@@ -78,9 +78,18 @@ variable "istio_ingress_apps_domains" {
   description = "DNS names and wildcard patterns accepted by the apps Istio Gateway and included in its TLS certificate SANs"
 }
 
+variable "enable_istio_oauth" {
+  description = "Deploy the dedicated OAuth ingress, certificate, health route and JWT policies. Disabled until an environment opts in."
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
 variable "istio_ingress_oauth_domains" {
   type        = list(string)
   description = "DNS names and wildcard patterns accepted by the OAuth Istio Gateway and included in its TLS certificate SANs"
+  default     = []
+  nullable    = false
 }
 
 variable "istio_ingress_oauth_health_hostname" {
@@ -96,23 +105,25 @@ variable "istio_ingress_oauth_health_hostname" {
 
 variable "istio_ingress_oauth_jwt_issuer" {
   type        = string
-  description = "Exact Entra issuer from the API token's matching OpenID Connect metadata. Replace REPLACE_ME placeholders before planning."
+  description = "Exact issuer from the matching OpenID Connect metadata. Required when enable_istio_oauth is true."
+  default     = ""
   nullable    = false
 
   validation {
-    condition     = trimspace(var.istio_ingress_oauth_jwt_issuer) != ""
-    error_message = "OAuth JWT issuer must be non-empty."
+    condition     = var.istio_ingress_oauth_jwt_issuer == "" || trimspace(var.istio_ingress_oauth_jwt_issuer) != ""
+    error_message = "OAuth JWT issuer must be empty when unused, or non-blank."
   }
 }
 
 variable "istio_ingress_oauth_jwt_jwks_uri" {
   type        = string
-  description = "HTTPS public signing-key endpoint from the same OpenID Connect metadata as the issuer."
+  description = "HTTPS public signing-key endpoint from the same metadata as the issuer. Required when enable_istio_oauth is true."
+  default     = ""
   nullable    = false
 
   validation {
-    condition     = can(regex("^https://[^/?#[:space:]]+[^[:space:]]*$", var.istio_ingress_oauth_jwt_jwks_uri))
-    error_message = "OAuth JWT JWKS URI must be a non-empty HTTPS URL."
+    condition     = var.istio_ingress_oauth_jwt_jwks_uri == "" || can(regex("^https://[^/?#[:space:]]+[^[:space:]]*$", var.istio_ingress_oauth_jwt_jwks_uri))
+    error_message = "OAuth JWT JWKS URI must be empty when unused, or an HTTPS URL."
   }
 }
 

@@ -76,6 +76,8 @@ resource "kubernetes_namespace" "istio_ingress_web_namespace" {
 }
 
 resource "kubernetes_namespace" "istio_ingress_oauth_namespace" {
+  count = var.enable_istio_oauth ? 1 : 0
+
   metadata {
     name = "istio-ingress-oauth"
     labels = {
@@ -406,6 +408,7 @@ resource "helm_release" "istio_ingress_apps_install" {
 }
 
 resource "helm_release" "istio_ingress_oauth_install" {
+  count      = var.enable_istio_oauth ? 1 : 0
   name       = "istio-ingress-oauth"
   chart      = lookup(var.charts.istio-ingress, "name", "istio-ingress")
   version    = lookup(var.charts.istio-ingress, "version", "")
@@ -444,12 +447,12 @@ resource "helm_release" "istio_ingress_oauth_install" {
 
   set {
     name  = "gateways.istio-ingressgateway.autoscaleMin"
-    value = var.istio_components_hpa_spec.istio_ingress_oauth_min_replicas
+    value = lookup(var.istio_components_hpa_spec, "istio_ingress_oauth_min_replicas", 2)
   }
 
   set {
     name  = "gateways.istio-ingressgateway.autoscaleMax"
-    value = var.istio_components_hpa_spec.istio_ingress_oauth_max_replicas
+    value = lookup(var.istio_components_hpa_spec, "istio_ingress_oauth_max_replicas", 10)
   }
 
   set {
@@ -474,6 +477,21 @@ resource "helm_release" "istio_ingress_oauth_install" {
 
   wait    = true
   timeout = 300
+
+  lifecycle {
+    precondition {
+      condition     = length(var.istio_ingress_oauth_domains) > 0
+      error_message = "istio_ingress_oauth_domains must contain at least one domain when enable_istio_oauth is true."
+    }
+    precondition {
+      condition     = trimspace(var.istio_ingress_oauth_jwt_issuer) != ""
+      error_message = "istio_ingress_oauth_jwt_issuer is required when enable_istio_oauth is true."
+    }
+    precondition {
+      condition     = var.istio_ingress_oauth_jwt_jwks_uri != ""
+      error_message = "istio_ingress_oauth_jwt_jwks_uri is required when enable_istio_oauth is true."
+    }
+  }
 
   depends_on = [
     null_resource.download_charts,
@@ -576,6 +594,8 @@ data "kubectl_file_documents" "istio_ingress_gateway_apps_manifests" {
 }
 
 data "kubectl_file_documents" "istio_ingress_gateway_oauth_manifests" {
+  count = var.enable_istio_oauth ? 1 : 0
+
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_oauth.yaml", {
     istio_gateway_oauth_cert_secret_name = var.istio_gateway_oauth_cert_secret_name
     istio_ingress_oauth_domains          = var.istio_ingress_oauth_domains
@@ -592,6 +612,8 @@ data "kubectl_file_documents" "istio_ingress_gateway_mgmt_manifests" {
 }
 
 data "kubectl_file_documents" "istio_ingress_gateway_oauth_requestauthentication_manifests" {
+  count = var.enable_istio_oauth ? 1 : 0
+
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_oauth_requestauthentication.yaml", {
     istio_ingress_oauth_jwt_issuer   = var.istio_ingress_oauth_jwt_issuer
     istio_ingress_oauth_jwt_jwks_uri = var.istio_ingress_oauth_jwt_jwks_uri
@@ -599,14 +621,16 @@ data "kubectl_file_documents" "istio_ingress_gateway_oauth_requestauthentication
 }
 
 data "kubectl_file_documents" "istio_ingress_gateway_oauth_authorizationpolicy_manifests" {
+  count = var.enable_istio_oauth ? 1 : 0
+
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_oauth_authorizationpolicy.yaml", {
     istio_ingress_oauth_health_hostname = var.istio_ingress_oauth_health_hostname
   })
 }
 
 resource "kubectl_manifest" "install_istio_ingress_gateway_oauth_requestauthentication_manifests" {
-  count     = length(data.kubectl_file_documents.istio_ingress_gateway_oauth_requestauthentication_manifests.documents)
-  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_oauth_requestauthentication_manifests.documents, count.index)
+  count     = var.enable_istio_oauth ? length(data.kubectl_file_documents.istio_ingress_gateway_oauth_requestauthentication_manifests[0].documents) : 0
+  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_oauth_requestauthentication_manifests[0].documents, count.index)
   lifecycle {
     ignore_changes = [field_manager]
   }
@@ -618,8 +642,8 @@ resource "kubectl_manifest" "install_istio_ingress_gateway_oauth_requestauthenti
 }
 
 resource "kubectl_manifest" "install_istio_ingress_gateway_oauth_authorizationpolicy_manifests" {
-  count     = length(data.kubectl_file_documents.istio_ingress_gateway_oauth_authorizationpolicy_manifests.documents)
-  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_oauth_authorizationpolicy_manifests.documents, count.index)
+  count     = var.enable_istio_oauth ? length(data.kubectl_file_documents.istio_ingress_gateway_oauth_authorizationpolicy_manifests[0].documents) : 0
+  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_oauth_authorizationpolicy_manifests[0].documents, count.index)
   lifecycle {
     ignore_changes = [field_manager]
   }
@@ -653,8 +677,8 @@ resource "kubectl_manifest" "install_istio_ingress_gateway_apps_manifests" {
 }
 
 resource "kubectl_manifest" "install_istio_ingress_gateway_oauth_manifests" {
-  count     = length(data.kubectl_file_documents.istio_ingress_gateway_oauth_manifests.documents)
-  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_oauth_manifests.documents, count.index)
+  count     = var.enable_istio_oauth ? length(data.kubectl_file_documents.istio_ingress_gateway_oauth_manifests[0].documents) : 0
+  yaml_body = element(data.kubectl_file_documents.istio_ingress_gateway_oauth_manifests[0].documents, count.index)
   lifecycle {
     ignore_changes = [field_manager]
   }
