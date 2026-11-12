@@ -29,3 +29,25 @@ spec:
     tls:
       credentialName: ${istio_gateway_apps_cert_secret_name}
       mode: SIMPLE
+%{ if istio_ingress_apps_health_hostname != null ~}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: istio-ingressgateway-apps-health
+  namespace: istio-ingress
+spec:
+  hosts:
+  - "${istio_ingress_apps_health_hostname}"
+  gateways:
+  - istio-ingress/istio-ingressgateway-apps
+  http:
+  - match:
+    - uri:
+        exact: /healthz/ready
+    route:
+    - destination:
+        host: istio-ingressgateway-apps.istio-ingress.svc.cluster.local
+        port:
+          number: 15021
+%{ endif ~}

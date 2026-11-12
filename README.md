@@ -1,6 +1,12 @@
 ## Configure AKS cluster - This module is to specific to Common Platform
 The module is used to configure AKS cluster for common platform.
 
+### Apps, management and web ingress health checks
+
+The optional `istio_ingress_apps_health_hostname`, `istio_ingress_mgmt_health_hostname` and `istio_ingress_web_health_hostname` inputs default to null. Set an input to an exact hostname to create a VirtualService for that gateway. It routes `https://<hostname>/healthz/ready` on port 443 to the gateway Service's Istio status port `15021`. Leave it null to omit the route.
+
+The hostname must match the corresponding `istio_ingress_apps_domains`, `istio_ingress_mgmt_domains` or `istio_ingress_web_domains` Gateway host and be covered by its TLS certificate. Configure the Application Gateway HTTPS probe with that hostname and path. The management gateway's existing IP-based authorization policy still applies; allow the probe's source as appropriate. Confirm the probe succeeds in the target environment before relying on it.
+
 ### OAuth Istio ingress
 
 The OAuth ingress is disabled by default. Set `enable_istio_oauth = true` to deploy its dedicated namespace, Istio ingress release, TLS Certificate, Gateway, optional health route, internal LoadBalancer Service and JWT policies. When disabled, the module creates none of these resources, does not query the OAuth Service, and returns null for `ingress_lb_private_ip_address_oauth`. Existing apps, management and web ingress resources remain enabled.

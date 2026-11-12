@@ -589,6 +589,7 @@ data "kubectl_file_documents" "istio_ingress_gateway_apps_manifests" {
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_apps.yaml", {
     istio_gateway_apps_cert_secret_name = var.istio_gateway_apps_cert_secret_name
     istio_ingress_apps_domains          = var.istio_ingress_apps_domains
+    istio_ingress_apps_health_hostname  = var.istio_ingress_apps_health_hostname
     aks_cluster_name                    = var.aks_cluster_name
   })
 }
@@ -607,6 +608,7 @@ data "kubectl_file_documents" "istio_ingress_gateway_mgmt_manifests" {
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_mgmt.yaml", {
     istio_gateway_mgmt_cert_secret_name = var.istio_gateway_mgmt_cert_secret_name
     istio_ingress_mgmt_domains          = var.istio_ingress_mgmt_domains
+    istio_ingress_mgmt_health_hostname  = var.istio_ingress_mgmt_health_hostname
     aks_cluster_name                    = var.aks_cluster_name
   })
 }
@@ -659,6 +661,7 @@ data "kubectl_file_documents" "istio_ingress_gateway_web_manifests" {
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_web.yaml", {
     istio_gateway_web_cert_secret_name = var.istio_gateway_web_cert_secret_name
     istio_ingress_web_domains          = var.istio_ingress_web_domains
+    istio_ingress_web_health_hostname  = var.istio_ingress_web_health_hostname
     aks_cluster_name                   = var.aks_cluster_name
   })
 }

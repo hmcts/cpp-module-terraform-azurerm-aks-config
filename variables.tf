@@ -78,6 +78,17 @@ variable "istio_ingress_apps_domains" {
   description = "DNS names and wildcard patterns accepted by the apps Istio Gateway and included in its TLS certificate SANs"
 }
 
+variable "istio_ingress_apps_health_hostname" {
+  type        = string
+  description = "Host on the apps Istio Gateway that serves /healthz/ready over HTTPS. Set to null to disable the health route."
+  default     = null
+
+  validation {
+    condition     = var.istio_ingress_apps_health_hostname == null ? true : can(regex("^[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?$", var.istio_ingress_apps_health_hostname))
+    error_message = "Apps health hostname must be null or an exact hostname without whitespace, wildcards, a port or a path."
+  }
+}
+
 variable "enable_istio_oauth" {
   description = "Deploy the dedicated OAuth ingress, certificate, health route and JWT policies. Disabled until an environment opts in."
   type        = bool
@@ -132,9 +143,31 @@ variable "istio_ingress_mgmt_domains" {
   description = "DNS names and wildcard patterns accepted by the management Istio Gateway and included in its TLS certificate SANs"
 }
 
+variable "istio_ingress_mgmt_health_hostname" {
+  type        = string
+  description = "Host on the management Istio Gateway that serves /healthz/ready over HTTPS. Set to null to disable the health route."
+  default     = null
+
+  validation {
+    condition     = var.istio_ingress_mgmt_health_hostname == null ? true : can(regex("^[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?$", var.istio_ingress_mgmt_health_hostname))
+    error_message = "Management health hostname must be null or an exact hostname without whitespace, wildcards, a port or a path."
+  }
+}
+
 variable "istio_ingress_web_domains" {
   type        = list(string)
   description = "DNS names and wildcard patterns accepted by the web Istio Gateway and included in its TLS certificate SANs"
+}
+
+variable "istio_ingress_web_health_hostname" {
+  type        = string
+  description = "Host on the web Istio Gateway that serves /healthz/ready over HTTPS. Set to null to disable the health route."
+  default     = null
+
+  validation {
+    condition     = var.istio_ingress_web_health_hostname == null ? true : can(regex("^[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?$", var.istio_ingress_web_health_hostname))
+    error_message = "Web health hostname must be null or an exact hostname without whitespace, wildcards, a port or a path."
+  }
 }
 
 variable "kiali_hostnames" {
