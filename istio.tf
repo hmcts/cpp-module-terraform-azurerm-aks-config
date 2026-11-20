@@ -626,7 +626,8 @@ data "kubectl_file_documents" "istio_ingress_gateway_oauth_authorizationpolicy_m
   count = var.enable_istio_oauth ? 1 : 0
 
   content = templatefile("${path.module}/manifests/istio/istio_ingress_gateway_oauth_authorizationpolicy.yaml", {
-    istio_ingress_oauth_health_hostname = var.istio_ingress_oauth_health_hostname
+    istio_ingress_oauth_authorization_policy_action = var.istio_ingress_oauth_authorization_policy_action
+    istio_ingress_oauth_health_hostname             = var.istio_ingress_oauth_health_hostname
   })
 }
 

@@ -25,12 +25,15 @@ The OAuth gateway has dedicated `RequestAuthentication` and `AuthorizationPolicy
 |---|---|
 | `istio_ingress_oauth_jwt_issuer` | Exact issuer from the matching Entra OpenID Connect metadata and token `iss` claim |
 | `istio_ingress_oauth_jwt_jwks_uri` | HTTPS `jwks_uri` from that same metadata document |
+| `istio_ingress_oauth_authorization_policy_action` | `ALLOW` (default) enforces JWT principal matching; `AUDIT` stops this policy from enforcing access |
 
 The JWT inputs default to empty strings so existing callers need no new settings. Enabling OAuth without both inputs blocks the plan. Whitespace-only values and non-HTTPS JWKS URIs are rejected. Do not store or share access tokens. The original `Authorization: Bearer` token is forwarded; applications retain their own authorization checks.
 
 The gateway deliberately has no audience restriction for initial testing. It validates signature, exact issuer and token time claims, but accepts any audience from that issuer. This may admit ID tokens or tokens intended for unrelated resources. Every protected service must validate its own audience, token type and roles/scopes. Gateway acceptance alone does not authorize access to a service.
 
-Only the OAuth workload is selected. API requests require an authenticated principal. A separate rule permits tokenless `GET /healthz/ready` only on the exact configured health hostname. It does not identify the caller. Wildcard health hosts are rejected. Setting the health hostname to null omits both the health route and its permission. Invalid supplied JWTs are still rejected, including on the health endpoint.
+Only the OAuth workload is selected. With the default `ALLOW` action, API requests require an authenticated principal; a request without a valid JWT does not match the rule and is denied. A separate rule permits tokenless `GET /healthz/ready` only on the exact configured health hostname. It does not identify the caller. Wildcard health hosts are rejected. Setting the health hostname to null omits both the health route and its permission. Invalid supplied JWTs are still rejected, including on the health endpoint.
+
+Set `istio_ingress_oauth_authorization_policy_action = "AUDIT"` to stop this policy from enforcing access. Requests can then be allowed unless another applicable `ALLOW`, `DENY` or `CUSTOM` policy restricts them. `AUDIT` only marks matching requests for audit; an Istio audit plugin is required to produce audit records. Use this only as a deliberate, temporary exception and restore `ALLOW` to enforce JWT principal matching again.
 
 Before rollout, review the rendered policies and all other policies that select this gateway. Verify Istiod can retrieve the public signing keys over the existing HTTPS outbound path. No credential or network rule is added.
 
