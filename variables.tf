@@ -138,6 +138,18 @@ variable "istio_ingress_oauth_jwt_jwks_uri" {
   }
 }
 
+variable "istio_ingress_oauth_authorization_policy_action" {
+  type        = string
+  description = "OAuth ingress AuthorizationPolicy action. ALLOW enforces JWT principal matching; AUDIT does not enforce access."
+  default     = "ALLOW"
+  nullable    = false
+
+  validation {
+    condition     = contains(["ALLOW", "AUDIT"], var.istio_ingress_oauth_authorization_policy_action)
+    error_message = "OAuth ingress AuthorizationPolicy action must be ALLOW or AUDIT."
+  }
+}
+
 variable "istio_ingress_mgmt_domains" {
   type        = list(string)
   description = "DNS names and wildcard patterns accepted by the management Istio Gateway and included in its TLS certificate SANs"

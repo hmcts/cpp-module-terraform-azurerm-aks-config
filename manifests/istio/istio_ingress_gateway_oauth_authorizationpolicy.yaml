@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       app: istio-ingressgateway-oauth
-  action: ALLOW
+  action: ${jsonencode(istio_ingress_oauth_authorization_policy_action)}
   rules:
   - from:
     - source:
