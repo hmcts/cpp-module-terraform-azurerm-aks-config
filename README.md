@@ -11,6 +11,8 @@ The hostname must match the corresponding `istio_ingress_apps_domains`, `istio_i
 
 The OAuth ingress is disabled by default. Set `enable_istio_oauth = true` to deploy its dedicated namespace, Istio ingress release, TLS Certificate, Gateway, optional health route, internal LoadBalancer Service and JWT policies. When disabled, the module creates none of these resources, does not query the OAuth Service, and returns null for `ingress_lb_private_ip_address_oauth`. Existing apps, management and web ingress resources remain enabled.
 
+Earlier versions could record `cert_issuer_install[5]` as a duplicate of the Vault token Secret at `cert_issuer_install[0]` while OAuth was disabled. Before applying this version, check the plan and state. If both addresses refer to the same Secret, back up the state securely and remove only the duplicate `[5]` binding with `terraform state rm`, using the full module address. This does not delete the Secret. Re-plan and verify that the Secret is not deleted or replaced. Do not remove `[5]` if it refers to an actual OAuth Certificate.
+
 When enabled, supply a non-empty `istio_ingress_oauth_domains` list and the JWT inputs below. OAuth replica bounds default to 2 and 10 even when an existing environment supplies an HPA map without OAuth keys. Set `istio_ingress_oauth_min_replicas` and `istio_ingress_oauth_max_replicas` in that map to override these bounds.
 
 Merge this module's feature-flag changes to `main` before merging a caller that passes `enable_istio_oauth`. Terraform checks module arguments even when the flag is false. Callers must use a static module source; a feature flag cannot select a source reference.

@@ -63,8 +63,9 @@ data "kubectl_file_documents" "cert_issuer_manifests" {
 }
 
 resource "kubectl_manifest" "cert_issuer_install" {
-  count     = length(split("\n---\n", file("${path.module}/manifests/cert-manager/cert-issuer.yaml")))
-  yaml_body = element(data.kubectl_file_documents.cert_issuer_manifests.documents, count.index)
+  # The unrendered file contains one optional OAuth document.
+  count     = length(split("\n---\n", file("${path.module}/manifests/cert-manager/cert-issuer.yaml"))) - (var.enable_istio_oauth ? 0 : 1)
+  yaml_body = data.kubectl_file_documents.cert_issuer_manifests.documents[count.index]
   lifecycle {
     ignore_changes = [field_manager]
   }
