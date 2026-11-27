@@ -48,6 +48,49 @@ clusterRoles:
     - apiGroups: [""]
       resources: ["pods/portforward"]
       verbs: ["*"]
+  # Restricted variants of contributor-role / reader-role: no secrets, pods/exec, pods/attach
+  # or workload creation. Unbound here; only take effect where a namespace RoleBinding references them.
+  contributor-role-restricted:
+    create: true
+    createBinding: false
+    rules:
+    - apiGroups: [""]
+      resources: ["pods"]
+      verbs: ["get", "list", "watch", "delete"]
+    - apiGroups: [""]
+      resources: ["pods/log"]
+      verbs: ["get", "list"]
+    - apiGroups: [""]
+      resources: ["pods/portforward"]
+      verbs: ["get", "create"]
+    - apiGroups: [""]
+      resources: ["services", "endpoints", "events", "configmaps", "persistentvolumeclaims", "replicationcontrollers", "serviceaccounts", "resourcequotas", "limitranges"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: ["apps"]
+      resources: ["deployments", "statefulsets", "replicasets", "daemonsets"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: ["apps"]
+      resources: ["deployments/scale", "statefulsets/scale"]
+      verbs: ["get", "update", "patch"]
+    - apiGroups: ["batch"]
+      resources: ["jobs", "cronjobs"]
+      verbs: ["get", "list", "watch", "delete"]
+    - apiGroups: ["networking.k8s.io"]
+      resources: ["ingresses", "networkpolicies"]
+      verbs: ["get", "list", "watch"]
+  reader-role-restricted:
+    create: true
+    createBinding: false
+    rules:
+    - apiGroups: [""]
+      resources: ["pods", "pods/log", "services", "endpoints", "events", "configmaps", "persistentvolumeclaims", "replicationcontrollers", "serviceaccounts"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: [""]
+      resources: ["pods/portforward"]
+      verbs: ["get", "create"]
+    - apiGroups: ["apps", "batch"]
+      resources: ["*"]
+      verbs: ["get", "list", "watch"]
   jenkins-deploy:
     create: true
     rules:
